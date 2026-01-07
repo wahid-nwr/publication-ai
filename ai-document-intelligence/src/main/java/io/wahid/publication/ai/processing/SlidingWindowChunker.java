@@ -29,7 +29,7 @@ public class SlidingWindowChunker implements Chunker {
     }
 
     @Override
-    public void accept(TextChunk input) {
+    public void accept(TextChunk input) throws Exception {
         if (currentDocumentId == null) {
             currentDocumentId = input.documentId();
             baseMetadata = input.metadata();
@@ -52,7 +52,7 @@ public class SlidingWindowChunker implements Chunker {
         }
     }
 
-    private void emitChunk() {
+    private void emitChunk() throws Exception {
         StringBuilder sb = new StringBuilder();
         List<String> emitted = new ArrayList<>();
 
@@ -87,7 +87,7 @@ public class SlidingWindowChunker implements Chunker {
         }
     }
 
-    private void splitLargeText(TextChunk input) {
+    private void splitLargeText(TextChunk input) throws Exception {
         String[] sentences = input.text().split("(?<=[.!?])\\s+");
 
         for (String sentence : sentences) {
@@ -107,7 +107,7 @@ public class SlidingWindowChunker implements Chunker {
     }
 
     @Override
-    public void flush() {
+    public void flush() throws Exception {
         if (!buffer.isEmpty()) {
             emitChunk();
         }

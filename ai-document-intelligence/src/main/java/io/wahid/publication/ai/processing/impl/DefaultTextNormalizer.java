@@ -16,7 +16,7 @@ public class DefaultTextNormalizer implements TextNormalizer {
     }
 
     @Override
-    public void accept(TextChunk chunk) {
+    public void accept(TextChunk chunk) throws Exception {
         String normalized = normalize(chunk.text());
 
         if (normalized.isBlank()) return;

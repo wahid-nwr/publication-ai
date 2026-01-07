@@ -21,21 +21,25 @@ public class QueryServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        QueryRequest request =
-                objectMapper.readValue(req.getInputStream(), QueryRequest.class);
+        try {
+            QueryRequest request =
+                    objectMapper.readValue(req.getInputStream(), QueryRequest.class);
 
-        if (request.getQuestion() == null || request.getQuestion().isBlank()) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Question is required");
-            return;
+            if (request.getQuestion() == null || request.getQuestion().isBlank()) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Question is required");
+                return;
+            }
+
+            QueryService.QueryResult result =
+                    queryService.query(request.getQuestion(), request.getTopK());
+
+            QueryResponse response =
+                    new QueryResponse(result.answer(), result.sources());
+
+            resp.setContentType("application/json");
+            objectMapper.writeValue(resp.getOutputStream(), response);
+        } catch (Exception e) {
+            throw new IOException(e);
         }
-
-        QueryService.QueryResult result =
-                queryService.query(request.getQuestion(), request.getTopK());
-
-        QueryResponse response =
-                new QueryResponse(result.answer(), result.sources());
-
-        resp.setContentType("application/json");
-        objectMapper.writeValue(resp.getOutputStream(), response);
     }
 }

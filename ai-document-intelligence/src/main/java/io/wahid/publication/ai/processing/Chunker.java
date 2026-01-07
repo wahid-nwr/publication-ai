@@ -6,5 +6,5 @@ public interface Chunker extends TextChunkConsumer {
 
     void setDownstream(TextChunkConsumer downstream);
 
-    void flush();
+    void flush() throws Exception;
 }

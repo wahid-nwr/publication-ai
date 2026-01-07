@@ -1,4 +1,9 @@
 package io.wahid.publication.ai.embedding;
 
-public class EmbeddingClient {
+import java.util.List;
+
+public interface EmbeddingClient {
+
+    List<Float> embed(String text) throws Exception;
+
 }
