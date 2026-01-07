@@ -10,6 +10,12 @@ import org.eclipse.jetty.server.Server;
 public class ServerLauncher {
 
     public static void main(String[] args) throws Exception {
+        ApplicationContext applicationContext = new ApplicationContext();
+
+        IngestServlet ingestServlet = new IngestServlet(applicationContext.ingestionService());
+
+        QueryServlet queryServlet = new QueryServlet(applicationContext.queryService());
+
         Server server = new Server(8080);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);

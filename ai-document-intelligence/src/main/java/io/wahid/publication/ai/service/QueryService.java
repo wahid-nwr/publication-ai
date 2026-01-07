@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface QueryService {
 
-    QueryResult query(String question, int topK);
+    QueryResult query(String question, int topK) throws Exception;
 
     record QueryResult(String answer, List<String> sources) {}
 }

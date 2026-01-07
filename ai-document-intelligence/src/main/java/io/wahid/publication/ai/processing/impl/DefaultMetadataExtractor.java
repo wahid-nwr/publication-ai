@@ -17,7 +17,7 @@ public class DefaultMetadataExtractor implements MetadataExtractor {
     }
 
     @Override
-    public void accept(TextChunk chunk) {
+    public void accept(TextChunk chunk) throws Exception {
         Map<String, Object> enriched =
                 new HashMap<>(chunk.metadata());
 
