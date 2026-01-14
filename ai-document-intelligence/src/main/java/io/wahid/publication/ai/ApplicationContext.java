@@ -19,6 +19,7 @@ import io.wahid.publication.ai.vectorstore.*;
 public class ApplicationContext {
 
     public IngestionService ingestionService() {
+        ensureQdrantCollection();
 
         // Final consumer: embedding + vector storage
         TextChunkConsumer embeddingConsumer = createEmbeddingPipeline();
@@ -41,14 +42,14 @@ public class ApplicationContext {
     public QueryService queryService() {
         VectorSearcher vectorSearcher =
                 new QdrantVectorSearcher(
-                        "http://localhost:6333",
+                        "http://qdrant:6333",
                         "documents"
                 );
 
         OllamaEmbeddingClient ollamaClient =
                 new OllamaEmbeddingClient(
                         "http://localhost:11434",
-                        "llama3"
+                        "all-minilm"
                 );
 
         Retriever retriever = new DefaultRetriever(ollamaClient, vectorSearcher);
@@ -71,7 +72,7 @@ public class ApplicationContext {
 
         VectorWriter vectorWriter =
                 new QdrantVectorWriter(
-                        "http://localhost:6333",
+                        "http://qdrant:6333",
                         "documents"
                 );
 
@@ -80,4 +81,15 @@ public class ApplicationContext {
                 vectorWriter
         );
     }
+
+    private void ensureQdrantCollection() {
+        QdrantAdminClient admin = new QdrantAdminClient("http://qdrant:6333");
+
+        admin.ensureCollection(
+                "documents",
+                384,          // embedding dimension
+                "Cosine"
+        );
+    }
+
 }
