@@ -30,12 +30,14 @@ public class SlidingWindowChunker implements Chunker {
 
     @Override
     public void accept(TextChunk input) throws Exception {
+        System.out.println("accept text chunk");
         if (currentDocumentId == null) {
             currentDocumentId = input.documentId();
             baseMetadata = input.metadata();
         }
 
         String text = input.text();
+        System.out.println("text chunk->" + text);
         int tokens = TokenEstimator.estimateTokens(text);
 
         if (tokens > maxTokens) {

@@ -20,16 +20,14 @@ public class CsvIngestor implements DocumentIngestor {
             InputStream inputStream,
             TextChunkConsumer consumer
     ) throws Exception {
-
-        try (CSVReader reader =
-                     new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
+        System.out.println("ingesting csv file!");
+        try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String[] row;
             int rowNumber = 0;
 
             while ((row = reader.readNext()) != null) {
                 rowNumber++;
-
+                System.out.println("ingesting row!");
                 String text = String.join(" | ", row);
 
                 Map<String, Object> metadata = new HashMap<>();
