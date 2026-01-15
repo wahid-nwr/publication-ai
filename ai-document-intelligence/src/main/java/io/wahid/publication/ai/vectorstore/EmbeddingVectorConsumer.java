@@ -1,12 +1,13 @@
 package io.wahid.publication.ai.vectorstore;
 
 import io.wahid.publication.ai.embedding.EmbeddingClient;
+import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
 import io.wahid.publication.ai.ingestion.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 
 import java.util.List;
 
-public class EmbeddingVectorConsumer implements TextChunkConsumer {
+public class EmbeddingVectorConsumer extends AbstractPipelineStage implements TextChunkConsumer {
 
     private final EmbeddingClient embeddingClient;
     private final VectorWriter vectorWriter;
@@ -20,12 +21,21 @@ public class EmbeddingVectorConsumer implements TextChunkConsumer {
     }
 
     @Override
-    public void accept(TextChunk chunk) {
-        try {
-            List<Float> embedding = embeddingClient.embed(chunk.text());
-            vectorWriter.write(chunk, embedding);
-        } catch (Exception e) {
-            throw new RuntimeException("Embedding pipeline failed", e);
+    public void accept(TextChunk chunk) throws Exception {
+        System.out.println("EmbeddingVectorConsumer received chunk: "
+                + chunk.text().substring(0, Math.min(80, chunk.text().length())));
+
+        // 🔥 THIS must be called
+        List<Float> vector = embeddingClient.embed(chunk.text());
+
+        if (vector == null || vector.isEmpty()) {
+            System.out.println("⚠️ Empty embedding, skipping");
+            return;
         }
+
+        vectorWriter.write(
+                chunk,
+                vector
+        );
     }
 }

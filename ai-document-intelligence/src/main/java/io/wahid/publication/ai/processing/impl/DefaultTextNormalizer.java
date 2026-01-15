@@ -1,19 +1,11 @@
 package io.wahid.publication.ai.processing.impl;
 
+import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
 import io.wahid.publication.ai.ingestion.TextChunk;
-import io.wahid.publication.ai.ingestion.TextChunkConsumer;
-import io.wahid.publication.ai.processing.TextNormalizer;
 
 import java.text.Normalizer;
 
-public class DefaultTextNormalizer implements TextNormalizer {
-
-    private TextChunkConsumer downstream;
-
-    @Override
-    public void setDownstream(TextChunkConsumer downstream) {
-        this.downstream = downstream;
-    }
+public class DefaultTextNormalizer extends AbstractPipelineStage {
 
     @Override
     public void accept(TextChunk chunk) throws Exception {
