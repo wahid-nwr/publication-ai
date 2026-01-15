@@ -4,7 +4,7 @@ import io.wahid.publication.ai.embedding.DefaultRetriever;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.embedding.OllamaEmbeddingClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
-import io.wahid.publication.ai.ingestion.TextChunkConsumer;
+import io.wahid.publication.ai.ingestion.PipelineStage;
 import io.wahid.publication.ai.processing.SlidingWindowChunker;
 import io.wahid.publication.ai.processing.impl.DefaultMetadataExtractor;
 import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
@@ -16,17 +16,19 @@ import io.wahid.publication.ai.service.QueryService;
 import io.wahid.publication.ai.service.impl.DefaultQueryService;
 import io.wahid.publication.ai.vectorstore.*;
 
+import java.io.IOException;
+
 public class ApplicationContext {
 
-    public IngestionService ingestionService() {
+    public IngestionService ingestionService() throws IOException, InterruptedException {
         ensureQdrantCollection();
 
         // Final consumer: embedding + vector storage
-        TextChunkConsumer embeddingConsumer = createEmbeddingPipeline();
+        PipelineStage embeddingStage = createEmbeddingPipeline();
 
         // Chunker
         SlidingWindowChunker chunker = new SlidingWindowChunker(500, 50);
-        chunker.setDownstream(embeddingConsumer);
+        chunker.setDownstream(embeddingStage);
 
         // Metadata extractor
         DefaultMetadataExtractor metadataExtractor = new DefaultMetadataExtractor();
@@ -48,8 +50,8 @@ public class ApplicationContext {
 
         OllamaEmbeddingClient ollamaClient =
                 new OllamaEmbeddingClient(
-                        "http://localhost:11434",
-                        "all-minilm"
+                        "http://ollama:11434",
+                        "nomic-embed-text"
                 );
 
         Retriever retriever = new DefaultRetriever(ollamaClient, vectorSearcher);
@@ -62,12 +64,12 @@ public class ApplicationContext {
         );
     }
 
-    private TextChunkConsumer createEmbeddingPipeline() {
+    private PipelineStage createEmbeddingPipeline() throws IOException, InterruptedException {
 
         EmbeddingClient embeddingClient =
                 new OllamaEmbeddingClient(
-                        "http://localhost:11434",
-                        "all-minilm"
+                        "http://ollama:11434",
+                        "nomic-embed-text"
                 );
 
         VectorWriter vectorWriter =
@@ -76,10 +78,23 @@ public class ApplicationContext {
                         "documents"
                 );
 
+        validateEmbeddingDimension(embeddingClient, vectorWriter);
         return new EmbeddingVectorConsumer(
                 embeddingClient,
                 vectorWriter
         );
+    }
+
+    private void validateEmbeddingDimension(EmbeddingClient embeddingClient, VectorWriter vectorWriter) throws IOException, InterruptedException {
+        int modelDim = embeddingClient.dimension();
+        int collectionDim = vectorWriter.requiredVectorSize();
+
+        if (modelDim != collectionDim) {
+            throw new IllegalStateException(
+                    "Embedding dimension mismatch: model=" + modelDim +
+                            ", Qdrant collection=" + collectionDim
+            );
+        }
     }
 
     private void ensureQdrantCollection() {
@@ -87,9 +102,8 @@ public class ApplicationContext {
 
         admin.ensureCollection(
                 "documents",
-                384,          // embedding dimension
+                768,          // embedding dimension
                 "Cosine"
         );
     }
-
 }

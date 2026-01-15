@@ -30,10 +30,15 @@ public class OllamaEmbeddingClient implements EmbeddingClient {
                 .build();
     }
 
+    @Override
+    public int dimension() {
+        return 768;
+    }
     /* ===================== EMBEDDINGS ===================== */
 
     @Override
     public List<Float> embed(String text) {
+        System.out.println("embedding text->" + text);
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("model", model);
@@ -41,6 +46,7 @@ public class OllamaEmbeddingClient implements EmbeddingClient {
 
             String requestBody = mapper.writeValueAsString(body);
 
+            System.out.println("embedding text to -> " + baseUrl);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/api/embeddings"))
                     .header("Content-Type", "application/json")
@@ -75,6 +81,7 @@ public class OllamaEmbeddingClient implements EmbeddingClient {
     /* ===================== ANSWERS (RAG) ===================== */
 
     public String answer(String question, String context) {
+        System.out.println("answering question ->" + question + ", context->" + context);
         try {
             String prompt = promptBuilder.build(question, context);
 

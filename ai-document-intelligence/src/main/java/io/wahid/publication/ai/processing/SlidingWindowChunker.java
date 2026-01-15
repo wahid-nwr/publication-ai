@@ -1,16 +1,16 @@
 package io.wahid.publication.ai.processing;
 
+import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
+import io.wahid.publication.ai.ingestion.PipelineStage;
 import io.wahid.publication.ai.ingestion.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 
 import java.util.*;
 
-public class SlidingWindowChunker implements Chunker {
+public class SlidingWindowChunker extends AbstractPipelineStage implements TextChunkConsumer {
 
     private final int maxTokens;
     private final int overlapTokens;
-
-    private TextChunkConsumer downstream;
 
     private final Deque<String> buffer = new ArrayDeque<>();
     private int bufferedTokens = 0;
@@ -21,11 +21,6 @@ public class SlidingWindowChunker implements Chunker {
     public SlidingWindowChunker(int maxTokens, int overlapTokens) {
         this.maxTokens = maxTokens;
         this.overlapTokens = overlapTokens;
-    }
-
-    @Override
-    public void setDownstream(TextChunkConsumer downstream) {
-        this.downstream = downstream;
     }
 
     @Override
@@ -106,6 +101,11 @@ public class SlidingWindowChunker implements Chunker {
         meta.put("chunked", true);
         meta.put("timestamp", System.currentTimeMillis());
         return meta;
+    }
+
+    @Override
+    public void setDownstream(PipelineStage downstream) {
+        this.downstream = downstream;
     }
 
     @Override
