@@ -18,4 +18,10 @@ public abstract class AbstractPipelineStage implements PipelineStage {
             downstream.flush();
         }
     }
+
+    protected void forward(TextChunk chunk) throws Exception {
+        if (downstream != null) {
+            downstream.accept(chunk);
+        }
+    }
 }
