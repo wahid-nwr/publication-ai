@@ -61,6 +61,7 @@ public class SlidingWindowChunker extends AbstractPipelineStage implements TextC
             tokenCount += t;
             emitted.add(s);
         }
+        System.out.println("EMIT CHUNK: " + sb.length());
 
         downstream.accept(new TextChunk(
                 currentDocumentId,
@@ -73,8 +74,7 @@ public class SlidingWindowChunker extends AbstractPipelineStage implements TextC
         bufferedTokens = 0;
 
         int overlapCount = 0;
-        ListIterator<String> it =
-                emitted.listIterator(emitted.size());
+        ListIterator<String> it = emitted.listIterator(emitted.size());
 
         while (it.hasPrevious() && overlapCount < overlapTokens) {
             String s = it.previous();
