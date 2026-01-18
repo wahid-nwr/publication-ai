@@ -10,6 +10,7 @@ import io.wahid.publication.ai.processing.impl.DefaultMetadataExtractor;
 import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
 import io.wahid.publication.ai.rag.AnswerGenerator;
 import io.wahid.publication.ai.rag.OllamaAnswerGenerator;
+import io.wahid.publication.ai.rag.OllamaLLMClient;
 import io.wahid.publication.ai.rag.Retriever;
 import io.wahid.publication.ai.service.IngestionService;
 import io.wahid.publication.ai.service.QueryService;
@@ -48,15 +49,21 @@ public class ApplicationContext {
                         "documents"
                 );
 
-        OllamaEmbeddingClient ollamaClient =
+        OllamaEmbeddingClient embeddingClient =
                 new OllamaEmbeddingClient(
                         "http://ollama:11434",
                         "nomic-embed-text"
                 );
 
-        Retriever retriever = new DefaultRetriever(ollamaClient, vectorSearcher);
+        OllamaLLMClient llmClient =
+                new OllamaLLMClient(
+                        "http://ollama:11434",
+                        "llama3"   // 🔥 GENERATION MODEL
+                );
 
-        AnswerGenerator answerGenerator = new OllamaAnswerGenerator(ollamaClient);
+        Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);
+
+        AnswerGenerator answerGenerator = new OllamaAnswerGenerator(llmClient);
 
         return new DefaultQueryService(
                 retriever,

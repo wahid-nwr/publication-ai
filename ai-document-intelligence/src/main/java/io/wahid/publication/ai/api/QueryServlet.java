@@ -30,11 +30,9 @@ public class QueryServlet extends HttpServlet {
                 return;
             }
 
-            QueryService.QueryResult result =
-                    queryService.query(request.getQuestion(), request.getTopK());
+            QueryService.QueryResult result = queryService.query(request.getQuestion(), request.getTopK());
 
-            QueryResponse response =
-                    new QueryResponse(result.answer(), result.sources());
+            QueryResponse response = new QueryResponse(result.answer(), result.sources());
 
             resp.setContentType("application/json");
             objectMapper.writeValue(resp.getOutputStream(), response);

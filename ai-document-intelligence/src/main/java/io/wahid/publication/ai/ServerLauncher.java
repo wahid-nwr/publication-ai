@@ -2,8 +2,6 @@ package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.api.IngestServlet;
 import io.wahid.publication.ai.api.QueryServlet;
-import io.wahid.publication.ai.service.impl.StubIngestionService;
-import io.wahid.publication.ai.service.impl.StubQueryService;
 import jakarta.servlet.MultipartConfigElement;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;

@@ -1,0 +1,57 @@
+package io.wahid.publication.ai.rag;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.Map;
+
+public class OllamaLLMClient {
+
+    private final HttpClient client = HttpClient.newHttpClient();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final String baseUrl;
+    private final String model;
+
+    public OllamaLLMClient(String baseUrl, String model) {
+        this.baseUrl = baseUrl;
+        this.model = model;
+    }
+
+    public String generate(String prompt) {
+        try {
+            Map<String, Object> body = new HashMap<>();
+            body.put("model", model);
+            body.put("prompt", prompt);   // ← RAW STRING, Jackson escapes it
+            body.put("stream", false);
+
+            String requestBody = mapper.writeValueAsString(body);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/api/generate"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException(
+                        "LLM generation failed: " + response.body()
+                );
+            }
+            return extractResponse(response.body());
+        } catch (Exception e) {
+            throw new RuntimeException("LLM answer generation failed", e);
+        }
+    }
+
+    private String extractResponse(String json) throws Exception {
+        JsonNode root = mapper.readTree(json);
+        return root.path("response").asText();
+    }
+}

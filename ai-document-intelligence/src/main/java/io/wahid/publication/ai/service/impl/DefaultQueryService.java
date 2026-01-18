@@ -6,7 +6,6 @@ import io.wahid.publication.ai.service.QueryService;
 import io.wahid.publication.ai.vectorstore.VectorSearcher;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DefaultQueryService implements QueryService {
 
@@ -24,16 +23,16 @@ public class DefaultQueryService implements QueryService {
     @Override
     public QueryResult query(String question, int topK) throws Exception {
 
-        List<VectorSearcher.SearchResult> retrieved =
-                retriever.retrieve(question, topK);
-
-        String answer =
-                answerGenerator.generateAnswer(question, retrieved);
+        List<VectorSearcher.SearchResult> retrieved = retriever.retrieve(question, topK);
+        System.out.println("---- Retrieved Context ----");
+        retrieved.stream().map(VectorSearcher.SearchResult::chunkText).forEach(System.out::println);
+        System.out.println("---------------------------");
+        String answer = answerGenerator.generateAnswer(question, retrieved);
 
         List<String> sources = retrieved.stream()
                 .map(VectorSearcher.SearchResult::documentId)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         return new QueryResult(answer, sources);
     }
