@@ -23,16 +23,26 @@ public class OllamaAnswerGenerator implements AnswerGenerator {
                 .map(VectorSearcher.SearchResult::chunkText)
                 .collect(Collectors.joining("\n\n"));
 
-        String prompt = """
-                Answer the question using ONLY the context below.
+        String prompt = build(question, context);
+        return ollamaClient.generate(prompt);
+    }
+
+    public String build(String question, String context) {
+        return """
+                You are an assistant answering questions strictly from the provided context.
+
+                Rules:
+                - If the answer is not explicitly stated, say: "I don't know based on the provided documents."
+                - Do not infer platform purpose unless stated.
+                - Be concise and factual.
 
                 Context:
                 %s
 
                 Question:
                 %s
-                """.formatted(context, question);
 
-        return ollamaClient.generate(prompt);
+                Answer:
+                """.formatted(context, question);
     }
 }
