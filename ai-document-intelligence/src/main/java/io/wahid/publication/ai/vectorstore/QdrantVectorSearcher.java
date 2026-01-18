@@ -31,17 +31,14 @@ public class QdrantVectorSearcher implements VectorSearcher {
     public List<SearchResult> search(List<Float> queryVector, int topK) {
         try {
             String requestBody = buildRequest(queryVector, topK);
-
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            baseUrl + "/collections/" + collection + "/points/search"))
+                    .uri(URI.create(baseUrl + "/collections/" + collection + "/points/search"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .timeout(Duration.ofSeconds(10))
                     .build();
 
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
                 throw new RuntimeException("Qdrant search failed: " + response.body());
@@ -82,4 +79,25 @@ public class QdrantVectorSearcher implements VectorSearcher {
         }
         return results;
     }
+
+    private String buildContext(List<SearchResult> results) {
+        StringBuilder sb = new StringBuilder();
+
+        for (SearchResult r : results) {
+            sb.append("- ").append(r.chunkText()).append("\n");
+        }
+
+        return sb.toString();
+    }
+    /*private List<SearchResult> parseResults(String json) throws Exception {
+        JsonNode root = mapper.readTree(json);
+        List<SearchResult> results = new ArrayList<>();
+
+        for (JsonNode hit : root.path("result")) {
+            String text = hit.path("payload").path("text").asText();
+            double score = hit.path("score").asDouble();
+            results.add(new SearchResult(text, score));
+        }
+        return results;
+    }*/
 }
