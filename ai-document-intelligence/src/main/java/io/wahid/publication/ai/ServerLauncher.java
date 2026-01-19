@@ -1,6 +1,7 @@
 package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.api.*;
+import io.wahid.publication.ai.service.HealthService;
 import jakarta.servlet.MultipartConfigElement;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
@@ -68,7 +69,9 @@ public class ServerLauncher {
                 )
         );
 
-        context.addServlet(new ServletHolder(new HealthCheckServlet()), "/health");
+        HealthService healthService = new HealthService(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
+        HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
+        context.addServlet(new ServletHolder(healthCheckServlet), "/health");
         context.addServlet(new ServletHolder(new InfoServlet()), "/info");
         ReadyServlet readyServlet = new ReadyServlet(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
         context.addServlet(new ServletHolder(readyServlet), "/ready");
