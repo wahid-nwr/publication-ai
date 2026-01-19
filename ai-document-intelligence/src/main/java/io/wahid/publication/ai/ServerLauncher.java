@@ -1,5 +1,6 @@
 package io.wahid.publication.ai;
 
+import io.wahid.publication.ai.api.HealthCheckServlet;
 import io.wahid.publication.ai.api.IngestServlet;
 import io.wahid.publication.ai.api.QueryServlet;
 import jakarta.servlet.MultipartConfigElement;
@@ -53,8 +54,7 @@ public class ServerLauncher {
 
         Server server = new Server(8080);
 
-        ServletContextHandler context =
-                new ServletContextHandler(ServletContextHandler.SESSIONS);
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/api");
 
         ServletHolder ingestHolder = new ServletHolder(ingestServlet);
@@ -70,8 +70,9 @@ public class ServerLauncher {
                 )
         );
 
-        context.addServlet(ingestHolder, "/ingest");
+        context.addServlet(new ServletHolder(new HealthCheckServlet()), "/health");
         context.addServlet(new ServletHolder(queryServlet), "/query");
+        context.addServlet(ingestHolder, "/ingest");
 
         server.setHandler(context);
 
