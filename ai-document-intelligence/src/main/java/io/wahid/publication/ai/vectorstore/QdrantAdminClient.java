@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,6 +22,23 @@ public class QdrantAdminClient implements QdrantClient {
     }
 
     @Override
+    public boolean isUp() {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL("http://ollama:11434/api/tags").openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(500);
+            conn.setReadTimeout(500);
+
+            int status = conn.getResponseCode();
+            return status == 200;
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
     public boolean collectionExists(String collection) {
         try {
             HttpRequest req = HttpRequest.newBuilder()
@@ -27,8 +46,7 @@ public class QdrantAdminClient implements QdrantClient {
                     .GET()
                     .build();
 
-            return client.send(req, HttpResponse.BodyHandlers.discarding())
-                    .statusCode() == 200;
+            return client.send(req, HttpResponse.BodyHandlers.discarding()).statusCode() == 200;
         } catch (Exception e) {
             return false;
         }
@@ -42,8 +60,7 @@ public class QdrantAdminClient implements QdrantClient {
                     .GET()
                     .build();
 
-            HttpResponse<String> resp =
-                    client.send(req, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
 
             JsonNode root = mapper.readTree(resp.body());
             return root.path("result")
