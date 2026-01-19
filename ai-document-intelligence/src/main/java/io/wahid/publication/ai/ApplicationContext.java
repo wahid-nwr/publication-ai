@@ -3,6 +3,8 @@ package io.wahid.publication.ai;
 import io.wahid.publication.ai.embedding.DefaultRetriever;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.embedding.OllamaEmbeddingClient;
+import io.wahid.publication.ai.infra.ollama.OllamaClient;
+import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 import io.wahid.publication.ai.ingestion.PipelineStage;
 import io.wahid.publication.ai.processing.SlidingWindowChunker;
@@ -20,6 +22,18 @@ import io.wahid.publication.ai.vectorstore.*;
 import java.io.IOException;
 
 public class ApplicationContext {
+
+    private QdrantAdminClient admin;
+    private OllamaLLMClient llmClient;
+
+    public ApplicationContext() {
+        this.admin = new QdrantAdminClient("http://qdrant:6333");
+        this.llmClient =
+                new OllamaLLMClient(
+                        "http://ollama:11434",
+                        "llama3"   // 🔥 GENERATION MODEL
+                );
+    }
 
     public IngestionService ingestionService() throws IOException, InterruptedException {
         ensureQdrantCollection();
@@ -55,12 +69,6 @@ public class ApplicationContext {
                         "nomic-embed-text"
                 );
 
-        OllamaLLMClient llmClient =
-                new OllamaLLMClient(
-                        "http://ollama:11434",
-                        "llama3"   // 🔥 GENERATION MODEL
-                );
-
         Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);
 
         AnswerGenerator answerGenerator = new OllamaAnswerGenerator(llmClient);
@@ -69,6 +77,14 @@ public class ApplicationContext {
                 retriever,
                 answerGenerator
         );
+    }
+
+    public QdrantClient getQdrantClient() {
+        return this.admin;
+    }
+
+    public OllamaClient getOllamaClient() {
+        return this.llmClient;
     }
 
     private PipelineStage createEmbeddingPipeline() throws IOException, InterruptedException {
@@ -105,8 +121,6 @@ public class ApplicationContext {
     }
 
     private void ensureQdrantCollection() {
-        QdrantAdminClient admin = new QdrantAdminClient("http://qdrant:6333");
-
         admin.ensureCollection(
                 "documents",
                 768,          // embedding dimension

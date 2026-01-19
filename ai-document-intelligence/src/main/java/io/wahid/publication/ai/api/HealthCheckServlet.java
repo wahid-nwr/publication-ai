@@ -65,7 +65,7 @@ public class HealthCheckServlet extends HttpServlet {
     private boolean checkQdrant() {
         // TODO handle deprecated URL http://localhost:6333/collections/documents USE FOR READYNESS
         try {
-            HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:6333/healthz").openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL("http://qdrant:6333/healthz").openConnection();
 
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(500);
