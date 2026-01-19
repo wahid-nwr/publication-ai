@@ -1,17 +1,60 @@
 package io.wahid.publication.ai.vectorstore;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.infra.qdrant.QdrantClient;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class QdrantAdminClient {
+public class QdrantAdminClient implements QdrantClient {
 
+    private final ObjectMapper mapper = new ObjectMapper();
     private final HttpClient client = HttpClient.newHttpClient();
     private final String baseUrl;
 
     public QdrantAdminClient(String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    @Override
+    public boolean collectionExists(String collection) {
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/collections/" + collection))
+                    .GET()
+                    .build();
+
+            return client.send(req, HttpResponse.BodyHandlers.discarding())
+                    .statusCode() == 200;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int getVectorSize(String collection) {
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/collections/" + collection))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> resp =
+                    client.send(req, HttpResponse.BodyHandlers.ofString());
+
+            JsonNode root = mapper.readTree(resp.body());
+            return root.path("result")
+                    .path("config")
+                    .path("params")
+                    .path("vectors")
+                    .path("size")
+                    .asInt(-1);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     public void ensureCollection(
@@ -24,17 +67,16 @@ public class QdrantAdminClient {
                     .uri(URI.create(baseUrl + "/collections/" + collection))
                     .header("Content-Type", "application/json")
                     .PUT(HttpRequest.BodyPublishers.ofString("""
-                    {
-                      "vectors": {
-                        "size": %d,
-                        "distance": "%s"
-                      }
-                    }
-                    """.formatted(vectorSize, distance)))
+                            {
+                              "vectors": {
+                                "size": %d,
+                                "distance": "%s"
+                              }
+                            }
+                            """.formatted(vectorSize, distance)))
                     .build();
 
-            HttpResponse<String> response =
-                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // ✅ Treat collection exists as success
             if (response.statusCode() == 200 || response.body().contains("already exists")) {

@@ -2,6 +2,7 @@ package io.wahid.publication.ai.rag;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.infra.ollama.OllamaClient;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,7 +11,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OllamaLLMClient {
+public class OllamaLLMClient implements OllamaClient {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -20,6 +21,44 @@ public class OllamaLLMClient {
     public OllamaLLMClient(String baseUrl, String model) {
         this.baseUrl = baseUrl;
         this.model = model;
+    }
+
+    @Override
+    public boolean isUp() {
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/api/tags"))
+                    .GET()
+                    .build();
+
+            return client.send(req, HttpResponse.BodyHandlers.discarding())
+                    .statusCode() == 200;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean hasModel(String modelName) {
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/api/tags"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> resp =
+                    client.send(req, HttpResponse.BodyHandlers.ofString());
+
+            JsonNode root = mapper.readTree(resp.body());
+            for (JsonNode model : root.path("models")) {
+                if (model.path("name").asText().startsWith(modelName)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String generate(String prompt) {
