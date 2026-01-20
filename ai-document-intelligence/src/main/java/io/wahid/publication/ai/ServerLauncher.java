@@ -72,7 +72,7 @@ public class ServerLauncher {
         HealthService healthService = new HealthService(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
         context.addServlet(new ServletHolder(healthCheckServlet), "/health");
-        context.addServlet(new ServletHolder(new InfoServlet()), "/info");
+        context.addServlet(new ServletHolder(new InfoServlet(applicationContext.getEmbeddingClient())), "/info");
         ReadyServlet readyServlet = new ReadyServlet(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
         context.addServlet(new ServletHolder(readyServlet), "/ready");
         context.addServlet(new ServletHolder(queryServlet), "/query");
