@@ -1,49 +1,31 @@
 package io.wahid.publication.ai;
 
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
+import com.nimbusds.jose.proc.SecurityContext;
 import io.wahid.publication.ai.api.*;
+import io.wahid.publication.ai.security.JwtConfig;
+import io.wahid.publication.ai.security.JwtFilter;
 import io.wahid.publication.ai.service.HealthService;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.EnumSet;
+import java.util.logging.Logger;
 
 public class ServerLauncher {
-
-/*    public static void main(String[] args) throws Exception {
-        System.out.println("Inside serverlauncher");
-        ApplicationContext applicationContext = new ApplicationContext();
-
-        IngestServlet ingestServlet = new IngestServlet(applicationContext.ingestionService());
-
-        QueryServlet queryServlet = new QueryServlet(applicationContext.queryService());
-
-        Server server = new Server(8080);
-
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-
-        context.setContextPath("/api");
-
-        context.addServlet(
-                new IngestServlet(new StubIngestionService()),
-                "/ingest"
-        );
-
-        context.addServlet(
-                new QueryServlet(new StubQueryService()),
-                "/query"
-        );
-
-        server.setHandler(context);
-        server.start();
-        server.join();
-    }*/
+    private static final Logger LOGGER = Logger.getLogger(ServerLauncher.class.getName());
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Inside serverlauncher");
+        LOGGER.info("Initiating Serverlauncher");
 
         ApplicationContext applicationContext = new ApplicationContext();
 
@@ -54,7 +36,7 @@ public class ServerLauncher {
         Server server = new Server(8080);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/api");
+        context.setContextPath("/");
 
         ServletHolder ingestHolder = new ServletHolder(ingestServlet);
 
@@ -71,12 +53,21 @@ public class ServerLauncher {
 
         HealthService healthService = new HealthService(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
-        context.addServlet(new ServletHolder(healthCheckServlet), "/health");
-        context.addServlet(new ServletHolder(new InfoServlet(applicationContext.getEmbeddingClient())), "/info");
+        context.addServlet(new ServletHolder(new LoginServlet()), "/auth/login");
+        context.addServlet(new ServletHolder(healthCheckServlet), "/api/health");
+        context.addServlet(new ServletHolder(new InfoServlet(applicationContext.getEmbeddingClient())), "/api/info");
         ReadyServlet readyServlet = new ReadyServlet(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
-        context.addServlet(new ServletHolder(readyServlet), "/ready");
-        context.addServlet(new ServletHolder(queryServlet), "/query");
-        context.addServlet(ingestHolder, "/ingest");
+        context.addServlet(new ServletHolder(readyServlet), "/api/ready");
+        context.addServlet(new ServletHolder(queryServlet), "/api/query");
+        context.addServlet(ingestHolder, "/api/ingest");
+
+        JwtConfig cfg = new JwtConfig(
+                "https://www.googleapis.com/oauth2/v3/certs",
+                "https://securetoken.google.com/alert-cursor-476219-s1"
+        );
+        JWKSource<SecurityContext> jwkSource = JWKSourceBuilder.create(URI.create(cfg.getJwksUri()).toURL()).build();
+        FilterHolder jwtFilterHolder = new FilterHolder(new JwtFilter(cfg, jwkSource));
+        context.addFilter(jwtFilterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         server.setHandler(context);
 
