@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.wahid.publication.ai.api.*;
+import io.wahid.publication.ai.exception.GlobalExceptionFilter;
 import io.wahid.publication.ai.security.JwtConfig;
 import io.wahid.publication.ai.security.JwtFilter;
 import io.wahid.publication.ai.service.HealthService;
@@ -27,11 +28,11 @@ public class ServerLauncher {
     public static void main(String[] args) throws Exception {
         LOGGER.info("Initiating Serverlauncher");
 
-        ApplicationContext applicationContext = new ApplicationContext();
+        ApplicationContext appContext = new ApplicationContext();
 
-        IngestServlet ingestServlet = new IngestServlet(applicationContext.ingestionService());
+        IngestServlet ingestServlet = new IngestServlet(appContext.ingestionService());
 
-        QueryServlet queryServlet = new QueryServlet(applicationContext.queryService());
+        QueryServlet queryServlet = new QueryServlet(appContext.queryService());
 
         Server server = new Server(8080);
 
@@ -51,12 +52,19 @@ public class ServerLauncher {
                 )
         );
 
-        HealthService healthService = new HealthService(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
+        FilterHolder exceptionFilterHolder = new FilterHolder(new GlobalExceptionFilter());
+        context.addFilter(exceptionFilterHolder, "/*", EnumSet.of(
+                DispatcherType.REQUEST,
+                DispatcherType.ASYNC,
+                DispatcherType.ERROR
+        ));
+
+        HealthService healthService = new HealthService(appContext.getOllamaClient(), appContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
         context.addServlet(new ServletHolder(new LoginServlet()), "/auth/login");
         context.addServlet(new ServletHolder(healthCheckServlet), "/api/health");
-        context.addServlet(new ServletHolder(new InfoServlet(applicationContext.getEmbeddingClient())), "/api/info");
-        ReadyServlet readyServlet = new ReadyServlet(applicationContext.getOllamaClient(), applicationContext.getQdrantClient());
+        context.addServlet(new ServletHolder(new InfoServlet(appContext.getEmbeddingClient())), "/api/info");
+        ReadyServlet readyServlet = new ReadyServlet(appContext.getOllamaClient(), appContext.getEmbeddingClient(), appContext.getQdrantClient());
         context.addServlet(new ServletHolder(readyServlet), "/api/ready");
         context.addServlet(new ServletHolder(queryServlet), "/api/query");
         context.addServlet(ingestHolder, "/api/ingest");

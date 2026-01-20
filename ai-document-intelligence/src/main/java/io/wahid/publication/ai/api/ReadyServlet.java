@@ -2,6 +2,8 @@ package io.wahid.publication.ai.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.wahid.publication.ai.config.AppConfig;
+import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.infra.ollama.OllamaClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import jakarta.servlet.http.HttpServlet;
@@ -12,48 +14,62 @@ import java.io.IOException;
 
 public class ReadyServlet extends HttpServlet {
 
-    private static final String EMBEDDING_MODEL = "nomic-embed-text";
-    private static final String LLM_MODEL = "llama3";
-    private static final String COLLECTION = "documents";
-    private static final int EXPECTED_VECTOR_SIZE = 768;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final OllamaClient ollamaClient;
     private final QdrantClient qdrantClient;
+    private final EmbeddingClient embeddingClient;
 
     public ReadyServlet(OllamaClient ollamaClient,
+                        EmbeddingClient embeddingClient,
                         QdrantClient qdrantClient) {
         this.ollamaClient = ollamaClient;
         this.qdrantClient = qdrantClient;
+        this.embeddingClient = embeddingClient;
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         ObjectNode checks = MAPPER.createObjectNode();
 
-        boolean ollamaUp = ollamaClient.isUp();
+        boolean ollamaUp;
+        try {
+            ollamaUp = ollamaClient.isUp();
+        } catch (Exception e) {
+            ollamaUp = false;
+        }
         checks.put("ollama", ollamaUp ? "UP" : "DOWN");
 
-        boolean embeddingOk = ollamaUp && ollamaClient.hasModel(EMBEDDING_MODEL);
+        boolean hasModel;
+        try {
+            hasModel = ollamaClient.hasModel(AppConfig.embeddingModel());
+        } catch (Exception e) {
+            hasModel = false;
+        }
+
+        boolean embeddingOk = ollamaUp && hasModel;
         checks.put("embeddingModel", embeddingOk ? "UP" : "MISSING");
 
-        boolean llmOk = ollamaUp && ollamaClient.hasModel(LLM_MODEL);
+        boolean llmOk = ollamaUp && hasModel;
         checks.put("llmModel", llmOk ? "UP" : "MISSING");
 
-        boolean qdrantUp = qdrantClient.collectionExists(COLLECTION);
+        boolean qdrantUp;
+        try {
+            qdrantUp = qdrantClient.collectionExists(AppConfig.collectionName());
+        } catch (Exception e) {
+            qdrantUp = false;
+        }
         checks.put("qdrant", qdrantUp ? "UP" : "DOWN");
 
         boolean vectorSizeMatch = false;
         if (qdrantUp) {
-            int actual = qdrantClient.getVectorSize(COLLECTION);
-            vectorSizeMatch = actual == EXPECTED_VECTOR_SIZE;
+            int actual = qdrantClient.getVectorSize(AppConfig.collectionName());
+            vectorSizeMatch = actual == embeddingClient.dimension();
         }
         checks.put("vectorSizeMatch", vectorSizeMatch);
 
         boolean ready = ollamaUp
-                && embeddingOk
                 && llmOk
                 && qdrantUp
                 && vectorSizeMatch;
