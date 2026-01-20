@@ -1,5 +1,6 @@
 package io.wahid.publication.ai;
 
+import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.DefaultRetriever;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.embedding.OllamaEmbeddingClient;
@@ -23,26 +24,30 @@ import java.io.IOException;
 
 public class ApplicationContext {
 
-    private QdrantAdminClient admin;
-    private OllamaLLMClient llmClient;
+    private final QdrantAdminClient admin;
+    private final OllamaLLMClient llmClient;
+    private final OllamaEmbeddingClient embeddingClient;
 
     public ApplicationContext() {
-        this.admin = new QdrantAdminClient("http://qdrant:6333");
-        this.llmClient =
-                new OllamaLLMClient(
-                        "http://ollama:11434",
-                        "llama3"   // 🔥 GENERATION MODEL
-                );
+        this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
+        this.llmClient = new OllamaLLMClient(
+                AppConfig.ollamaBaseUrl(),
+                AppConfig.llmModel()   // 🔥 GENERATION MODEL
+        );
+        this.embeddingClient = new OllamaEmbeddingClient(
+                AppConfig.ollamaBaseUrl(),
+                AppConfig.embeddingModel()
+        );
     }
 
     public IngestionService ingestionService() throws IOException, InterruptedException {
-        ensureQdrantCollection();
+        ensureQdrantCollection(embeddingClient);
 
         // Final consumer: embedding + vector storage
         PipelineStage embeddingStage = createEmbeddingPipeline();
 
         // Chunker
-        SlidingWindowChunker chunker = new SlidingWindowChunker(500, 50);
+        SlidingWindowChunker chunker = new SlidingWindowChunker(AppConfig.chunkSize(), AppConfig.chunkOverlap());
         chunker.setDownstream(embeddingStage);
 
         // Metadata extractor
@@ -57,17 +62,10 @@ public class ApplicationContext {
     }
 
     public QueryService queryService() {
-        VectorSearcher vectorSearcher =
-                new QdrantVectorSearcher(
-                        "http://qdrant:6333",
-                        "documents"
-                );
-
-        OllamaEmbeddingClient embeddingClient =
-                new OllamaEmbeddingClient(
-                        "http://ollama:11434",
-                        "nomic-embed-text"
-                );
+        VectorSearcher vectorSearcher = new QdrantVectorSearcher(
+                AppConfig.qdrantBaseUrl(),
+                AppConfig.collectionName()
+        );
 
         Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);
 
@@ -87,19 +85,15 @@ public class ApplicationContext {
         return this.llmClient;
     }
 
+    public EmbeddingClient getEmbeddingClient() {
+        return embeddingClient;
+    }
+
     private PipelineStage createEmbeddingPipeline() throws IOException, InterruptedException {
-
-        EmbeddingClient embeddingClient =
-                new OllamaEmbeddingClient(
-                        "http://ollama:11434",
-                        "nomic-embed-text"
-                );
-
-        VectorWriter vectorWriter =
-                new QdrantVectorWriter(
-                        "http://qdrant:6333",
-                        "documents"
-                );
+        VectorWriter vectorWriter = new QdrantVectorWriter(
+                AppConfig.qdrantBaseUrl(),
+                AppConfig.collectionName()
+        );
 
         validateEmbeddingDimension(embeddingClient, vectorWriter);
         return new EmbeddingVectorConsumer(
@@ -120,11 +114,11 @@ public class ApplicationContext {
         }
     }
 
-    private void ensureQdrantCollection() {
+    private void ensureQdrantCollection(EmbeddingClient embeddingClient) {
         admin.ensureCollection(
-                "documents",
-                768,          // embedding dimension
-                "Cosine"
+                AppConfig.collectionName(),
+                embeddingClient.dimension(),           // embedding dimension
+                AppConfig.distanceMetric()
         );
     }
 }
