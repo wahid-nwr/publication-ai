@@ -16,4 +16,4 @@ spec:
         - name: rag-api
           image: rag-api:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8081

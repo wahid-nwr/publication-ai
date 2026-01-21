@@ -4,6 +4,10 @@ public final class AppConfig {
 
     private AppConfig() {}
 
+    public static String issuer() {
+        return env("ISSUER", "https://securetoken.google.com/alert-cursor-476219-s1");
+    }
+
     public static String ollamaBaseUrl() {
         return env("OLLAMA_BASE_URL", "http://ollama:11434");
     }

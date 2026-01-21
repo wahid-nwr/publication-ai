@@ -8,7 +8,7 @@ COPY target/lib ./lib
 # OpenShift runs with random UID
 RUN chmod 644 app.jar
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["java", "-Xms256m", "-Xmx1G", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", \
 "-cp", "app.jar:lib/*", "io.wahid.publication.ai.ServerLauncher"]
