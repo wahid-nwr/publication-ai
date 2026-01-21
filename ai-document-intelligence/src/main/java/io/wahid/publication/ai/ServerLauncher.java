@@ -4,7 +4,9 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.wahid.publication.ai.api.*;
+import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.exception.GlobalExceptionFilter;
+import io.wahid.publication.ai.security.FirebaseInit;
 import io.wahid.publication.ai.security.JwtConfig;
 import io.wahid.publication.ai.security.JwtFilter;
 import io.wahid.publication.ai.service.HealthService;
@@ -24,9 +26,11 @@ import java.util.logging.Logger;
 
 public class ServerLauncher {
     private static final Logger LOGGER = Logger.getLogger(ServerLauncher.class.getName());
+    private static final String JWKS_URI = "https://www.googleapis.com/oauth2/v3/certs";
 
     public static void main(String[] args) throws Exception {
         LOGGER.info("Initiating Serverlauncher");
+        FirebaseInit.initialize();
 
         ApplicationContext appContext = new ApplicationContext();
 
@@ -34,7 +38,7 @@ public class ServerLauncher {
 
         QueryServlet queryServlet = new QueryServlet(appContext.queryService());
 
-        Server server = new Server(8080);
+        Server server = new Server(8081);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
@@ -43,14 +47,13 @@ public class ServerLauncher {
 
         Path uploadDir = Paths.get(System.getProperty("java.io.tmpdir"), "uploads");
         Files.createDirectories(uploadDir);
-        ingestHolder.getRegistration().setMultipartConfig(
-                new MultipartConfigElement(
-                        uploadDir.toString(),             // location (null = temp dir)
-                        50 * 1024 * 1024L,        // maxFileSize
-                        60 * 1024 * 1024L,        // maxRequestSize
-                        1024 * 1024               // fileSizeThreshold
-                )
+        MultipartConfigElement multipartConfig = new MultipartConfigElement(
+                uploadDir.toString(),             // location (null = temp dir)
+                50 * 1024 * 1024L,        // maxFileSize
+                60 * 1024 * 1024L,        // maxRequestSize
+                1024 * 1024               // fileSizeThreshold
         );
+        ingestHolder.getRegistration().setMultipartConfig(multipartConfig);
 
         FilterHolder exceptionFilterHolder = new FilterHolder(new GlobalExceptionFilter());
         context.addFilter(exceptionFilterHolder, "/*", EnumSet.of(
@@ -58,6 +61,8 @@ public class ServerLauncher {
                 DispatcherType.ASYNC,
                 DispatcherType.ERROR
         ));
+
+        DocumentUploadServlet uploadServlet = new DocumentUploadServlet(appContext.ingestionService());
 
         HealthService healthService = new HealthService(appContext.getOllamaClient(), appContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
@@ -68,10 +73,13 @@ public class ServerLauncher {
         context.addServlet(new ServletHolder(readyServlet), "/api/ready");
         context.addServlet(new ServletHolder(queryServlet), "/api/query");
         context.addServlet(ingestHolder, "/api/ingest");
+        ServletHolder uploadHolder = new ServletHolder(uploadServlet);
+        uploadHolder.getRegistration().setMultipartConfig(multipartConfig);
+        context.addServlet(uploadHolder, "/api/document/upload");
 
         JwtConfig cfg = new JwtConfig(
-                "https://www.googleapis.com/oauth2/v3/certs",
-                "https://securetoken.google.com/alert-cursor-476219-s1"
+                JWKS_URI,
+                AppConfig.issuer()
         );
         JWKSource<SecurityContext> jwkSource = JWKSourceBuilder.create(URI.create(cfg.getJwksUri()).toURL()).build();
         FilterHolder jwtFilterHolder = new FilterHolder(new JwtFilter(cfg, jwkSource));

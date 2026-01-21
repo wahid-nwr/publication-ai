@@ -6,4 +6,4 @@ spec:
   selector:
     app: rag-api
   ports:
-    - port: 8080
+    - port: 8081
