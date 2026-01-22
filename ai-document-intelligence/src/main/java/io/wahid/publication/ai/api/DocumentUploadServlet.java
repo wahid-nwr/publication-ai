@@ -53,32 +53,29 @@ public class DocumentUploadServlet extends HttpServlet {
 
         Path targetFile = UPLOAD_DIR.resolve(jobId + "-" + originalFileName);
 
-        // TODO: trigger async processing (CSV parsing, hashing, blockchain, etc.)
+        try (InputStream in = filePart.getInputStream()) {
+            Files.copy(in, targetFile);
+        } catch (IOException e) {
+            throw new FileProcessingException("Error in CSV job " + jobId, e);
+        }
+
         // jobService.submit(jobId, targetFile);
         DocumentServiceExecutor.submit(() -> {
             try {
                 Instant start = Instant.now();
-                LOGGER.log(Level.INFO,"Starting CSV parsing job: {0}", jobId);
-//                JobRegistry.update(jobId, JobStatus.RUNNING);
-                try (InputStream in = filePart.getInputStream()) {
-//                    Files.copy(in, targetFile);
-                    LOGGER.log(Level.INFO,"Initiating ingestion: {0}", jobId);
-                    ingestionService.ingest(jobId, "csv", in);
-                }
-                Instant end = Instant.now();
+                LOGGER.log(Level.INFO, "Starting CSV parsing job: {0}", jobId);
+                ingestionService.ingest(jobId, "csv", targetFile);
                 LOGGER.log(Level.INFO, "CSV parsing completed for job: {0}", jobId);
-                LOGGER.log(Level.INFO, "Total time -> {0} seconds", Duration.between(start, end).toSeconds());
-//                JobRegistry.update(jobId, JobStatus.SUCCESS);
+                Instant end = Instant.now();
+                LOGGER.log(Level.INFO, "Total time -> {0}s", Duration.between(start, end).toSeconds());
             } catch (Exception e) {
-//                JobRegistry.update(jobId, JobStatus.FAILED);
-                LOGGER.log(Level.WARNING, "Error in document ingesting with job id, " + jobId + ": " + e.getMessage());
-                throw new FileProcessingException("Error in CSV job " + jobId + ": " + e.getMessage(), e);
+                LOGGER.log(Level.WARNING, "Error in job " + jobId + ": " + e.getMessage(), e);
+                throw new FileProcessingException("Error in CSV job " + jobId, e);
             } finally {
                 try {
-                    Thread.sleep(3000);
-//                    JobRegistry.update(jobId, JobStatus.IDLE);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Files.deleteIfExists(targetFile);
+                } catch (IOException ex) {
+                    LOGGER.warning("Failed to cleanup temp file: " + targetFile);
                 }
             }
         });
@@ -87,11 +84,11 @@ public class DocumentUploadServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_ACCEPTED);
 
         resp.getWriter().write("""
-            {
-              "jobId": "%s",
-              "status": "STARTED",
-              "message": "Upload successful. Processing initiated."
-            }
-            """.formatted(jobId));
+                {
+                  "jobId": "%s",
+                  "status": "STARTED",
+                  "message": "Upload successful. Processing initiated."
+                }
+                """.formatted(jobId));
     }
 }
