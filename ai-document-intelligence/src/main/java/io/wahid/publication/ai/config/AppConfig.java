@@ -40,6 +40,14 @@ public final class AppConfig {
         return envInt("CHUNK_OVERLAP", 50);
     }
 
+    public static int maxToken() {
+        return envInt("MAX_TOKEN", 1200);
+    }
+
+    public static int maxChar() {
+        return envInt("MAX_CHAR", 400);
+    }
+
     private static int envInt(String key, int defaultValue) {
         try {
             String v = System.getenv(key);

@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface EmbeddingClient {
     int dimension();
-    List<Float> embed(String text) throws Exception;
-
+    float[] embed(String text) throws Exception;
+    List<float[]> embedBatch(List<String> texts);
 }

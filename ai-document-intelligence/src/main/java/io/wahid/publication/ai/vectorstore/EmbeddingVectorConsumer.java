@@ -5,8 +5,6 @@ import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
 import io.wahid.publication.ai.ingestion.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 
-import java.util.List;
-
 public class EmbeddingVectorConsumer extends AbstractPipelineStage implements TextChunkConsumer {
 
     private final EmbeddingClient embeddingClient;
@@ -26,9 +24,9 @@ public class EmbeddingVectorConsumer extends AbstractPipelineStage implements Te
                 + chunk.text().substring(0, Math.min(80, chunk.text().length())));
 
         // 🔥 THIS must be called
-        List<Float> vector = embeddingClient.embed(chunk.text());
+        float[] vector = embeddingClient.embed(chunk.text());
 
-        if (vector == null || vector.isEmpty()) {
+        if (vector == null || vector.length == 0) {
             System.out.println("⚠️ Empty embedding, skipping");
             return;
         }

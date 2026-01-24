@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 public class DocumentServiceExecutor {
     private DocumentServiceExecutor() {}
 
-    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public static Future<?> submit(Runnable task) {
         return EXECUTOR.submit(task);
     }

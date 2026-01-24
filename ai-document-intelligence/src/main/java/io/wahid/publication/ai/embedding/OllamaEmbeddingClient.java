@@ -2,22 +2,28 @@ package io.wahid.publication.ai.embedding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.publication.ai.rag.PromptBuilder;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import io.wahid.publication.ai.config.AppConfig;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.Executors;
 
 public class OllamaEmbeddingClient implements EmbeddingClient {
 
-    private final HttpClient httpClient;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final PromptBuilder promptBuilder = new PromptBuilder();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().build();
+
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .executor(Executors.newFixedThreadPool(1))
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
 
     private final String baseUrl;
     private final String model;
@@ -25,99 +31,80 @@ public class OllamaEmbeddingClient implements EmbeddingClient {
     public OllamaEmbeddingClient(String baseUrl, String model) {
         this.baseUrl = baseUrl;
         this.model = model;
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .build();
     }
 
     @Override
     public int dimension() {
-        return 768;
+        return 768; // change if using a different model
     }
-    /* ===================== EMBEDDINGS ===================== */
 
     @Override
-    public List<Float> embed(String text) {
-        System.out.println("embedding text->" + text);
+    public float[] embed(String text) {
+        return embedBatch(Collections.singletonList(text)).getFirst();
+    }
+
+    @Override
+    public List<float[]> embedBatch(List<String> texts) {
+        List<float[]> finalResult = new ArrayList<>();
+        if (texts.isEmpty()) return finalResult;
+
         try {
-            Map<String, Object> body = new HashMap<>();
-            body.put("model", model);
-            body.put("prompt", text);
+            // Build JSON payload
+            Map<String, Object> payload = Map.of(
+                    "model", model,
+                    "input", texts
+            );
 
-            String requestBody = mapper.writeValueAsString(body);
+            Instant start = Instant.now();
+            String requestBody = MAPPER.writeValueAsString(payload);
 
-            System.out.println("embedding text to -> " + baseUrl);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/embeddings"))
+                    .uri(URI.create(baseUrl + "/v1/embeddings"))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(30))
+                    .timeout(Duration.ofMinutes(10))
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("time taken to send embeddings and get response-> " + Duration.between(start, Instant.now()).toSeconds());
             if (response.statusCode() != 200) {
-                throw new RuntimeException(
-                        "Ollama embedding failed: " + response.body()
-                );
+                throw new RuntimeException("Ollama embedding failed: " + response.body());
             }
 
-            return extractEmbedding(response.body());
+            // Parse JSON
+            JsonNode root = MAPPER.readTree(response.body());
+            JsonNode dataNode = root.path("data");
+
+            if (!dataNode.isArray()) {
+                throw new IllegalStateException("Invalid Ollama response: " + response.body());
+            }
+
+            List<float[]> result = new ArrayList<>(texts.size());
+
+            for (int i = 0; i < texts.size(); i++) {
+                JsonNode item = dataNode.get(i);
+                if (item == null || !item.has("embedding")) {
+                    result.add(new float[0]);
+                    continue;
+                }
+
+                JsonNode vecNode = item.get("embedding");
+                if (!vecNode.isArray() || vecNode.isEmpty()) {
+                    result.add(new float[0]);
+                    continue;
+                }
+
+                float[] vector = new float[vecNode.size()];
+                for (int j = 0; j < vecNode.size(); j++) {
+                    vector[j] = vecNode.get(j).floatValue();
+                }
+                result.add(vector);
+            }
+
+            return result;
 
         } catch (Exception e) {
             throw new RuntimeException("Embedding generation failed", e);
         }
     }
-
-    private List<Float> extractEmbedding(String json) throws Exception {
-        JsonNode root = mapper.readTree(json);
-        return mapper.convertValue(
-                root.path("embedding"),
-                mapper.getTypeFactory().constructCollectionType(List.class, Float.class)
-        );
-    }
-
-    /* ===================== ANSWERS (RAG) ===================== */
-
-    public String answer(String question, String context) {
-        System.out.println("answering question ->" + question + ", context->" + context);
-        try {
-            String prompt = promptBuilder.build(question, context);
-
-            Map<String, Object> body = new HashMap<>();
-            body.put("model", model);
-            body.put("prompt", prompt);
-            body.put("stream", false);
-
-            String requestBody = mapper.writeValueAsString(body);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl + "/api/generate"))
-                    .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(60))
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
-
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != 200) {
-                throw new RuntimeException(
-                        "Ollama generation failed: " + response.body()
-                );
-            }
-
-            return extractAnswer(response.body());
-
-        } catch (Exception e) {
-            throw new RuntimeException("LLM answer generation failed", e);
-        }
-    }
-
-    private String extractAnswer(String json) throws Exception {
-        JsonNode root = mapper.readTree(json);
-        return root.path("response").asText().trim();
-    }
 }
-

@@ -28,7 +28,7 @@ public class QdrantVectorSearcher implements VectorSearcher {
     }
 
     @Override
-    public List<SearchResult> search(List<Float> queryVector, int topK) {
+    public List<SearchResult> search(float[] queryVector, int topK) {
         try {
             String requestBody = buildRequest(queryVector, topK);
             HttpRequest request = HttpRequest.newBuilder()
@@ -51,7 +51,7 @@ public class QdrantVectorSearcher implements VectorSearcher {
         }
     }
 
-    private String buildRequest(List<Float> vector, int topK) throws Exception {
+    private String buildRequest(float[] vector, int topK) throws Exception {
         Map<String, Object> body = new HashMap<>();
         body.put("vector", vector);
         body.put("limit", topK);
