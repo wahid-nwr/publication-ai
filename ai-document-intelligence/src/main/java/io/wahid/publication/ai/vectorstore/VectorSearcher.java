@@ -6,7 +6,7 @@ import java.util.Map;
 public interface VectorSearcher {
 
     List<SearchResult> search(
-            List<Float> queryVector,
+            float[] queryVector,
             int topK
     );
 

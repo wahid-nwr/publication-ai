@@ -23,7 +23,7 @@ public class DefaultRetriever implements Retriever {
             String question,
             int topK
     ) throws Exception {
-        List<Float> queryEmbedding = embeddingClient.embed(question);
+        float[] queryEmbedding = embeddingClient.embed(question);
 
         return vectorSearcher.search(queryEmbedding, topK);
     }

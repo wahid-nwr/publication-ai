@@ -41,7 +41,7 @@ public class QdrantVectorWriter implements VectorWriter {
     }
 
     @Override
-    public void write(TextChunk chunk, List<Float> embedding) throws Exception {
+    public void write(TextChunk chunk, float[] embedding) throws Exception {
 
         Map<String, Object> payload = new HashMap<>(chunk.metadata());
         payload.put("documentId", chunk.documentId());
@@ -74,6 +74,11 @@ public class QdrantVectorWriter implements VectorWriter {
                     "Qdrant write failed: " + response.statusCode() + " " + response.body()
             );
         }
+    }
+
+    @Override
+    public void write(float[] floats, Map<String, Object> metadata) {
+
     }
 
     public int getCollectionVectorSize(String collection) throws IOException, InterruptedException {

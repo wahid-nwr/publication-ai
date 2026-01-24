@@ -2,13 +2,13 @@ package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.DefaultRetriever;
+import io.wahid.publication.ai.embedding.EmbeddingChunker;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.embedding.OllamaEmbeddingClient;
 import io.wahid.publication.ai.infra.ollama.OllamaClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 import io.wahid.publication.ai.ingestion.PipelineStage;
-import io.wahid.publication.ai.processing.SlidingWindowChunker;
 import io.wahid.publication.ai.processing.impl.DefaultMetadataExtractor;
 import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
 import io.wahid.publication.ai.rag.AnswerGenerator;
@@ -47,7 +47,7 @@ public class ApplicationContext {
         PipelineStage embeddingStage = createEmbeddingPipeline();
 
         // Chunker
-        SlidingWindowChunker chunker = new SlidingWindowChunker(AppConfig.chunkSize(), AppConfig.chunkOverlap());
+        EmbeddingChunker chunker = new EmbeddingChunker(AppConfig.maxToken(), AppConfig.maxChar());
         chunker.setDownstream(embeddingStage);
 
         // Metadata extractor
@@ -96,9 +96,10 @@ public class ApplicationContext {
         );
 
         validateEmbeddingDimension(embeddingClient, vectorWriter);
-        return new EmbeddingVectorConsumer(
+        return new BatchEmbeddingVectorConsumer(
                 embeddingClient,
-                vectorWriter
+                vectorWriter,
+                128
         );
     }
 
