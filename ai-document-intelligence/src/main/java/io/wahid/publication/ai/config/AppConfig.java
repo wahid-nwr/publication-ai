@@ -8,6 +8,14 @@ public final class AppConfig {
         return env("ISSUER", "https://securetoken.google.com/alert-cursor-476219-s1");
     }
 
+    public static boolean openaiEnabled() {
+        return envBoolean("OPENAI_ENABLED", false);
+    }
+
+    public static String openAIKey() {
+        return env("OPENAI_API_KEY", "");
+    }
+
     public static String ollamaBaseUrl() {
         return env("OLLAMA_BASE_URL", "http://ollama:11434");
     }
@@ -52,6 +60,15 @@ public final class AppConfig {
         try {
             String v = System.getenv(key);
             return v == null ? defaultValue : Integer.parseInt(v);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private static boolean envBoolean(String key, boolean defaultValue) {
+        try {
+            String v = System.getenv(key);
+            return v == null ? defaultValue : Boolean.parseBoolean(v);
         } catch (Exception e) {
             return defaultValue;
         }
