@@ -1,10 +1,7 @@
 package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.config.AppConfig;
-import io.wahid.publication.ai.embedding.DefaultRetriever;
-import io.wahid.publication.ai.embedding.EmbeddingChunker;
-import io.wahid.publication.ai.embedding.EmbeddingClient;
-import io.wahid.publication.ai.embedding.OllamaEmbeddingClient;
+import io.wahid.publication.ai.embedding.*;
 import io.wahid.publication.ai.infra.ollama.OllamaClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
@@ -26,7 +23,7 @@ public class ApplicationContext {
 
     private final QdrantAdminClient admin;
     private final OllamaLLMClient llmClient;
-    private final OllamaEmbeddingClient embeddingClient;
+    private final EmbeddingClient embeddingClient;
 
     public ApplicationContext() {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
@@ -34,10 +31,14 @@ public class ApplicationContext {
                 AppConfig.ollamaBaseUrl(),
                 AppConfig.llmModel()   // 🔥 GENERATION MODEL
         );
-        this.embeddingClient = new OllamaEmbeddingClient(
-                AppConfig.ollamaBaseUrl(),
-                AppConfig.embeddingModel()
-        );
+        if (AppConfig.openaiEnabled()) {
+            this.embeddingClient = new OpenAIEmbeddingClient(AppConfig.openAIKey());
+        } else {
+            this.embeddingClient = new OllamaEmbeddingClient(
+                    AppConfig.ollamaBaseUrl(),
+                    AppConfig.embeddingModel()
+            );
+        }
     }
 
     public IngestionService ingestionService() throws IOException, InterruptedException {
