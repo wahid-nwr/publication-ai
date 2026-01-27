@@ -16,6 +16,18 @@ public final class AppConfig {
         return env("OPENAI_API_KEY", "");
     }
 
+    public static String r2AccessUrl() {
+        return env("R2_ACCESS_URL", "https://047c814396bdfb908b85ffd11aaac5c1.r2.cloudflarestorage.com");
+    }
+
+    public static String r2AccessKey() {
+        return env("R2_ACCESS_KEY", "");
+    }
+
+    public static String r2SecretKey() {
+        return env("R2_SECRET_KEY", "");
+    }
+
     public static String ollamaBaseUrl() {
         return env("OLLAMA_BASE_URL", "http://ollama:11434");
     }
