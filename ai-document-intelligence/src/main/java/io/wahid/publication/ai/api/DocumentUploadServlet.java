@@ -1,5 +1,6 @@
 package io.wahid.publication.ai.api;
 
+import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.exception.FileProcessingException;
 import io.wahid.publication.ai.service.DocumentServiceExecutor;
 import io.wahid.publication.ai.service.IngestionService;
@@ -29,10 +30,13 @@ public class DocumentUploadServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(DocumentUploadServlet.class.getName());
     private static final Path UPLOAD_DIR = Path.of("/tmp/publication-upload");
+    private static final String BUCKET = "documents";
 
     private final IngestionService ingestionService;
+    private final R2Client r2Client;
 
-    public DocumentUploadServlet(IngestionService ingestionService) {
+    public DocumentUploadServlet(IngestionService ingestionService, R2Client r2Client) {
+        this.r2Client = r2Client;
         this.ingestionService = ingestionService;
     }
 
@@ -50,11 +54,19 @@ public class DocumentUploadServlet extends HttpServlet {
 
         String originalFileName = filePart.getSubmittedFileName();
         String jobId = UUID.randomUUID().toString();
+        String objectKey = "uploads/" + jobId + "/" + originalFileName;
 
-        Path targetFile = UPLOAD_DIR.resolve(jobId + "-" + originalFileName);
+//        Path targetFile = UPLOAD_DIR.resolve(jobId + "-" + originalFileName);
 
         try (InputStream in = filePart.getInputStream()) {
-            Files.copy(in, targetFile);
+//            Files.copy(in, targetFile);
+            r2Client.upload(
+                    BUCKET,
+                    objectKey,
+                    in,
+                    filePart.getSize(),
+                    filePart.getContentType()
+            );
         } catch (IOException e) {
             throw new FileProcessingException("Error in CSV job " + jobId, e);
         }
@@ -64,20 +76,26 @@ public class DocumentUploadServlet extends HttpServlet {
             try {
                 Instant start = Instant.now();
                 LOGGER.log(Level.INFO, "Starting CSV parsing job: {0}", jobId);
-                ingestionService.ingest(jobId, "csv", targetFile);
+//                ingestionService.ingest(jobId, "csv", targetFile);
+                ingestionService.ingestFromR2(
+                        jobId,
+                        "csv",
+                        BUCKET,
+                        objectKey
+                );
                 LOGGER.log(Level.INFO, "CSV parsing completed for job: {0}", jobId);
                 Instant end = Instant.now();
                 LOGGER.log(Level.INFO, "Total time -> {0}s", Duration.between(start, end).toSeconds());
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error in job " + jobId + ": " + e.getMessage(), e);
                 throw new FileProcessingException("Error in CSV job " + jobId, e);
-            } finally {
+            } /*finally {
                 try {
                     Files.deleteIfExists(targetFile);
                 } catch (IOException ex) {
                     LOGGER.warning("Failed to cleanup temp file: " + targetFile);
                 }
-            }
+            }*/
         });
 
         resp.setContentType("application/json");
@@ -87,8 +105,10 @@ public class DocumentUploadServlet extends HttpServlet {
                 {
                   "jobId": "%s",
                   "status": "STARTED",
+                  "storage": "R2",
+                  "objectKey": "%s",
                   "message": "Upload successful. Processing initiated."
                 }
-                """.formatted(jobId));
+                """.formatted(jobId, objectKey));
     }
 }

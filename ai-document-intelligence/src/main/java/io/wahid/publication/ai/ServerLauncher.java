@@ -62,7 +62,7 @@ public class ServerLauncher {
                 DispatcherType.ERROR
         ));
 
-        DocumentUploadServlet uploadServlet = new DocumentUploadServlet(appContext.ingestionService());
+        DocumentUploadServlet uploadServlet = new DocumentUploadServlet(appContext.ingestionService(), appContext.getR2Client());
 
         HealthService healthService = new HealthService(appContext.getOllamaClient(), appContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
