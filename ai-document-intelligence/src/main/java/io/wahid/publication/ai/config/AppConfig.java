@@ -45,7 +45,10 @@ public final class AppConfig {
     }
 
     public static String collectionName() {
-        return env("QDRANT_COLLECTION", "documents");
+        String collectionName = AppConfig.openaiEnabled()
+                ? "documents_openai"
+                : "documents_ollama";
+        return env("QDRANT_COLLECTION", collectionName);
     }
 
     public static String distanceMetric() {
