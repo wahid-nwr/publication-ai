@@ -11,6 +11,7 @@
   <url>http://maven.apache.org</url>
   <modules>
     <module>ai-document-intelligence</module>
+    <module>ai-summary-model</module>
   </modules>
 
   <properties>

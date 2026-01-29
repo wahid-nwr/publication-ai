@@ -2,6 +2,7 @@ package io.wahid.publication.ai.embedding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,9 +12,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OpenAIEmbeddingClient implements EmbeddingClient {
 
+    private static final Logger LOGGER = Logger.getLogger(OpenAIEmbeddingClient.class.getName());
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final HttpClient HTTP = HttpClient.newHttpClient();
 
@@ -38,6 +42,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
 
     @Override
     public float[] embed(String text) {
+        LOGGER.log(Level.INFO, "embedding text to openai -> {0}", text);
         List<float[]> result = embedBatch(List.of(text));
         return result.isEmpty() ? new float[0] : result.getFirst();
     }
@@ -55,6 +60,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
             );
 
             String body = MAPPER.writeValueAsString(payload);
+            LOGGER.log(Level.INFO, "embedding batch body to openai -> {0}", body);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(ENDPOINT))
@@ -64,8 +70,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
-            HttpResponse<String> response =
-                    HTTP.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
                 throw new RuntimeException(
@@ -76,6 +81,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
             JsonNode root = MAPPER.readTree(response.body());
             JsonNode data = root.get("data");
 
+            LOGGER.log(Level.INFO, "embedding response from openai -> {0}", data);
             if (data == null || !data.isArray()) {
                 throw new IllegalStateException("Invalid OpenAI response: " + response.body());
             }

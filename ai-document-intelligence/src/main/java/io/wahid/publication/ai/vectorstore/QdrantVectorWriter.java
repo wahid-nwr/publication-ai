@@ -11,16 +11,16 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QdrantVectorWriter implements VectorWriter {
-
+    private static final Logger LOGGER = Logger.getLogger(QdrantVectorWriter.class.getName());
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    private HttpClient httpClient;
     private final URI upsertUri;
+    private HttpClient httpClient;
     private String baseUrl;
     private String collection;
 
@@ -46,7 +46,7 @@ public class QdrantVectorWriter implements VectorWriter {
         Map<String, Object> payload = new HashMap<>(chunk.metadata());
         payload.put("documentId", chunk.documentId());
         payload.put("text", chunk.text());
-
+        LOGGER.log(Level.INFO, "writing vectors -> {0}", chunk.text());
         Map<String, Object> point = Map.of(
                 "id", UUID.randomUUID().toString(),
                 "vector", embedding,
@@ -54,7 +54,7 @@ public class QdrantVectorWriter implements VectorWriter {
         );
 
         Map<String, Object> body = Map.of(
-                "points", new Object[]{ point }
+                "points", new Object[]{point}
         );
 
         HttpRequest request = HttpRequest.newBuilder()

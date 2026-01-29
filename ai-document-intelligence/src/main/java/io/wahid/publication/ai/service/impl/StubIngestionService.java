@@ -11,4 +11,9 @@ public class StubIngestionService implements IngestionService {
         // Next steps: route to CSV / PDF / MD processor
         System.out.println("Ingesting document: " + documentId + " type=" + type);
     }
+
+    @Override
+    public void ingestFromR2(String jobId, String type, String bucket, String objectKey) throws Exception {
+
+    }
 }
