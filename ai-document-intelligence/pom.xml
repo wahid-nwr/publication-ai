@@ -28,6 +28,11 @@
         </dependency>
 
         <dependency>
+            <groupId>io.wahid.publication.ai</groupId>
+            <artifactId>ai-summary-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>12.0.5</version>

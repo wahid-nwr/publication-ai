@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class BatchEmbeddingVectorConsumer
@@ -37,6 +38,7 @@ public final class BatchEmbeddingVectorConsumer
 
     @Override
     public synchronized void accept(TextChunk chunk) {
+        LOGGER.log(Level.INFO, "Consuming text chunk with BatchEmbeddingVectorConsumer -> {0}", chunk.text());
         buffer.add(chunk);
         if (buffer.size() >= batchSize) {
             flushBatch();
@@ -56,6 +58,7 @@ public final class BatchEmbeddingVectorConsumer
     }
 
     private synchronized void flushBatch() {
+        LOGGER.log(Level.INFO, "Flush batch buffer BatchEmbeddingVectorConsumer -> {0}", buffer.isEmpty());
         if (buffer.isEmpty()) return;
 
         List<TextChunk> toProcess = new ArrayList<>(buffer);
@@ -72,6 +75,7 @@ public final class BatchEmbeddingVectorConsumer
                                 if (vector.length == 0) continue;
 
                                 try {
+                                    LOGGER.log(Level.INFO, "writing vectors -> {0}", toProcess.get(i));
                                     vectorWriter.write(toProcess.get(i), vector);
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
@@ -89,7 +93,8 @@ public final class BatchEmbeddingVectorConsumer
 
 
     @Override
-    public void flush() throws Exception {
+    public void flush() {
+        LOGGER.log(Level.INFO, "Flush buffer BatchEmbeddingVectorConsumer -> {0}", buffer.isEmpty());
         if (!buffer.isEmpty()) flushBatch();
     }
 }

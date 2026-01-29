@@ -10,13 +10,11 @@ public class DefaultMetadataExtractor extends AbstractPipelineStage {
 
     @Override
     public void accept(TextChunk chunk) throws Exception {
-        Map<String, Object> enriched =
-                new HashMap<>(chunk.metadata());
+        Map<String, Object> enriched = new HashMap<>(chunk.metadata());
 
         // Generic metadata
         enriched.putIfAbsent("length", chunk.text().length());
-        enriched.putIfAbsent("wordCount",
-                chunk.text().split("\\s+").length);
+        enriched.putIfAbsent("wordCount", chunk.text().split("\\s+").length);
 
         // Heuristic: title detection
         if (isLikelyHeader(chunk.text())) {
@@ -31,7 +29,6 @@ public class DefaultMetadataExtractor extends AbstractPipelineStage {
     }
 
     private boolean isLikelyHeader(String text) {
-        return text.length() < 120 &&
-                text.equals(text.toUpperCase());
+        return text.length() < 120 && text.equals(text.toUpperCase());
     }
 }

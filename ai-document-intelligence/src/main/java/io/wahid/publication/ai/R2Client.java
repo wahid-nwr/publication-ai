@@ -6,11 +6,14 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Path;
 
 public class R2Client {
 
@@ -30,10 +33,20 @@ public class R2Client {
                         )
                 )
                 .region(Region.of("auto"))
+                .serviceConfiguration(
+                        S3Configuration.builder()
+                                .chunkedEncodingEnabled(false) // VERY IMPORTANT
+                                .build()
+                )
                 .build();
     }
 
-    public void upload(String bucket, String key, InputStream data, long size, String contentType) {
+    public void upload(String bucket, String key, String contentType, Path path) {
+        File file = path.toFile();
+        long size = file.length();
+        if (size <= 0) {
+            throw new IllegalArgumentException("Content length must be known for R2 uploads");
+        }
         s3.putObject(
                 PutObjectRequest.builder()
                         .bucket(bucket)
@@ -41,6 +54,24 @@ public class R2Client {
                         .contentType(contentType)
                         .contentLength(size)
                         .build(),
+                RequestBody.fromFile(file)
+        );
+    }
+
+    public void upload(String bucket, String key, InputStream data, long size, String contentType) {
+        if (size <= 0) {
+            throw new IllegalArgumentException("Content length must be known for R2 uploads");
+        }
+
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentLength(size)
+                .contentType(contentType)
+                .build();
+
+        s3.putObject(
+                request,
                 RequestBody.fromInputStream(data, size)
         );
     }

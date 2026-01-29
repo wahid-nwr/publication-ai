@@ -5,7 +5,10 @@ import io.wahid.publication.ai.ingestion.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 import io.wahid.publication.ai.processing.TokenEstimator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * High-throughput, monotonic chunker for EMBEDDINGS.
@@ -17,6 +20,7 @@ public final class EmbeddingChunker
         extends AbstractPipelineStage
         implements TextChunkConsumer {
 
+    private static final Logger LOGGER = Logger.getLogger(EmbeddingChunker.class.getName());
     private final int maxTokens;
     private final int maxChars;
 
@@ -43,6 +47,7 @@ public final class EmbeddingChunker
     }
 
     private void append(String text) throws Exception {
+        LOGGER.log(Level.INFO, "Embedding via EmbeddingChunker->{0}", text);
         int tokens = TokenEstimator.estimateTokens(text);
         int chars = text.length();
 
@@ -67,6 +72,7 @@ public final class EmbeddingChunker
     private void emit() throws Exception {
         if (buffer.isEmpty()) return;
 
+        LOGGER.log(Level.INFO, "emitting buffer from embeddingchunker with -> {0}", downstream.getClass().getName());
         downstream.accept(new TextChunk(
                 documentId,
                 buffer.toString().trim(),
@@ -86,6 +92,7 @@ public final class EmbeddingChunker
 
     @Override
     public void flush() throws Exception {
+        LOGGER.log(Level.INFO, "flushing buffer from embeddingchunker!");
         emit();
         buffer.setLength(0);
         bufferedTokens = 0;
