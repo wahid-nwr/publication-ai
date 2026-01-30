@@ -1,8 +1,11 @@
 package io.wahid.publication.ai.ingestion;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.dto.WeatherInfo;
+import io.wahid.publication.ai.embedding.EmbeddingClient;
+import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.service.CSVParser;
 import io.wahid.publication.ai.service.IngestionService;
 import io.wahid.publication.ai.service.WeatherAggregator;
@@ -29,9 +32,14 @@ public class DefaultIngestionService implements IngestionService {
     private final PipelineStage pipeline;
     private final R2Client r2Client;
 
-    public DefaultIngestionService(PipelineStage pipeline) {
+    private final EmbeddingClient embeddingClient;
+    private final QdrantClient qdrantClient;
+
+    public DefaultIngestionService(PipelineStage pipeline, EmbeddingClient embeddingClient, QdrantClient qdrantClient) {
         this.pipeline = pipeline;
         this.r2Client = new R2Client();
+        this.embeddingClient = embeddingClient;
+        this.qdrantClient = qdrantClient;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class DefaultIngestionService implements IngestionService {
     public void ingestFromR2(String jobId, String type, String bucket, String objectKey) throws Exception {
         LOGGER.info("trying file download from r2");
         try (InputStream in = r2Client.download(bucket, objectKey)) {
-            WeatherAggregator aggregator = new StationWeatherAggregator();
+            WeatherAggregator aggregator = new StationWeatherAggregator(embeddingClient, qdrantClient);
 
             new CSVParser(aggregator).parse(in);
 
