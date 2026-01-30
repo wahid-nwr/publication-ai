@@ -2,6 +2,7 @@ package io.wahid.publication.ai.vectorstore;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 
 import java.net.HttpURLConnection;
@@ -10,6 +11,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 public class QdrantAdminClient implements QdrantClient {
 
@@ -111,5 +113,48 @@ public class QdrantAdminClient implements QdrantClient {
         } catch (Exception e) {
             throw new RuntimeException("Qdrant admin call failed", e);
         }
+    }
+
+    @Override
+    public void upsert(
+            String collection,
+            String pointId,
+            float[] vector,
+            Map<String, Object> payload
+    ) {
+        try {
+            String body = buildRequestBody(pointId, vector, payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/collections/" + collection + "/points"))
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 300) {
+                throw new RuntimeException("Qdrant upsert failed: " + response.body());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upsert into Qdrant", e);
+        }
+    }
+
+    private String buildRequestBody(
+            String pointId,
+            float[] vector,
+            Map<String, Object> payload
+    ) throws Exception {
+        ObjectNode point = mapper.createObjectNode();
+        point.put("id", pointId);
+        point.set("vector", mapper.valueToTree(vector));
+        point.set("payload", mapper.valueToTree(payload));
+
+        ObjectNode root = mapper.createObjectNode();
+        root.set("points", mapper.createArrayNode().add(point));
+
+        return mapper.writeValueAsString(root);
     }
 }
