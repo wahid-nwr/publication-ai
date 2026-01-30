@@ -1,5 +1,8 @@
 package io.wahid.publication.ai.service;
 
+import io.wahid.publication.ai.util.JobRegistry;
+import io.wahid.publication.ai.util.JobStatus;
+
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;

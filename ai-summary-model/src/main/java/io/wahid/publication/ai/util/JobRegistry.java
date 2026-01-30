@@ -4,20 +4,20 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JobRegistry {
-    private static final Map<String, JobStatus> jobs = new ConcurrentHashMap<>();
+    private static final Map<String, JobStatus> JOBS = new ConcurrentHashMap<>();
 
     private JobRegistry() {
     }
 
-    public static void create(String id) {
-        jobs.put(id, JobStatus.PENDING);
+    public static void update(String jobId, JobStatus status) {
+        JOBS.put(jobId, status);
     }
 
-    public static void update(String id, JobStatus status) {
-        jobs.put(id, status);
+    public static JobStatus get(String jobId) {
+        return JOBS.get(jobId);
     }
 
-    public static JobStatus get(String id) {
-        return jobs.get(id);
+    public static boolean is(String jobId, JobStatus status) {
+        return status == JOBS.get(jobId);
     }
 }
