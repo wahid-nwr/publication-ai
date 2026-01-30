@@ -1,0 +1,40 @@
+package io.wahid.publication.ai.service;
+
+import com.opencsv.bean.CsvToBeanBuilder;
+import io.wahid.publication.ai.dto.WeatherInfo;
+import io.wahid.publication.ai.ingestion.DefaultIngestionService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
+
+public class CSVParser {
+    private static final Logger LOGGER = Logger.getLogger(CSVParser.class.getName());
+    private static final char COLUMN_SEPARATOR = ',';
+    private WeatherAggregator aggregator;
+
+    public CSVParser(WeatherAggregator aggregator) {
+        this.aggregator = aggregator;
+    }
+
+    public void parse(InputStream in) throws IOException {
+        InputStreamReader isr = new InputStreamReader(in, StandardCharsets.ISO_8859_1);
+        try (BufferedReader reader = new BufferedReader(isr)) {
+            LOGGER.info("downloaded file from r2");
+            new CsvToBeanBuilder<WeatherInfo>(reader)
+                    .withType(WeatherInfo.class)
+                    .withSeparator(COLUMN_SEPARATOR)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .withVerifyReader(true)
+                    .withThrowExceptions(true)
+                    .build()
+                    .stream()
+                    .forEach(aggregator::accept);
+
+            aggregator.finish();
+        }
+    }
+}
