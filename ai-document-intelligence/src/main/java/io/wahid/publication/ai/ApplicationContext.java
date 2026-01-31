@@ -73,7 +73,6 @@ public class ApplicationContext {
         DefaultTextNormalizer textNormalizer = new DefaultTextNormalizer();
         textNormalizer.setDownstream(metadataExtractor);
 
-        // TODO
         return new DefaultIngestionService(textNormalizer, getEmbeddingClient(), getQdrantClient());
     }
 

@@ -1,13 +1,13 @@
 package io.wahid.publication.ai.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@Entity
+@Table(name = "station_summary", uniqueConstraints = {@UniqueConstraint(columnNames = {"station"})})
+@Access(AccessType.FIELD)
 public class StationSummary {
 
     @Column(nullable = false)
@@ -23,6 +23,8 @@ public class StationSummary {
     private final double avgSunshine;
     private final double avgHumidity;
     private final int dataPoints;
+    @Lob
+    @Column(columnDefinition = "text")
     private final String summaryText;   // 👈 embed this
     private final String embeddingId;
     private final Instant createdAt;

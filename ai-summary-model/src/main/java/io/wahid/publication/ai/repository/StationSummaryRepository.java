@@ -3,6 +3,7 @@ package io.wahid.publication.ai.repository;
 import io.wahid.publication.ai.model.StationSummary;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 
 import java.util.UUID;
 
@@ -23,11 +24,20 @@ public class StationSummaryRepository {
     }
 
     public void updateEmbeddingId(UUID summaryId, String embeddingId) {
-        try (EntityManager em = emf.createEntityManager()) {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
             em.createQuery("UPDATE StationSummary ss SET ss.embeddingId = :embeddingId WHERE ss.summaryId = :summaryId")
                     .setParameter("embeddingId", embeddingId)
                     .setParameter("summaryId", summaryId)
                     .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 }

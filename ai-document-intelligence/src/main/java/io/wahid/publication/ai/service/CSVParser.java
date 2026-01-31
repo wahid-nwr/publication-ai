@@ -28,6 +28,7 @@ public class CSVParser {
                     .withIgnoreLeadingWhiteSpace(true)
                     .withVerifyReader(true)
                     .withThrowExceptions(true)
+                    .withSkipLines(1)
                     .build()
                     .stream()
                     .forEach(aggregator::accept);

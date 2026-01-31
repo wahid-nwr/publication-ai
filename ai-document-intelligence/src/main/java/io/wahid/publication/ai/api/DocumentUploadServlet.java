@@ -3,6 +3,7 @@ package io.wahid.publication.ai.api;
 import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.exception.FileProcessingException;
+import io.wahid.publication.ai.service.AggregationOrchestrator;
 import io.wahid.publication.ai.service.DocumentServiceExecutor;
 import io.wahid.publication.ai.service.IngestionService;
 import io.wahid.publication.ai.util.JobRegistry;
@@ -35,12 +36,12 @@ public class DocumentUploadServlet extends HttpServlet {
     private static final Path UPLOAD_DIR = Path.of("/tmp/publication-upload");
     private static final String BUCKET = "documents";
 
-    private final IngestionService ingestionService;
     private final R2Client r2Client;
+    private final AggregationOrchestrator aggregationOrchestrator;
 
     public DocumentUploadServlet(IngestionService ingestionService, R2Client r2Client) {
         this.r2Client = r2Client;
-        this.ingestionService = ingestionService;
+        this.aggregationOrchestrator = new AggregationOrchestrator(ingestionService);
     }
 
     @Override
@@ -77,6 +78,7 @@ public class DocumentUploadServlet extends HttpServlet {
             Instant end = Instant.now();
             LOGGER.log(Level.INFO, "Total time taken -> {0}  seconds", Duration.between(start, end).toSeconds());
             JobRegistry.update(jobId, JobStatus.UPLOADED);
+            aggregationOrchestrator.onUploadCompleted(jobId, "csv", BUCKET, objectKey);
         } catch (IOException e) {
             JobRegistry.update(jobId, JobStatus.FAILED);
             throw new FileProcessingException("Error in CSV job " + jobId, e);
