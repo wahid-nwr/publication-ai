@@ -33,5 +33,29 @@ services:
     volumes:
       - ollama:/root/.ollama
 
+  docdb:
+    image: postgres:16-alpine
+    container_name: my-postgres-db
+    restart: always
+    ports:
+      - "65432:5432"
+    environment:
+      POSTGRES_DB: document-db
+      POSTGRES_USER: wahid
+      POSTGRES_PASSWORD: anwar
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wahid -d document-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 volumes:
   ollama:
+  db_data:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs

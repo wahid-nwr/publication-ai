@@ -8,19 +8,11 @@ import java.util.Map;
 
 public class JpaUtil {
 
-    private static final String PERSISTENCE_UNIT_NAME = "optimizely-unit";
+    private static final String PERSISTENCE_UNIT_NAME = "document-unit";
 
     private JpaUtil() {}
 
     private static EntityManagerFactory emf;
-
-    /*private static final class EmfHolder {
-        private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-    }
-
-    public static EntityManagerFactory getEntityManagerFactory() {
-        return EmfHolder.emf;
-    }*/
 
     public static synchronized EntityManagerFactory getEntityManagerFactory() {
         if (emf == null) {
