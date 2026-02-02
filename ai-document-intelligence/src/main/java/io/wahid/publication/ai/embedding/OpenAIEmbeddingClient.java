@@ -2,7 +2,6 @@ package io.wahid.publication.ai.embedding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -42,7 +41,6 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
 
     @Override
     public float[] embed(String text) {
-        LOGGER.log(Level.INFO, "embedding text to openai -> {0}", text);
         List<float[]> result = embedBatch(List.of(text));
         return result.isEmpty() ? new float[0] : result.getFirst();
     }
@@ -81,7 +79,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
             JsonNode root = MAPPER.readTree(response.body());
             JsonNode data = root.get("data");
 
-            LOGGER.log(Level.INFO, "embedding response from openai -> {0}", data);
+            LOGGER.log(Level.FINEST, "embedding response from openai -> {0}", data);
             if (data == null || !data.isArray()) {
                 throw new IllegalStateException("Invalid OpenAI response: " + response.body());
             }

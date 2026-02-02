@@ -3,16 +3,23 @@ package io.wahid.publication.ai.vectorstore;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.dto.DocumentPayload;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QdrantVectorSearcher implements VectorSearcher {
 
+    private static final Logger LOGGER = Logger.getLogger(QdrantVectorSearcher.class.getName());
     private final HttpClient httpClient;
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -62,42 +69,45 @@ public class QdrantVectorSearcher implements VectorSearcher {
     }
 
     private List<SearchResult> parseResults(String json) throws Exception {
+        LOGGER.log(Level.INFO, "Search result json: {0}", json);
         JsonNode root = mapper.readTree(json);
         JsonNode result = root.get("result");
 
         List<SearchResult> results = new ArrayList<>();
 
+        if (result == null || !result.isArray()) {
+            return results;
+        }
+
         for (JsonNode node : result) {
+
             JsonNode payload = node.get("payload");
+            if (payload == null || payload.isNull()) {
+                LOGGER.log(Level.WARNING, "Qdrant result without payload: {0}", node);
+                continue; // skip broken entry
+            }
+
+            JsonNode textNode = payload.get("text");
+            if (textNode == null || textNode.isNull()) {
+                continue;
+            }
+
+            JsonNode documentIdNode = payload.get("documentId");
+            String documentId = documentIdNode != null && !documentIdNode.isNull()
+                    ? documentIdNode.asText()
+                    : "unknown";
+
+            double score = node.has("score") ? node.get("score").asDouble() : 0.0;
 
             results.add(new SearchResult(
-                    payload.get("documentId").asText(),
-                    payload.get("text").asText(),
-                    mapper.convertValue(payload, Map.class),
-                    node.get("score").asDouble()
+                    documentId,
+                    textNode.asText(),
+                    mapper.convertValue(payload, DocumentPayload.class),
+                    score
             ));
         }
+
         return results;
     }
 
-    private String buildContext(List<SearchResult> results) {
-        StringBuilder sb = new StringBuilder();
-
-        for (SearchResult r : results) {
-            sb.append("- ").append(r.chunkText()).append("\n");
-        }
-
-        return sb.toString();
-    }
-    /*private List<SearchResult> parseResults(String json) throws Exception {
-        JsonNode root = mapper.readTree(json);
-        List<SearchResult> results = new ArrayList<>();
-
-        for (JsonNode hit : root.path("result")) {
-            String text = hit.path("payload").path("text").asText();
-            double score = hit.path("score").asDouble();
-            results.add(new SearchResult(text, score));
-        }
-        return results;
-    }*/
 }

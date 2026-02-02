@@ -64,12 +64,12 @@ public class ServerLauncher {
 
         DocumentUploadServlet uploadServlet = new DocumentUploadServlet(appContext.ingestionService(), appContext.getR2Client());
 
-        HealthService healthService = new HealthService(appContext.getOllamaClient(), appContext.getQdrantClient());
+        HealthService healthService = new HealthService(appContext.getLLMClient(), appContext.getQdrantClient());
         HealthCheckServlet healthCheckServlet = new HealthCheckServlet(healthService);
         context.addServlet(new ServletHolder(new LoginServlet()), "/auth/login");
         context.addServlet(new ServletHolder(healthCheckServlet), "/api/health");
         context.addServlet(new ServletHolder(new InfoServlet(appContext.getEmbeddingClient())), "/api/info");
-        ReadyServlet readyServlet = new ReadyServlet(appContext.getOllamaClient(), appContext.getEmbeddingClient(), appContext.getQdrantClient());
+        ReadyServlet readyServlet = new ReadyServlet(appContext.getLLMClient(), appContext.getEmbeddingClient(), appContext.getQdrantClient());
         context.addServlet(new ServletHolder(readyServlet), "/api/ready");
         context.addServlet(new ServletHolder(queryServlet), "/api/query");
         context.addServlet(ingestHolder, "/api/ingest");

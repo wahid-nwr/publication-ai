@@ -15,11 +15,20 @@ public class StationSummaryRepository {
         this.emf = emf;
     }
 
-    public void save(StationSummary stationSummary) {
+    public StationSummary save(StationSummary stationSummary) {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            em.persist(stationSummary);
+            stationSummary = em.merge(stationSummary);
             em.getTransaction().commit();
+        }
+        return stationSummary;
+    }
+
+    public StationSummary findBySummaryId(UUID summaryId) {
+        try (EntityManager em = emf.createEntityManager()) {
+            return em.createQuery("SELECT ss FROM StationSummary ss WHERE ss.summaryId = :summaryId", StationSummary.class)
+                    .setParameter("summaryId", summaryId)
+                    .getSingleResult();
         }
     }
 

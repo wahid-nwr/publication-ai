@@ -1,7 +1,8 @@
 package io.wahid.publication.ai.vectorstore;
 
+import io.wahid.publication.ai.dto.DocumentPayload;
+
 import java.util.List;
-import java.util.Map;
 
 public interface VectorSearcher {
 
@@ -13,7 +14,8 @@ public interface VectorSearcher {
     record SearchResult(
             String documentId,
             String chunkText,
-            Map<String, Object> metadata,
+            DocumentPayload metadata,
             double score
-    ) {}
+    ) {
+    }
 }

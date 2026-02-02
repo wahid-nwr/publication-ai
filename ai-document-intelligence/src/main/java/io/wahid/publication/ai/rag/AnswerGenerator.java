@@ -9,5 +9,5 @@ public interface AnswerGenerator {
     String generateAnswer(
             String question,
             List<VectorSearcher.SearchResult> context
-    );
+    ) throws Exception;
 }

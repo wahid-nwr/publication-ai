@@ -16,8 +16,8 @@ import java.util.Map;
 public class StationWeatherAggregator implements WeatherAggregator {
 
     private final Map<String, StationStats> statsByStation = new HashMap<>();
-    private StationSummaryRepository stationSummaryRepository;
-    private EmbeddingIndexService embeddingIndexService;
+    private final StationSummaryRepository stationSummaryRepository;
+    private final EmbeddingIndexService embeddingIndexService;
 
     public StationWeatherAggregator(EmbeddingClient embeddingClient, QdrantClient qdrantClient) {
         this.stationSummaryRepository = new StationSummaryRepository(JpaUtil.getEntityManagerFactory());
@@ -35,7 +35,7 @@ public class StationWeatherAggregator implements WeatherAggregator {
             StationSummary summary = entry.getValue().toSummary(entry.getKey());
 
             // 👇 persist + embed later
-            stationSummaryRepository.save(summary);
+            summary = stationSummaryRepository.save(summary);
             embeddingIndexService.index(summary);
         }
     }

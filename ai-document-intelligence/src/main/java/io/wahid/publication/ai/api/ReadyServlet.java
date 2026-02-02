@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
+import io.wahid.publication.ai.infra.ollama.LLMClient;
 import io.wahid.publication.ai.infra.ollama.OllamaClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import jakarta.servlet.http.HttpServlet;
@@ -16,14 +17,14 @@ public class ReadyServlet extends HttpServlet {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final OllamaClient ollamaClient;
+    private final LLMClient llmClient;
     private final QdrantClient qdrantClient;
     private final EmbeddingClient embeddingClient;
 
-    public ReadyServlet(OllamaClient ollamaClient,
+    public ReadyServlet(LLMClient llmClient,
                         EmbeddingClient embeddingClient,
                         QdrantClient qdrantClient) {
-        this.ollamaClient = ollamaClient;
+        this.llmClient = llmClient;
         this.qdrantClient = qdrantClient;
         this.embeddingClient = embeddingClient;
     }
@@ -35,7 +36,7 @@ public class ReadyServlet extends HttpServlet {
 
         boolean ollamaUp;
         try {
-            ollamaUp = ollamaClient.isUp();
+            ollamaUp = llmClient.isUp();
         } catch (Exception e) {
             ollamaUp = false;
         }
@@ -43,7 +44,7 @@ public class ReadyServlet extends HttpServlet {
 
         boolean hasModel;
         try {
-            hasModel = ollamaClient.hasModel(AppConfig.embeddingModel());
+            hasModel = llmClient.hasModel(AppConfig.embeddingModel());
         } catch (Exception e) {
             hasModel = false;
         }
