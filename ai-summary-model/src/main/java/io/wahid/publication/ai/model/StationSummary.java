@@ -32,6 +32,24 @@ public class StationSummary {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID summaryId;
 
+    protected StationSummary() {
+        this.station = null;
+        this.startYear = 0;
+        this.endYear = 0;
+        this.avgTemperature = 0;
+        this.minTemperature = 0;
+        this.maxTemperature = 0;
+        this.avgRainfall = 0;
+        this.totalRainfall = 0;
+        this.rainyMonths = null;
+        this.avgSunshine = 0;
+        this.avgHumidity = 0;
+        this.dataPoints = 0;
+        this.summaryText = null;
+        this.embeddingId = null;
+        this.createdAt = null;
+    }
+
     private StationSummary(Builder builder) {
         this.station = builder.station;
         this.startYear = builder.startYear;

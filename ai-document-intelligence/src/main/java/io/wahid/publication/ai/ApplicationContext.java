@@ -2,16 +2,13 @@ package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.*;
-import io.wahid.publication.ai.infra.ollama.OllamaClient;
+import io.wahid.publication.ai.infra.ollama.LLMClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 import io.wahid.publication.ai.ingestion.PipelineStage;
 import io.wahid.publication.ai.processing.impl.DefaultMetadataExtractor;
 import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
-import io.wahid.publication.ai.rag.AnswerGenerator;
-import io.wahid.publication.ai.rag.OllamaAnswerGenerator;
-import io.wahid.publication.ai.rag.OllamaLLMClient;
-import io.wahid.publication.ai.rag.Retriever;
+import io.wahid.publication.ai.rag.*;
 import io.wahid.publication.ai.service.IngestionService;
 import io.wahid.publication.ai.service.QueryService;
 import io.wahid.publication.ai.service.impl.DefaultQueryService;
@@ -34,16 +31,17 @@ import java.util.UUID;
 public class ApplicationContext {
 
     private final QdrantAdminClient admin;
-    private final OllamaLLMClient llmClient;
+    private final LLMClient llmClient;
     private final EmbeddingClient embeddingClient;
     private final R2Client r2Client;
 
     public ApplicationContext() {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
-        this.llmClient = new OllamaLLMClient(
+        this.llmClient = new OpenAILLMClient(AppConfig.openAIKey(), "gpt-4.1-mini");
+        /*this.llmClient = new OllamaLLMClient(
                 AppConfig.ollamaBaseUrl(),
                 AppConfig.llmModel()   // 🔥 GENERATION MODEL
-        );
+        );*/
         if (AppConfig.openaiEnabled()) {
             this.embeddingClient = new OpenAIEmbeddingClient(AppConfig.openAIKey());
         } else {
@@ -96,7 +94,7 @@ public class ApplicationContext {
         return this.admin;
     }
 
-    public OllamaClient getOllamaClient() {
+    public LLMClient getLLMClient() {
         return this.llmClient;
     }
 

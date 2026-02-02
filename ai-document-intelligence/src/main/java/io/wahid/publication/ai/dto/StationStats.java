@@ -8,6 +8,7 @@ import java.time.Instant;
 
 public class StationStats {
 
+    private final StationSummaryFormatter summaryFormatter = new DefaultStationSummaryFormatter();
     private int count;
     private double tempSum;
     private double minTemp = Double.MAX_VALUE;
@@ -15,11 +16,8 @@ public class StationStats {
     private double rainfallSum;
     private double sunshineSum;
     private double humiditySum;
-
     private int startYear = Integer.MAX_VALUE;
     private int endYear = Integer.MIN_VALUE;
-
-    private final StationSummaryFormatter summaryFormatter = new DefaultStationSummaryFormatter();
 
     public void add(WeatherInfo info) {
         count++;

@@ -61,6 +61,7 @@ public class OllamaLLMClient implements OllamaClient {
         }
     }
 
+    @Override
     public String generate(String prompt) {
         try {
             Map<String, Object> body = new HashMap<>();
