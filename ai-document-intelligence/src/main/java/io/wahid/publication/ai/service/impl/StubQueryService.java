@@ -14,4 +14,9 @@ public class StubQueryService implements QueryService {
                 List.of("doc-123", "doc-456")
         );
     }
+
+    @Override
+    public String route(String question) throws Exception {
+        return "";
+    }
 }

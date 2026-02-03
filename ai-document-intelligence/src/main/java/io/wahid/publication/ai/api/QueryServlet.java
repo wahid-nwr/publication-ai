@@ -22,8 +22,7 @@ public class QueryServlet extends HttpServlet {
             throws IOException {
 
         try {
-            QueryRequest request =
-                    objectMapper.readValue(req.getInputStream(), QueryRequest.class);
+            QueryRequest request = objectMapper.readValue(req.getInputStream(), QueryRequest.class);
 
             if (request.getQuestion() == null || request.getQuestion().isBlank()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Question is required");

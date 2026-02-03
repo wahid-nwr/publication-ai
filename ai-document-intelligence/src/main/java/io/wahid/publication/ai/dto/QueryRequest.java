@@ -2,7 +2,7 @@ package io.wahid.publication.ai.dto;
 
 public class QueryRequest {
     private String question;
-    private int topK = 5;
+    private int topK = 50;
 
     public String getQuestion() {
         return question;
