@@ -11,6 +11,7 @@ import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
 import io.wahid.publication.ai.rag.*;
 import io.wahid.publication.ai.service.IngestionService;
 import io.wahid.publication.ai.service.QueryService;
+import io.wahid.publication.ai.service.QuestionRouter;
 import io.wahid.publication.ai.service.impl.DefaultQueryService;
 import io.wahid.publication.ai.vectorstore.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -79,12 +80,14 @@ public class ApplicationContext {
                 AppConfig.qdrantBaseUrl(),
                 AppConfig.collectionName()
         );
+        QuestionRouter questionRouter = new QuestionRouter(vectorSearcher, embeddingClient, llmClient);
 
         Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);
 
         AnswerGenerator answerGenerator = new OllamaAnswerGenerator(llmClient);
 
         return new DefaultQueryService(
+                questionRouter,
                 retriever,
                 answerGenerator
         );
