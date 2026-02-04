@@ -25,14 +25,6 @@ public class StationSummaryRepository {
         return stationSummary;
     }
 
-    public StationSummary findBySummaryId(UUID summaryId) {
-        try (EntityManager em = emf.createEntityManager()) {
-            return em.createQuery("SELECT ss FROM StationSummary ss WHERE ss.summaryId = :summaryId", StationSummary.class)
-                    .setParameter("summaryId", summaryId)
-                    .getSingleResult();
-        }
-    }
-
     public StationSummary findTopByOrderByTotalRainfallDesc() {
         try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery("SELECT s FROM StationSummary s ORDER BY s.totalRainfall DESC LIMIT 1", StationSummary.class)
@@ -40,11 +32,15 @@ public class StationSummaryRepository {
         }
     }
 
-    public List<String> findAllStations() {
+    public List<StationSummary> findAll() {
         try (EntityManager em = emf.createEntityManager()) {
-            return em.createQuery("SELECT DISTINCT s.station FROM StationSummary s", String.class)
+            return em.createQuery("SELECT DISTINCT s FROM StationSummary s", StationSummary.class)
                     .getResultList();
         }
+    }
+
+    public List<String> findAllStations() {
+        return findAll().stream().map(StationSummary::getStation).toList();
     }
 
     public void updateEmbeddingId(UUID summaryId, String embeddingId) {

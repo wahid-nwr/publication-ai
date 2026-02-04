@@ -2,13 +2,17 @@ package io.wahid.publication.ai.rag;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.dto.NumericResult;
+import io.wahid.publication.ai.dto.TrendResult;
 import io.wahid.publication.ai.infra.ollama.LLMClient;
+import io.wahid.publication.ai.model.StationSummary;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 
 public class OpenAILLMClient implements LLMClient {
 

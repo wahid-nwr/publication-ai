@@ -2,17 +2,20 @@ package io.wahid.publication.ai;
 
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.*;
+import io.wahid.publication.ai.infra.graph.Neo4jGraphClient;
 import io.wahid.publication.ai.infra.ollama.LLMClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.ingestion.DefaultIngestionService;
 import io.wahid.publication.ai.ingestion.PipelineStage;
 import io.wahid.publication.ai.processing.impl.DefaultMetadataExtractor;
 import io.wahid.publication.ai.processing.impl.DefaultTextNormalizer;
-import io.wahid.publication.ai.rag.*;
-import io.wahid.publication.ai.service.IngestionService;
-import io.wahid.publication.ai.service.QueryService;
-import io.wahid.publication.ai.service.QuestionRouter;
+import io.wahid.publication.ai.rag.AnswerGenerator;
+import io.wahid.publication.ai.rag.OllamaAnswerGenerator;
+import io.wahid.publication.ai.rag.OpenAILLMClient;
+import io.wahid.publication.ai.rag.Retriever;
+import io.wahid.publication.ai.service.*;
 import io.wahid.publication.ai.service.impl.DefaultQueryService;
+import io.wahid.publication.ai.service.impl.HybridNumericQueryEngine;
 import io.wahid.publication.ai.vectorstore.*;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -35,10 +38,15 @@ public class ApplicationContext {
     private final LLMClient llmClient;
     private final EmbeddingClient embeddingClient;
     private final R2Client r2Client;
+    private final Neo4jGraphClient neo4jGraphClient;
 
     public ApplicationContext() {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
         this.llmClient = new OpenAILLMClient(AppConfig.openAIKey(), "gpt-4.1-mini");
+
+        this.neo4jGraphClient = new Neo4jGraphClient("bolt://neo4j:7687",
+                "neo4j",
+                "mysecretpassword");
         /*this.llmClient = new OllamaLLMClient(
                 AppConfig.ollamaBaseUrl(),
                 AppConfig.llmModel()   // 🔥 GENERATION MODEL
@@ -72,7 +80,7 @@ public class ApplicationContext {
         DefaultTextNormalizer textNormalizer = new DefaultTextNormalizer();
         textNormalizer.setDownstream(metadataExtractor);
 
-        return new DefaultIngestionService(textNormalizer, getEmbeddingClient(), getQdrantClient());
+        return new DefaultIngestionService(textNormalizer, getEmbeddingClient(), getQdrantClient(), neo4jGraphClient);
     }
 
     public QueryService queryService() {
@@ -80,7 +88,11 @@ public class ApplicationContext {
                 AppConfig.qdrantBaseUrl(),
                 AppConfig.collectionName()
         );
-        QuestionRouter questionRouter = new QuestionRouter(vectorSearcher, embeddingClient, llmClient);
+
+        NumericQueryEngine numericQueryEngine = new HybridNumericQueryEngine(neo4jGraphClient, llmClient);
+        LLMNumericIntentParser numericIntentParser = new LLMNumericIntentParser(llmClient);
+        QuestionRouter questionRouter = new QuestionRouter(vectorSearcher, embeddingClient,
+                llmClient, numericQueryEngine, numericIntentParser);
 
         Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);
 
