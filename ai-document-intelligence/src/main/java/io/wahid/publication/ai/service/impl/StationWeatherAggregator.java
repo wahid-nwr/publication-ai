@@ -7,6 +7,7 @@ import io.wahid.publication.ai.infra.qdrant.QdrantClient;
 import io.wahid.publication.ai.model.StationSummary;
 import io.wahid.publication.ai.repository.StationSummaryRepository;
 import io.wahid.publication.ai.service.EmbeddingIndexService;
+import io.wahid.publication.ai.service.Neo4jSyncService;
 import io.wahid.publication.ai.service.WeatherAggregator;
 import io.wahid.publication.ai.util.JpaUtil;
 
@@ -18,10 +19,12 @@ public class StationWeatherAggregator implements WeatherAggregator {
     private final Map<String, StationStats> statsByStation = new HashMap<>();
     private final StationSummaryRepository stationSummaryRepository;
     private final EmbeddingIndexService embeddingIndexService;
+    private final Neo4jSyncService neo4jSyncService;
 
-    public StationWeatherAggregator(EmbeddingClient embeddingClient, QdrantClient qdrantClient) {
+    public StationWeatherAggregator(EmbeddingClient embeddingClient, QdrantClient qdrantClient, Neo4jSyncService neo4jSyncService) {
         this.stationSummaryRepository = new StationSummaryRepository(JpaUtil.getEntityManagerFactory());
         this.embeddingIndexService = new EmbeddingIndexService(embeddingClient, qdrantClient, stationSummaryRepository);
+        this.neo4jSyncService = neo4jSyncService;
     }
 
     @Override
@@ -36,6 +39,7 @@ public class StationWeatherAggregator implements WeatherAggregator {
 
             // 👇 persist + embed later
             summary = stationSummaryRepository.save(summary);
+            neo4jSyncService.sync();
             embeddingIndexService.index(summary);
         }
     }

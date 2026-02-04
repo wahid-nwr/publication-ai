@@ -123,6 +123,11 @@
             <version>2.41.14</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>5.17.0</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>

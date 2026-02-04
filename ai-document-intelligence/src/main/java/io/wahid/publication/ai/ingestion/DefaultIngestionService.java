@@ -5,13 +5,17 @@ import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.dto.WeatherInfo;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
+import io.wahid.publication.ai.infra.graph.Neo4jGraphClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
+import io.wahid.publication.ai.repository.StationSummaryRepository;
 import io.wahid.publication.ai.service.CSVParser;
 import io.wahid.publication.ai.service.IngestionService;
+import io.wahid.publication.ai.service.Neo4jSyncService;
 import io.wahid.publication.ai.service.WeatherAggregator;
 import io.wahid.publication.ai.service.impl.StationWeatherAggregator;
 import io.wahid.publication.ai.util.JobRegistry;
 import io.wahid.publication.ai.util.JobStatus;
+import io.wahid.publication.ai.util.JpaUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -34,12 +38,14 @@ public class DefaultIngestionService implements IngestionService {
 
     private final EmbeddingClient embeddingClient;
     private final QdrantClient qdrantClient;
+    private final Neo4jSyncService neo4jSyncService;
 
-    public DefaultIngestionService(PipelineStage pipeline, EmbeddingClient embeddingClient, QdrantClient qdrantClient) {
+    public DefaultIngestionService(PipelineStage pipeline, EmbeddingClient embeddingClient, QdrantClient qdrantClient, Neo4jGraphClient neo4jGraphClient) {
         this.pipeline = pipeline;
         this.r2Client = new R2Client();
         this.embeddingClient = embeddingClient;
         this.qdrantClient = qdrantClient;
+        this.neo4jSyncService = new Neo4jSyncService(new StationSummaryRepository(JpaUtil.getEntityManagerFactory()), neo4jGraphClient.getDriver());
     }
 
     @Override
@@ -66,7 +72,7 @@ public class DefaultIngestionService implements IngestionService {
     public void ingestFromR2(String jobId, String type, String bucket, String objectKey) throws Exception {
         LOGGER.info("trying file download from r2");
         try (InputStream in = r2Client.download(bucket, objectKey)) {
-            WeatherAggregator aggregator = new StationWeatherAggregator(embeddingClient, qdrantClient);
+            WeatherAggregator aggregator = new StationWeatherAggregator(embeddingClient, qdrantClient, neo4jSyncService);
 
             new CSVParser(aggregator).parse(in);
 
