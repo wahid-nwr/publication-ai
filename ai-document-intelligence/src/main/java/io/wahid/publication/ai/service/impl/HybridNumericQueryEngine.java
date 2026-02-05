@@ -5,10 +5,12 @@ import io.wahid.publication.ai.dto.*;
 import io.wahid.publication.ai.infra.graph.Neo4jGraphClient;
 import io.wahid.publication.ai.infra.ollama.LLMClient;
 import io.wahid.publication.ai.model.StationSummary;
+import io.wahid.publication.ai.model.StationYearMetric;
 import io.wahid.publication.ai.repository.StationSummaryRepository;
 import io.wahid.publication.ai.service.NumericQueryEngine;
 import io.wahid.publication.ai.util.JpaUtil;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class HybridNumericQueryEngine implements NumericQueryEngine {
@@ -41,15 +43,15 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
             );
 
             case TOP_K -> wrap(
-                    neoRepo.findTopKByMetricDesc(metric, query.getK())
+                    neoRepo.findTopKByMetricDesc(metric, query.getK()), List.of()
             );
 
             case BOTTOM_K -> wrap(
-                    neoRepo.findBottomKByMetric(metric, query.getK())
+                    neoRepo.findBottomKByMetric(metric, query.getK()), List.of()
             );
 
             case COMPARE -> new NumericResult(
-                    postgresRepo.findByStationIn(query.getStations())
+                    postgresRepo.findByStationIn(query.getStations()), List.of()
             );
 
             case TREND -> handleTrend(query);
@@ -64,13 +66,13 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
         }
     }
 
-    private NumericResult wrap(List<GraphResult> graphResults) {
+    private NumericResult wrap(List<GraphResult> graphResults, List<TrendResult> trendResults) {
 
         List<StationSummary> summaries = graphResults.stream()
                 .map(this::toStationSummary)
                 .toList();
-
-        return new NumericResult(summaries);
+        List<StationYearMetric> yearMetrics = List.of();
+        return new NumericResult(summaries, yearMetrics);
     }
 
 
@@ -89,7 +91,7 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
     }
 
     private NumericResult wrap(GraphResult r) {
-        return wrap(List.of(r));
+        return wrap(List.of(r), List.of());
     }
 
     private NumericResult handleTrend(NumericQuery query) {
@@ -100,9 +102,12 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
                         query.getMetric(),
                         query.getFromYear()
                 );
-
         TrendResult trend = neoRepo.computeTrend(series);
-
-        return llm.explainTrend(trend);
+        System.out.println("trend-> " + trend);
+        try {
+            return llm.explainTrend(trend);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

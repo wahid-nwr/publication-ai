@@ -51,4 +51,8 @@ public class WeatherInfo {
     public double getTemperature() {
         return temperature;
     }
+
+    public WeatherRow getWeatherRow() {
+        return new WeatherRow(station, year, month, day, rainfall, sunshine, humidity, temperature);
+    }
 }
