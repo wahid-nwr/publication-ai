@@ -197,53 +197,11 @@ public class QuestionRouter {
             return getComparisonAnswers(query, result);
         }
 
-//        if (query.getType() == TREND) {
-////            return getTrendAnswers(query, result);
-//            StationSummary s = result.getNodes().getFirst();
-//
-//            return String.format(
-//                    "I cannot determine a trend for %s in %s since %d because the data " +
-//                            "only contains a single aggregated summary covering %d to %d.",
-//                    query.getMetric(),
-//                    s.getStation(),
-//                    query.getFromYear(),
-//                    s.getStartYear(),
-//                    s.getEndYear()
-//            );
-//        }
+        if (query.getType() == TREND) {
+            return result.getNodes().isEmpty() ? "" : result.getNodes().getFirst().getSummaryText();
+        }
         // For TOP_K / BOTTOM_K / TREND
         return "This numeric analysis not yet supported.";
-    }
-
-    // TODO breakdown stationsummary into timeline data, then apply trend again
-    private String getTrendAnswers(NumericQuery query, NumericResult result) {
-        List<StationSummary> nodes = result.getNodes(); // should be sorted by year
-        if (nodes.isEmpty()) {
-            return "No data available for " + query.getStation() + " since " + query.getFromYear();
-        }
-
-        double first = getMetricValue(query.getMetric(), nodes.get(0));
-        double last = getMetricValue(query.getMetric(), nodes.get(nodes.size() - 1));
-        String unit = getMetricUnit(query.getMetric());
-
-        String trend;
-        if (last > first) {
-            trend = "increasing";
-        } else if (last < first) {
-            trend = "decreasing";
-        } else {
-            trend = "stable";
-        }
-
-        return String.format(
-                "Since %d, %s has shown an %s trend in %s: from %.2f %s to %.2f %s.",
-                query.getFromYear(),
-                query.getStation(),
-                trend,
-                query.getMetric(),
-                first, unit,
-                last, unit
-        );
     }
 
     private String getComparisonAnswers(NumericQuery query, NumericResult result) {
