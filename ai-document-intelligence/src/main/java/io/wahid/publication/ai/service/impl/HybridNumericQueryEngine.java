@@ -10,8 +10,9 @@ import io.wahid.publication.ai.repository.StationSummaryRepository;
 import io.wahid.publication.ai.service.NumericQueryEngine;
 import io.wahid.publication.ai.util.JpaUtil;
 
-import java.util.Comparator;
 import java.util.List;
+
+import static io.wahid.publication.ai.config.NumericMetric.*;
 
 public class HybridNumericQueryEngine implements NumericQueryEngine {
 
@@ -31,7 +32,7 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
     @Override
     public NumericResult execute(NumericQuery query) {
 
-        String metric = getMetric(query);
+        String metric = query.getMetric().getMetricName();
         return switch (query.getType()) {
 
             case MAX -> wrap(
@@ -54,16 +55,10 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
                     postgresRepo.findByStationIn(query.getStations()), List.of()
             );
 
+            case VALUE -> handleValue(query);
+
             case TREND -> handleTrend(query);
         };
-    }
-
-    private String getMetric(NumericQuery query) {
-        try {
-            return NumericMetric.valueOf(query.getMetric()).name();
-        } catch (IllegalArgumentException ex) {
-            return "";
-        }
     }
 
     private NumericResult wrap(List<GraphResult> graphResults, List<TrendResult> trendResults) {
@@ -79,14 +74,13 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
     private StationSummary toStationSummary(GraphResult r) {
         return StationSummary.builder()
                 .station(r.station())
-                .avgRainfall(r.metric().equals("avgRainfall") ? r.value() : 0)
-                .totalRainfall(r.metric().equals("totalRainfall") ? r.value() : 0)
-                .avgSunshine(r.metric().equals("avgSunshine") ? r.value() : 0)
-                .avgHumidity(r.metric().equals("avgHumidity") ? r.value() : 0)
-                .avgTemperature(r.metric().equals("avgTemperature") ? r.value() : 0)
-                .minTemperature(r.metric().equals("minTemperature") ? r.value() : 0)
-                .maxTemperature(r.metric().equals("maxTemperature") ? r.value() : 0)
-                // optional: keep metric/value generic
+                .avgRainfall(r.metric().equals(AVG_RAINFALL.getMetricName()) ? r.value() : 0)
+                .totalRainfall(r.metric().equals(TOTAL_RAINFALL.getMetricName()) ? r.value() : 0)
+                .avgSunshine(r.metric().equals(AVG_SUNSHINE.getMetricName()) ? r.value() : 0)
+                .avgHumidity(r.metric().equals(AVG_HUMIDITY.getMetricName()) ? r.value() : 0)
+                .avgTemperature(r.metric().equals(AVG_TEMPERATURE.getMetricName()) ? r.value() : 0)
+                .minTemperature(r.metric().equals(MIN_TEMPERATURE.getMetricName()) ? r.value() : 0)
+                .maxTemperature(r.metric().equals(MAX_TEMPERATURE.getMetricName()) ? r.value() : 0)
                 .build();
     }
 
@@ -94,15 +88,26 @@ public class HybridNumericQueryEngine implements NumericQueryEngine {
         return wrap(List.of(r), List.of());
     }
 
+    private NumericResult handleValue(NumericQuery query) {
+        GraphResult metricValue = neoRepo.getMetricValue(query.getStation(), query.getMetric().getMetricName());
+        System.out.println("metric value -> " + metricValue);
+
+        try {
+            return llm.explainValue(query, metricValue);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private NumericResult handleTrend(NumericQuery query) {
 
         List<YearValue> series =
                 neoRepo.getMetricTrend(
                         query.getStation(),
-                        query.getMetric(),
+                        query.getMetric().getMetricName(),
                         query.getFromYear()
                 );
-        TrendResult trend = neoRepo.computeTrend(series);
+        TrendResult trend = neoRepo.computeTrend(query.getMetric(), series, query.getStation());
         System.out.println("trend-> " + trend);
         try {
             return llm.explainTrend(trend);

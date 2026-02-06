@@ -1,5 +1,6 @@
 package io.wahid.publication.ai.service.impl;
 
+import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.dto.StationStats;
 import io.wahid.publication.ai.dto.StationYearStats;
 import io.wahid.publication.ai.dto.WeatherInfo;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.wahid.publication.ai.config.NumericMetric.*;
+
 public class StationWeatherAggregator implements WeatherAggregator {
 
     private final Map<String, Map<Integer, YearlyAccumulator>> yearlyData = new HashMap<>();
@@ -28,11 +31,13 @@ public class StationWeatherAggregator implements WeatherAggregator {
     private final StationYearMetricRepository stationYearMetricRepository;
     private final EmbeddingIndexService embeddingIndexService;
     private final Neo4jSyncService neo4jSyncService;
+    private final QdrantClient qdrantClient;
 
     public StationWeatherAggregator(EmbeddingClient embeddingClient, QdrantClient qdrantClient, Neo4jSyncService neo4jSyncService) {
         EntityManagerFactory emf = JpaUtil.getEntityManagerFactory();
         this.stationSummaryRepository = new StationSummaryRepository(emf);
         this.stationYearMetricRepository = new StationYearMetricRepository(emf);
+        this.qdrantClient = qdrantClient;
         this.embeddingIndexService = new EmbeddingIndexService(embeddingClient, qdrantClient, stationSummaryRepository);
         this.neo4jSyncService = neo4jSyncService;
     }
@@ -48,6 +53,12 @@ public class StationWeatherAggregator implements WeatherAggregator {
 
     @Override
     public void finish() throws Exception {
+        // sanitize
+        stationSummaryRepository.removeAll();
+        stationYearMetricRepository.removeAll();
+        neo4jSyncService.removeAll();
+        qdrantClient.deleteAllPoints(AppConfig.collectionName());
+
         for (Map.Entry<String, StationStats> entry : statsByStation.entrySet()) {
             StationSummary summary = entry.getValue().toSummary(entry.getKey());
 
@@ -63,13 +74,13 @@ public class StationWeatherAggregator implements WeatherAggregator {
                 int year = yearEntry.getKey();
                 YearlyAccumulator acc = yearEntry.getValue();
 
-                yearMetrics.add(new StationYearStats(station, year, "avgRainfall", acc.getRainfallSum() / acc.getCount()));
-                yearMetrics.add(new StationYearStats(station, year, "totalRainfall", acc.getRainfallSum()));
-                yearMetrics.add(new StationYearStats(station, year, "avgTemperature", acc.getTemperatureSum() / acc.getCount()));
-                yearMetrics.add(new StationYearStats(station, year, "avgSunshine", acc.getSunshineSum() / acc.getCount()));
-                yearMetrics.add(new StationYearStats(station, year, "avgHumidity", acc.getHumiditySum() / acc.getCount()));
-                yearMetrics.add(new StationYearStats(station, year, "minTemperature", acc.getMinTemp()));
-                yearMetrics.add(new StationYearStats(station, year, "maxTemperature", acc.getMaxTemp()));
+                yearMetrics.add(new StationYearStats(station, year, AVG_RAINFALL.getMetricName(), acc.getRainfallSum() / acc.getCount()));
+                yearMetrics.add(new StationYearStats(station, year, TOTAL_RAINFALL.getMetricName(), acc.getRainfallSum()));
+                yearMetrics.add(new StationYearStats(station, year, AVG_TEMPERATURE.getMetricName(), acc.getTemperatureSum() / acc.getCount()));
+                yearMetrics.add(new StationYearStats(station, year, AVG_SUNSHINE.getMetricName(), acc.getSunshineSum() / acc.getCount()));
+                yearMetrics.add(new StationYearStats(station, year, AVG_HUMIDITY.getMetricName(), acc.getHumiditySum() / acc.getCount()));
+                yearMetrics.add(new StationYearStats(station, year, MIN_TEMPERATURE.getMetricName(), acc.getMinTemp()));
+                yearMetrics.add(new StationYearStats(station, year, MAX_TEMPERATURE.getMetricName(), acc.getMaxTemp()));
             }
         }
         yearMetrics.forEach(stats -> stationYearMetricRepository.save(stats.toYearSummary(stats.getStation(), stats.getYear())));

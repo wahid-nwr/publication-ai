@@ -68,4 +68,19 @@ public class StationSummaryRepository {
                     .getResultList();
         }
     }
+
+    public void removeAll() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createQuery("DELETE FROM StationSummary").executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

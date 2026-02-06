@@ -3,6 +3,7 @@ package io.wahid.publication.ai.repository;
 import io.wahid.publication.ai.model.StationYearMetric;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 
 import java.util.List;
 
@@ -27,6 +28,21 @@ public class StationYearMetricRepository {
         try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery("SELECT DISTINCT s FROM StationYearMetric s", StationYearMetric.class)
                     .getResultList();
+        }
+    }
+
+    public void removeAll() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.createQuery("DELETE FROM StationYearMetric").executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
         }
     }
 }

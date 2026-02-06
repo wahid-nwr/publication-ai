@@ -7,4 +7,5 @@ public interface QdrantClient {
     boolean collectionExists(String collection);
     int getVectorSize(String collection);
     void upsert(String collection, String pointId, float[] vector, Map<String, Object> payload);
+    void deleteAllPoints(String collection);
 }

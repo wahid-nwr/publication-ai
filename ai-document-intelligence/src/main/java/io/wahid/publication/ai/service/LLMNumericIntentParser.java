@@ -2,6 +2,7 @@ package io.wahid.publication.ai.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.config.NumericMetric;
 import io.wahid.publication.ai.config.NumericQueryType;
 import io.wahid.publication.ai.dto.NumericQuery;
 import io.wahid.publication.ai.infra.ollama.LLMClient;
@@ -44,8 +45,11 @@ public class LLMNumericIntentParser {
 
             return Optional.of(
                     new NumericQuery.Builder()
+                            .numeric(root.path("numeric").asBoolean(numeric))
+                            .timeBased(root.path("timeBased").asBoolean(false))
+                            .value(root.path("value").asDouble(0))
                             .type(nmQuerytype)
-                            .metric(metric)
+                            .metric(NumericMetric.getMetricByName(metric))
                             .k(root.path("k").asInt(1))
                             .station(asNullable(root, "station"))
                             .fromYear(asNullableInt(root, "fromYear"))
@@ -70,30 +74,31 @@ public class LLMNumericIntentParser {
         return response.trim();
     }
 
-    /*private String buildPrompt(String question) {
-        return """
-                You are an intent extraction engine.
-                Return ONLY valid JSON.
-
-                Schema:
-                {
-                  "numeric": boolean,
-                  "type": "MAX | MIN | TOP_K | BOTTOM_K | TREND | NONE",
-                  "metric": "totalRainfall | avgRainfall | avgSunshine | avgTemperature | NONE",
-                  "k": number,
-                  "station": string | null,
-                  "fromYear": number | null
-                }
-
-                Question:
-                "%s"
-                """.formatted(question);
-    }*/
     private String buildPrompt(String question) {
         return """
         You are an intent extraction engine.
         Return ONLY valid JSON. No explanation.
 
+        If the question mentions:
+        - a metric AND
+        - a station AND
+        - a starting year (e.g. "since 1980", "from 1990")
+        Then:
+        - numeric = true
+        - timeBased = true
+        - type = TREND
+        Even if words like "increase" or "decrease" are NOT present.
+        
+        If the question asks:
+        “what is”
+        “how much”
+        “how many”
+        AND includes
+        a metric
+        a station
+        AND does NOT ask for comparison
+        → classify as VALUE
+        
         A query is NUMERIC if it involves:
         - comparison (min, max, least, highest, lowest)
         - aggregation (average, total, trend)
@@ -107,8 +112,9 @@ public class LLMNumericIntentParser {
 
         Schema:
         {
+          "timeBased": boolean,
           "numeric": boolean,
-          "type": "MAX | MIN | TOP_K | BOTTOM_K | TREND | NONE",
+          "type": "MAX | MIN | TOP_K | BOTTOM_K | TREND | VALUE | NONE",
           "metric": "totalRainfall | avgRainfall | avgSunshine | avgTemperature | NONE",
           "k": number,
           "station": string | null,

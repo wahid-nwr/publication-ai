@@ -1,14 +1,18 @@
 package io.wahid.publication.ai.dto;
 
+import io.wahid.publication.ai.config.NumericMetric;
 import io.wahid.publication.ai.config.NumericQueryType;
 
 import java.util.List;
 
 public class NumericQuery {
 
+    private final boolean timeBased;
+    private final boolean numeric;
+    private final double value;
     private final NumericQueryType type;
 
-    private final String metric;
+    private final NumericMetric metric;
 
     // Used by COMPARE
     private final List<String> stations;
@@ -27,31 +31,49 @@ public class NumericQuery {
         this.station = b.station;
         this.fromYear = b.fromYear;
         this.k = b.k;
+        this.timeBased = b.timeBased;
+        this.numeric = b.numeric;
+        this.value = b.value;
     }
 
     public NumericQueryType getType() { return type; }
-    public String getMetric() { return metric; }
+    public NumericMetric getMetric() { return metric; }
 
     public List<String> getStations() { return stations; }
     public String getStation() { return station; }
     public Integer getFromYear() { return fromYear; }
     public Integer getK() { return k; }
 
+    public boolean isTimeBased() {
+        return timeBased;
+    }
+
+    public boolean isNumeric() {
+        return numeric;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
     // ---------- Builder ----------
     public static class Builder {
         private NumericQueryType type;
-        private String metric;
+        private NumericMetric metric;
         private List<String> stations;
         private String station;
         private Integer fromYear;
         private Integer k;
+        private boolean timeBased;
+        private boolean numeric;
+        private double value;
 
         public Builder type(NumericQueryType type) {
             this.type = type;
             return this;
         }
 
-        public Builder metric(String metric) {
+        public Builder metric(NumericMetric metric) {
             this.metric = metric;
             return this;
         }
@@ -73,6 +95,21 @@ public class NumericQuery {
 
         public Builder k(Integer k) {
             this.k = k;
+            return this;
+        }
+
+        public Builder timeBased(boolean timeBased) {
+            this.timeBased = timeBased;
+            return this;
+        }
+
+        public Builder numeric(boolean numeric) {
+            this.numeric = numeric;
+            return this;
+        }
+
+        public Builder value(double value) {
+            this.value = value;
             return this;
         }
 

@@ -1,5 +1,6 @@
 package io.wahid.publication.ai.service;
 
+import io.wahid.publication.ai.config.NumericMetric;
 import io.wahid.publication.ai.dto.NumericQuery;
 import io.wahid.publication.ai.dto.NumericResult;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
@@ -47,31 +48,10 @@ public class QuestionRouter {
         if (nq.isPresent()) {
             LOGGER.log(Level.INFO, "intent parsed numeric query -> {0}", nq.get());
             NumericResult result = numericEngine.execute(nq.get());
-            return formatNumericAnswer(nq.get(), result);
+            if (result != null) {
+                return formatNumericAnswer(nq.get(), result);
+            }
         }
-
-        /*QueryIntent intent = IntentClassifier.classify(question);
-
-        switch (intent) {
-
-            case GLOBAL_MAX, GLOBAL_MIN -> {
-                Optional<NumericQuery> nq = buildNumericQuery(question);
-                if (nq.isPresent()) {
-                    NumericResult result = numericEngine.execute(nq.get());
-                    return formatNumericAnswer(nq.get(), result);
-                } else {
-                    return "Could not extract numeric intent from the question.";
-                }
-            }
-
-            case COMPARISON -> {
-                return handleComparison(question);
-            }
-
-            case DESCRIPTIVE, UNKNOWN -> {
-                return handleDescriptive(question);
-            }
-        }*/
 
         return handleDescriptive(question);
     }
@@ -150,7 +130,7 @@ public class QuestionRouter {
 
     // ------------------------- Numeric result formatter -------------------------
     private String formatNumericAnswer(NumericQuery query, NumericResult result) throws Exception {
-        if (result.getNodes().isEmpty()) {
+        if (result == null || result.getNodes().isEmpty()) {
             return "No data available for this query.";
         }
 
@@ -158,30 +138,8 @@ public class QuestionRouter {
             StationSummary s = result.getNodes().getFirst();
 
             // Determine value and unit dynamically
-            double value;
-            String unit;
-
-            switch (query.getMetric()) {
-                case "totalRainfall":
-                    value = s.getTotalRainfall();
-                    unit = "mm";
-                    break;
-                case "avgRainfall":
-                    value = s.getAvgRainfall();
-                    unit = "mm";
-                    break;
-                case "avgSunshine":
-                    value = s.getAvgSunshine();
-                    unit = "hours/day";
-                    break;
-                case "avgTemperature":
-                    value = s.getAvgTemperature();
-                    unit = "°C";
-                    break;
-                default:
-                    value = 0.0;
-                    unit = "";
-            }
+            double value = getMetricValue(s, query.getMetric());
+            String unit = query.getMetric().getUnit();
 
             return llmClient.generate(
                     "Answer in one sentence: " +
@@ -197,7 +155,7 @@ public class QuestionRouter {
             return getComparisonAnswers(query, result);
         }
 
-        if (query.getType() == TREND) {
+        if (query.getType() == TREND || query.getType() == VALUE) {
             return result.getNodes().isEmpty() ? "" : result.getNodes().getFirst().getSummaryText();
         }
         // For TOP_K / BOTTOM_K / TREND
@@ -212,38 +170,32 @@ public class QuestionRouter {
                 .append(query.getMetric()).append(": ");
         for (int i = 0; i < nodes.size(); i++) {
             StationSummary s = nodes.get(i);
-            double value;
-            String unit;
-
-            switch (query.getMetric()) {
-                case "totalRainfall": value = s.getTotalRainfall(); unit = "mm"; break;
-                case "avgRainfall": value = s.getAvgRainfall(); unit = "mm"; break;
-                case "avgSunshine": value = s.getAvgSunshine(); unit = "hours/day"; break;
-                case "avgTemperature": value = s.getAvgTemperature(); unit = "°C"; break;
-                default: value = 0; unit = "";
-            }
-            sb.append("\n").append(i + 1).append(". ")
-                    .append(s.getStation()).append(" – ").append(value).append(" ").append(unit);
+            double value = getMetricValue(s, query.getMetric());
+            String unit = query.getMetric().getUnit();
+            sb.append("\n").append(i + 1).append(". ").append(s.getStation())
+                    .append(" – ").append(value).append(" ").append(unit);
         }
         return sb.toString();
     }
 
-    private double getMetricValue(String metric, StationSummary s) {
-        return switch (metric) {
-            case "totalRainfall" -> s.getTotalRainfall();
-            case "avgRainfall" -> s.getAvgRainfall();
-            case "avgSunshine" -> s.getAvgSunshine();
-            case "avgTemperature" -> s.getAvgTemperature();
-            default -> 0.0;
-        };
-    }
-
-    private String getMetricUnit(String metric) {
-        return switch (metric) {
-            case "totalRainfall", "avgRainfall" -> "mm";
-            case "avgSunshine" -> "hours/day";
-            case "avgTemperature" -> "°C";
-            default -> "";
-        };
+    private double getMetricValue(StationSummary ss, NumericMetric metric) {
+        double value;
+        switch (metric) {
+            case TOTAL_RAINFALL:
+                value = ss.getTotalRainfall();
+                break;
+            case AVG_RAINFALL:
+                value = ss.getAvgRainfall();
+                break;
+            case AVG_SUNSHINE:
+                value = ss.getAvgSunshine();
+                break;
+            case AVG_TEMPERATURE:
+                value = ss.getAvgTemperature();
+                break;
+            default:
+                value = 0;
+        }
+        return value;
     }
 }
