@@ -84,6 +84,18 @@ Combining both avoids common RAG pitfalls such as hallucination and poor numeric
 🚧 Work in progress
 This repository currently focuses on architecture, ingestion, and retrieval correctness.
 
+## Supported CSV Structure (Current)
+The ingestion pipeline currently supports CSV files that represent
+time-series or categorical datasets with identifiable entities,
+numeric metrics, and optional temporal dimensions.
+
+Typical columns include:
+- Entity identifiers (e.g. station, city, region)
+- One or more numeric measures
+- Optional temporal fields (e.g. year)
+
+The schema is expected to be consistent per dataset. Here is the currently supported csv schema - [CSV Schema](docs/architecture/csv-schema.md)
+
 ### Next Steps
 + Improve intent classification
 + Add re-ranking and confidence thresholds
