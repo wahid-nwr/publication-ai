@@ -94,7 +94,7 @@ Typical columns include:
 - One or more numeric measures
 - Optional temporal fields (e.g. year)
 
-The schema is expected to be consistent per dataset. Here is the currently supported csv schema - [CSV Schema](docs/architecture/csv-schema.md)
+The schema is expected to be consistent per dataset. Here is the currently supported csv schema - [CSV Schema](ai-document-intelligence/docs/csv-schema.md)
 
 ### Next Steps
 + Improve intent classification
