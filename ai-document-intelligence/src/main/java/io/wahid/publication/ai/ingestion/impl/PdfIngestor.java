@@ -1,7 +1,7 @@
 package io.wahid.publication.ai.ingestion.impl;
 
 import io.wahid.publication.ai.ingestion.DocumentIngestor;
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;

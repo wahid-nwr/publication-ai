@@ -3,7 +3,7 @@ package io.wahid.publication.ai.ingestion.impl;
 
 import com.opencsv.CSVReader;
 import io.wahid.publication.ai.ingestion.DocumentIngestor;
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 
 import java.io.InputStream;

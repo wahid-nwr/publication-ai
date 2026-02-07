@@ -1,9 +1,8 @@
 package io.wahid.publication.ai.vectorstore;
 
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public interface VectorWriter {

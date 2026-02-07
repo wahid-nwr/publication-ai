@@ -1,9 +1,7 @@
 package io.wahid.publication.ai.ingestion;
 
-import com.opencsv.bean.CsvToBeanBuilder;
-import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.R2Client;
-import io.wahid.publication.ai.dto.WeatherInfo;
+import io.wahid.publication.ai.dto.TextChunk;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.infra.graph.Neo4jGraphClient;
 import io.wahid.publication.ai.infra.qdrant.QdrantClient;
@@ -20,7 +18,6 @@ import io.wahid.publication.ai.util.JpaUtil;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +75,6 @@ public class DefaultIngestionService implements IngestionService {
 
             JobRegistry.update(jobId, JobStatus.AGGREGATED);
         }
-//        ingest(bucket + jobId + objectKey, type, in);
     }
 }
 

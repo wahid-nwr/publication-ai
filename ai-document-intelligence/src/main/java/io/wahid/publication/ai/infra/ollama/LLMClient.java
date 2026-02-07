@@ -23,11 +23,11 @@ public interface LLMClient {
     }
 
     default NumericResult explainValue(NumericQuery query, GraphResult result) throws Exception {
-        String explanation = "The " + query.getMetric() +
+        String prompt = "The " + query.getMetric() +
                 " at " + result.station() +
                 " is " + result.value() +
-                " unit.";
-                //" " + query.getMetric().unit() + ".";
+                " " + query.getMetric().getUnit() + ".";
+        String explanation = generate(prompt);
         StationSummary synthetic = StationSummary.builder()
                 .station("VALUE")
                 .summaryText(explanation)
