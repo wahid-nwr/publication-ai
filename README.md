@@ -1,5 +1,10 @@
 # 📚 Hybrid RAG + Graph-based Question Answering system
 
+Hybrid RAG system combining vector search and graph reasoning
+for querying CSV-based datasets using Neo4j, Qdrant, and LLMs.
+
+This repository is intended as a reference implementation for 
+building grounded, production-oriented RAG systems over structured datasets.
 ---
 
 ## 🚀 Overview
@@ -63,6 +68,7 @@ The system is designed to handle both numeric/analytical queries and natural lan
 
 ---
 ### Why Hybrid RAG?
+Combining both avoids common RAG pitfalls such as hallucination and poor numeric accuracy.
 - Graphs excel at:
   - Numeric reasoning
   - Aggregations
@@ -70,7 +76,6 @@ The system is designed to handle both numeric/analytical queries and natural lan
 - Vectors excel at:
   - Semantic similarity
   - Fuzzy and natural language queries
-Combining both avoids common RAG pitfalls such as hallucination and poor numeric accuracy.
 
 ---
 ### Design Principles
@@ -79,10 +84,6 @@ Combining both avoids common RAG pitfalls such as hallucination and poor numeric
 - Multi-tenant by design
 - Scalable ingestion and query paths
 - Explainable data flow
-
-### Status
-🚧 Work in progress
-This repository currently focuses on architecture, ingestion, and retrieval correctness.
 
 ## Supported CSV Structure (Current)
 The ingestion pipeline currently supports CSV files that represent
@@ -95,6 +96,10 @@ Typical columns include:
 - Optional temporal fields (e.g. year)
 
 The schema is expected to be consistent per dataset. Here is the currently supported csv schema - [CSV Schema](ai-document-intelligence/docs/csv-schema.md)
+
+### Status
+🚧 Work in progress
+This repository currently focuses on architecture, ingestion, and retrieval correctness.
 
 ### Next Steps
 + Improve intent classification
