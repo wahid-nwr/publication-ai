@@ -1,4 +1,4 @@
-package io.wahid.publication.ai.ingestion;
+package io.wahid.publication.ai.dto;
 
 import java.util.Map;
 

@@ -30,13 +30,13 @@ public class Neo4jSyncService {
         try (Session session = neo4j.session()) {
             for (StationSummary s : repo.findAll()) {
                 Map<String, Double> metrics = Map.of(
-                        avgRainfall.name(), s.getAvgRainfall(),
-                        totalRainfall.name(), s.getTotalRainfall(),
-                        avgSunshine.name(), s.getAvgSunshine(),
-                        avgHumidity.name(), s.getAvgHumidity(),
-                        avgTemperature.name(), s.getAvgTemperature(),
-                        minTemperature.name(), s.getMinTemperature(),
-                        maxTemperature.name(), s.getMaxTemperature()
+                        AVG_RAINFALL.getMetricName(), s.getAvgRainfall(),
+                        TOTAL_RAINFALL.getMetricName(), s.getTotalRainfall(),
+                        AVG_SUNSHINE.getMetricName(), s.getAvgSunshine(),
+                        AVG_HUMIDITY.getMetricName(), s.getAvgHumidity(),
+                        AVG_TEMPERATURE.getMetricName(), s.getAvgTemperature(),
+                        MIN_TEMPERATURE.getMetricName(), s.getMinTemperature(),
+                        MAX_TEMPERATURE.getMetricName(), s.getMaxTemperature()
                 );
 
                 for (var entry : metrics.entrySet()) {
@@ -61,6 +61,7 @@ public class Neo4jSyncService {
                     );
                 }
             }
+
             List<Map<String, Object>> rows = new ArrayList<>();
             int batchSize = 1000;
             for (StationYearMetric metric : yearMetricRepository.findAll()) {
@@ -97,6 +98,19 @@ public class Neo4jSyncService {
         try (Session session = neo4j.session()) {
             session.executeWrite(tx -> {
                 tx.run(cypher, Map.of("rows", rows)).consume();
+                return null;
+            });
+        }
+    }
+
+    public void removeAll() {
+        String cypher = """
+                MATCH (n)
+                DETACH DELETE n;
+                """;
+        try (Session session = neo4j.session()) {
+            session.executeWrite(tx -> {
+                tx.run(cypher).consume();
                 return null;
             });
         }

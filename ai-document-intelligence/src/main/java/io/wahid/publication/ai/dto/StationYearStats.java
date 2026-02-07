@@ -1,13 +1,8 @@
 package io.wahid.publication.ai.dto;
 
 import io.wahid.publication.ai.config.NumericMetric;
-import io.wahid.publication.ai.model.StationSummary;
 import io.wahid.publication.ai.model.StationYearMetric;
 import io.wahid.publication.ai.model.YearMetricId;
-import io.wahid.publication.ai.service.StationSummaryFormatter;
-import io.wahid.publication.ai.service.impl.DefaultStationSummaryFormatter;
-
-import java.time.Instant;
 
 public class StationYearStats {
 
@@ -27,10 +22,10 @@ public class StationYearStats {
     public void add(WeatherInfo info, NumericMetric metric) {
         count++;
         switch (metric) {
-            case avgTemperature: value += info.getTemperature();
-            case totalRainfall: value += info.getRainfall();
-            case avgSunshine: value += info.getSunshine();
-            case avgHumidity: value += info.getHumidity();
+            case AVG_TEMPERATURE: value += info.getTemperature();
+            case TOTAL_RAINFALL: value += info.getRainfall();
+            case AVG_SUNSHINE: value += info.getSunshine();
+            case AVG_HUMIDITY: value += info.getHumidity();
             default:
         }
     }

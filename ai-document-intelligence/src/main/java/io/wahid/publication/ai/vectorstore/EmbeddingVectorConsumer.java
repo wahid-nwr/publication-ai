@@ -2,7 +2,7 @@ package io.wahid.publication.ai.vectorstore;
 
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 import io.wahid.publication.ai.ingestion.TextChunkConsumer;
 
 public class EmbeddingVectorConsumer extends AbstractPipelineStage implements TextChunkConsumer {

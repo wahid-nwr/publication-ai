@@ -142,6 +142,27 @@ public class QdrantAdminClient implements QdrantClient {
         }
     }
 
+    @Override
+    public void deleteAllPoints(String collection) {
+        try {
+            String requestBody = "{\"filter\": {}}";
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/collections/" + collection + "/points/delete"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 300) {
+                throw new RuntimeException("Qdrant delete failed: " + response.body());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete points from Qdrant", e);
+        }
+    }
+
     private String buildRequestBody(
             String pointId,
             float[] vector,

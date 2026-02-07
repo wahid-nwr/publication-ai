@@ -5,6 +5,7 @@ public enum NumericQueryType {
     MIN,
     TOP_K,
     BOTTOM_K,
+    VALUE,
     TREND,
     COMPARE
 }

@@ -1,7 +1,7 @@
 package io.wahid.publication.ai.processing.impl;
 
 import io.wahid.publication.ai.ingestion.AbstractPipelineStage;
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,7 +2,7 @@ package io.wahid.publication.ai.vectorstore;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.publication.ai.ingestion.TextChunk;
+import io.wahid.publication.ai.dto.TextChunk;
 
 import java.io.IOException;
 import java.net.URI;
