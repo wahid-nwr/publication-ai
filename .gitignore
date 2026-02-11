@@ -1,6 +1,7 @@
 target/
 data/
 .env
+.terraform/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
