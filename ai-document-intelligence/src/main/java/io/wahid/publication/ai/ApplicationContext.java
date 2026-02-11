@@ -44,9 +44,9 @@ public class ApplicationContext {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
         this.llmClient = new OpenAILLMClient(AppConfig.openAIKey(), "gpt-4.1-mini");
 
-        this.neo4jGraphClient = new Neo4jGraphClient("bolt://neo4j:7687",
-                "neo4j",
-                "mysecretpassword");
+        this.neo4jGraphClient = new Neo4jGraphClient(AppConfig.neo4jBaseUrl(),
+                AppConfig.neo4jUser(),
+                AppConfig.neo4jPass());
         /*this.llmClient = new OllamaLLMClient(
                 AppConfig.ollamaBaseUrl(),
                 AppConfig.llmModel()   // 🔥 GENERATION MODEL

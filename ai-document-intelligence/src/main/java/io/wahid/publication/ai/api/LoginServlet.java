@@ -1,9 +1,9 @@
 package io.wahid.publication.ai.api;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import io.wahid.publication.ai.security.JwtFilter;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,20 +11,22 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@WebServlet(name = "LoginServlet", urlPatterns = {"/auth/login"})
 public class LoginServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
         JwtFilter.sendCorsHeaders(req, resp);
-        System.out.println("LoginServlet doOptions");
+        LOGGER.info("LoginServlet doOptions");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        System.out.println("LoginServlet doPost--------------> setting cors");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        LOGGER.info("LoginServlet doPost--------------> setting cors");
         JwtFilter.sendCorsHeaders(req, resp);
         resp.setContentType("application/json");
 
@@ -33,17 +35,26 @@ public class LoginServlet extends HttpServlet {
         try (BufferedReader reader = req.getReader()) {
             String line;
             while ((line = reader.readLine()) != null) sb.append(line);
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
 
-        System.out.println("request->" + sb);
+        LOGGER.log(Level.INFO, "request-> {0}", sb);
         JSONObject json = new JSONObject(sb.toString());
         String idToken = json.optString("idToken", null);
 
-        System.out.println("LoginServlet doPost--------------> checking idtoken");
-        if (idToken == null) {
+        LOGGER.info("LoginServlet doPost--------------> checking idtoken");
+        try {
+            if (idToken == null) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\":\"Missing idToken\"}");
+                return;
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\":\"Missing idToken\"}");
-            return;
         }
 
         try {
@@ -58,10 +69,9 @@ public class LoginServlet extends HttpServlet {
             result.put("access_token", decodedToken);
             resp.getWriter().write(result.toString());
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | FirebaseAuthException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("{\"error\":\"Invalid or expired token\"}");
         }
     }
 }

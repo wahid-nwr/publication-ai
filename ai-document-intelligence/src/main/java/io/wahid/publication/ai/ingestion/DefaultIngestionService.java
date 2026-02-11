@@ -71,7 +71,7 @@ public class DefaultIngestionService implements IngestionService {
         try (InputStream in = r2Client.download(bucket, objectKey)) {
             WeatherAggregator aggregator = new StationWeatherAggregator(embeddingClient, qdrantClient, neo4jSyncService);
 
-            new CSVParser(aggregator).parse(in);
+            new CSVParser(aggregator).parse(in, objectKey);
 
             JobRegistry.update(jobId, JobStatus.AGGREGATED);
         }
