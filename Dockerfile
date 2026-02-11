@@ -9,7 +9,7 @@ WORKDIR /app
 #COPY target/lib ./lib
 
 # Expose ports if needed
-EXPOSE 8081
+EXPOSE 8080
 
 # Start the application
 #ENTRYPOINT ["java", "-jar", "app.jar"]

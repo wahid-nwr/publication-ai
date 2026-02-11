@@ -1,7 +1,9 @@
 package io.wahid.publication.ai.security;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.*;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import jakarta.servlet.*;
@@ -13,18 +15,19 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JwtFilter implements Filter {
-
-    private final JwtConfig cfg;
+    private static final Logger LOGGER = Logger.getLogger(JwtFilter.class.getName());
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
-            "http://localhost:8080", "http://localhost:8080/",
-            "http://127.0.0.1:8080", "http://127.0.0.1:8080/",
-            "http://34.59.213.229:8080", "http://34.59.213.229:8080/"
+            "http://localhost:8081",
+            "http://127.0.0.1:8081",
+            "http://34.59.213.229:8081",
+            "https://publication-ai-652346505611.us-central1.run.app"
     );
 
     public JwtFilter(JwtConfig cfg, JWKSource<SecurityContext> jwkSource) {
-        this.cfg = cfg;
 
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 
@@ -34,7 +37,30 @@ public class JwtFilter implements Filter {
         jwtProcessor.setJWSKeySelector(keySelector);
 
         // We will validate claims manually
-        jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> { });
+        jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
+        });
+    }
+
+    public static void sendCorsHeaders(HttpServletRequest req, HttpServletResponse resp) {
+        String origin = req.getHeader("Origin");
+        if (origin != null) {
+            origin = origin.replaceAll("/$", "");
+        }
+
+        LOGGER.log(Level.INFO, "request origin-> {0}", origin);
+        if (origin != null) {
+            LOGGER.log(Level.INFO, "matched->> {0}", ALLOWED_ORIGINS.contains(origin));
+        }
+        // Allow only trusted origins
+        if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
+            LOGGER.info("setting allow origin true!");
+            resp.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
+        resp.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
+        resp.setHeader("Vary", "Origin"); // avoid caching incorrect CORS headers
     }
 
     @Override
@@ -45,10 +71,10 @@ public class JwtFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         sendCorsHeaders(request, response);
-        if (request.getMethod().equals("OPTIONS")) {
-            System.out.println("got options request, sending cors headers");
-            res.getWriter().write("HTTP/1.1 200 OK\r\n\r\n");
-            return;
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            LOGGER.info("got options request, sending cors headers");
+            response.setStatus(HttpServletResponse.SC_OK);
+            return; // stop filter chain
         }
         // public routes (login page, static assets)
         if (isPublicRoute(request)) {
@@ -59,33 +85,15 @@ public class JwtFilter implements Filter {
         // protected routes (all other routes)
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            unauthorized(response, "Missing Authorization header");
+            unauthorized(request, response, "Missing Authorization header");
             return;
         }
 
         if (TokenVerifier.verify(authHeader) == null) {
-            unauthorized(response, "Invalid token");
+            unauthorized(request, response, "Invalid token");
             return;
         }
         chain.doFilter(req, res);
-    }
-
-    public static void sendCorsHeaders(HttpServletRequest req, HttpServletResponse resp) {
-        String origin = req.getHeader("Origin");
-        System.out.println("request origin-> " + origin);
-        if (origin != null) {
-            System.out.println("matched->>" + ALLOWED_ORIGINS.contains(origin));
-        }
-        // Allow only trusted origins
-        if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
-            System.out.println("setting allow origin true!!!!!");
-            resp.setHeader("Access-Control-Allow-Origin", origin);
-        }
-
-        resp.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
-        resp.setHeader("Vary", "Origin"); // avoid caching incorrect CORS headers
     }
 
     private boolean isPublicRoute(HttpServletRequest req) {
@@ -97,8 +105,10 @@ public class JwtFilter implements Filter {
                 || path.endsWith(".css");
     }
 
-    private void unauthorized(HttpServletResponse response, String msg) throws IOException {
-        response.setStatus(401);
+    private void unauthorized(HttpServletRequest request, HttpServletResponse response, String msg) throws IOException {
+        sendCorsHeaders(request, response);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
         response.getWriter().write("{\"error\":\"" + msg + "\"}");
     }
 

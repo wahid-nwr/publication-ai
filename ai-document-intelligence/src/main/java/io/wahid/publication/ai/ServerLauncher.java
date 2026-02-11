@@ -38,7 +38,7 @@ public class ServerLauncher {
 
         QueryServlet queryServlet = new QueryServlet(appContext.queryService());
 
-        Server server = new Server(8081);
+        Server server = new Server(8080);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
@@ -89,6 +89,7 @@ public class ServerLauncher {
 
         server.start();
         server.join(); // ✔ correct and required
+        LOGGER.info("RAG server initialized!");
     }
 
 }
