@@ -17,6 +17,7 @@ import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +31,9 @@ public class ServerLauncher {
 
     public static void main(String[] args) throws Exception {
         LOGGER.info("Initiating Serverlauncher");
+        // TODO Remove this and add hostname to ssl key
+        System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
+
         FirebaseInit.initialize();
 
         ApplicationContext appContext = new ApplicationContext();
@@ -38,7 +42,8 @@ public class ServerLauncher {
 
         QueryServlet queryServlet = new QueryServlet(appContext.queryService());
 
-        Server server = new Server(8080);
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+        Server server = new Server(new InetSocketAddress("0.0.0.0", port));
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
@@ -78,11 +83,14 @@ public class ServerLauncher {
         context.addServlet(uploadHolder, "/api/document/upload");
 
         JwtConfig cfg = new JwtConfig(
-                JWKS_URI,
-                AppConfig.issuer()
+                AppConfig.jwksUri(),                  // https://host/realms/realm
+                AppConfig.issuer(),
+                AppConfig.audience()                 // your client id
         );
-        JWKSource<SecurityContext> jwkSource = JWKSourceBuilder.create(URI.create(cfg.getJwksUri()).toURL()).build();
-        FilterHolder jwtFilterHolder = new FilterHolder(new JwtFilter(cfg, jwkSource));
+
+        System.out.println("AppConfig.issuer()--->" + AppConfig.issuer());
+
+        FilterHolder jwtFilterHolder = new FilterHolder(new JwtFilter(cfg));
         context.addFilter(jwtFilterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         server.setHandler(context);

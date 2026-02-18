@@ -1,11 +1,25 @@
 package io.wahid.publication.ai.config;
 
+import java.lang.reflect.GenericDeclaration;
+
 public final class AppConfig {
 
     private AppConfig() {}
 
     public static String issuer() {
-        return env("ISSUER", "https://securetoken.google.com/alert-cursor-476219-s1");
+        return env("ISSUER", "http://localhost:8088/realms/rag-system");
+    }
+
+    public static String clientId() {
+        return env("CLIENT_ID", "publication-hybrid-rag");
+    }
+
+    public static String audience() {
+        return env("AUDIENCE", "account");
+    }
+
+    public static String jwksUri() {
+        return env("JWKS_URI", "http://keycloak:8080/realms/rag-system/protocol/openid-connect/certs");
     }
 
     public static boolean openaiEnabled() {

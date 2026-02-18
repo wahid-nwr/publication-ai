@@ -17,6 +17,7 @@ import io.wahid.publication.ai.service.*;
 import io.wahid.publication.ai.service.impl.DefaultQueryService;
 import io.wahid.publication.ai.service.impl.HybridNumericQueryEngine;
 import io.wahid.publication.ai.vectorstore.*;
+import org.slf4j.Logger;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -51,6 +52,7 @@ public class ApplicationContext {
                 AppConfig.ollamaBaseUrl(),
                 AppConfig.llmModel()   // 🔥 GENERATION MODEL
         );*/
+        System.out.println("Neo4j base url->" + AppConfig.neo4jBaseUrl());
         if (AppConfig.openaiEnabled()) {
             this.embeddingClient = new OpenAIEmbeddingClient(AppConfig.openAIKey());
         } else {

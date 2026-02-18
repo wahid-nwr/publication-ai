@@ -17,6 +17,8 @@ public class Neo4jGraphClient implements AutoCloseable {
                 uri,
                 AuthTokens.basic(user, password)
         );
+        driver.verifyConnectivity();
+        System.out.println("Connection established.");
     }
 
     public Driver getDriver() {

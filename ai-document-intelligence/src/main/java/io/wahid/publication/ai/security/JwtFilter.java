@@ -1,17 +1,23 @@
 package io.wahid.publication.ai.security;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.proc.BadJWTException;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +29,12 @@ public class JwtFilter implements Filter {
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
             "http://localhost:8081",
             "http://127.0.0.1:8081",
-            "http://34.59.213.229:8081",
+            "https://34.59.213.229",
             "https://publication-ai-652346505611.us-central1.run.app"
     );
-
-    public JwtFilter(JwtConfig cfg, JWKSource<SecurityContext> jwkSource) {
+    private final JwtConfig cfg;
+    private final DefaultJWTProcessor<SecurityContext> jwtProcessor;
+    /*public JwtFilter(JwtConfig cfg, JWKSource<SecurityContext> jwkSource) {
 
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
 
@@ -39,6 +46,57 @@ public class JwtFilter implements Filter {
         // We will validate claims manually
         jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
         });
+    }*/
+    public JwtFilter(JwtConfig cfg) throws Exception {
+        this.cfg = cfg;
+
+        DefaultJWTProcessor<SecurityContext> processor = new DefaultJWTProcessor<>();
+
+        // 1️⃣ Load Keycloak JWKS endpoint
+        JWKSource<SecurityContext> jwkSource =
+                JWKSourceBuilder.create(URI.create(cfg.getJwksUri()).toURL())
+                        .cache(
+                                5 * 60_000L,    // TTL: 5 minutes
+                                30_000L         // Refresh ahead: 30 seconds
+                        )
+                        .build();
+
+        // 2️⃣ Configure signature verification (RS256)
+        JWSKeySelector<SecurityContext> keySelector =
+                new JWSVerificationKeySelector<>(
+                        cfg.getJwsAlgorithm(),
+                        jwkSource
+                );
+
+        processor.setJWSKeySelector(keySelector);
+
+        // 3️⃣ Claims validation
+        processor.setJWTClaimsSetVerifier((claims, context) -> {
+
+            // Validate issuer
+            if (!cfg.getIssuer().equals(claims.getIssuer())) {
+                throw new BadJWTException("Invalid issuer");
+            }
+
+            // Validate expiration
+            Date exp = claims.getExpirationTime();
+            if (exp == null || new Date().after(exp)) {
+                throw new BadJWTException("Token expired");
+            }
+
+            // Validate audience
+            if (cfg.getAudience() != null &&
+                    !claims.getAudience().contains(cfg.getAudience())) {
+                throw new BadJWTException("Invalid audience");
+            }
+        });
+
+        this.jwtProcessor = processor;
+    }
+
+    public JWTClaimsSet validate(String token) throws Exception {
+        LOGGER.info("token->" + token);
+        return jwtProcessor.process(token, null);
     }
 
     public static void sendCorsHeaders(HttpServletRequest req, HttpServletResponse resp) {
@@ -89,10 +147,23 @@ public class JwtFilter implements Filter {
             return;
         }
 
-        if (TokenVerifier.verify(authHeader) == null) {
+        /*if (TokenVerifier.verify(authHeader) == null) {
+            unauthorized(request, response, "Invalid token");
+            return;
+        }*/
+        try {
+            String token = authHeader.substring(7); // remove "Bearer "
+            JWTClaimsSet claims = validate(token);
+
+            // optionally store claims for controllers
+            request.setAttribute("jwtClaims", claims);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "JWT validation failed", e);
             unauthorized(request, response, "Invalid token");
             return;
         }
+
         chain.doFilter(req, res);
     }
 

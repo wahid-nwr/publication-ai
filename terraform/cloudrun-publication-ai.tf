@@ -25,7 +25,7 @@ resource "google_cloud_run_v2_service" "publication-ai" {
       }
     }
     containers {
-      image = "us-central1-docker.pkg.dev/alert-cursor-476219-s1/publication-repo/publication-ai@sha256:01b795f1e0726b9a5985b0b6d8a0eefda68d7b8fb44638ce0512e96c1f53fce0"
+      image = "us-central1-docker.pkg.dev/alert-cursor-476219-s1/publication-repo/publication-ai@sha256:5bfc0c791a69df812fe8fafd562484ba5cd50e61923fd2b07db1ee695b69e7cb"
       volume_mounts {
         name       = "firebase-secret"
         mount_path = "/run/secrets"
@@ -60,6 +60,51 @@ resource "google_cloud_run_v2_service" "publication-ai" {
         value_source {
           secret_key_ref {
             secret  = "R2_SECRET_KEY" # existing secret name
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "NEO4J_BASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = "NEO4J_BASE_URL" # existing secret name
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "NEO4J_PASS"
+        value_source {
+          secret_key_ref {
+            secret  = "NEO4J_PASS" # existing secret name
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "JWKS_URI"
+        value_source {
+          secret_key_ref {
+            secret  = "JWKS_URI" # existing secret name
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "ISSUER"
+        value_source {
+          secret_key_ref {
+            secret  = "ISSUER" # existing secret name
+            version = "latest"
+          }
+        }
+      }
+      env {
+        name = "TRUSTSTORE_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = "TRUSTSTORE_PASSWORD" # existing secret name
             version = "latest"
           }
         }
