@@ -13,6 +13,7 @@ services:
       R2_ACCESS_KEY: ${R2_ACCESS_KEY}
       R2_SECRET_KEY: ${R2_SECRET_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NEO4J_BASE_URL: ${NEO4J_BASE_URL}
     secrets:
       - FIREBASE_SERVICE_ACCOUNT_JSON
     depends_on:
@@ -52,22 +53,34 @@ services:
       retries: 5
       start_period: 10s
 
-  neo4j:
-    image: neo4j:5.12  # latest 5.x stable
-    container_name: neo4j
-    ports:
-      - "7474:7474"   # HTTP browser / REST API
-      - "7687:7687"   # Bolt (used by your Java driver)
+#  neo4j:
+#    image: neo4j:5.12  # latest 5.x stable
+#    container_name: neo4j
+#    ports:
+#      - "7474:7474"   # HTTP browser / REST API
+#      - "7687:7687"   # Bolt (used by your Java driver)
+#    environment:
+#      NEO4J_AUTH: neo4j/mysecretpassword   # username/password
+#      NEO4J_dbms_default__listen__address: 0.0.0.0
+#      NEO4J_dbms_security_auth__enabled: "true"
+#    volumes:
+#      - neo4j_data:/data
+#      - neo4j_logs:/logs
+#      - neo4j_import:/import
+#      - neo4j_plugins:/plugins
+#    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev
     environment:
-      NEO4J_AUTH: neo4j/mysecretpassword   # username/password
-      NEO4J_dbms_default__listen__address: 0.0.0.0
-      NEO4J_dbms_security_auth__enabled: "true"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/import
-      - neo4j_plugins:/plugins
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8088:8080"
     restart: unless-stopped
+
 volumes:
   ollama:
   db_data:

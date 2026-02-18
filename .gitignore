@@ -2,6 +2,7 @@ target/
 data/
 .env
 .terraform/
+ai-document-intelligence/truststore/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

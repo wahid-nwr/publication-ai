@@ -4,11 +4,20 @@ WORKDIR /app
 
 COPY target/ai-document-intelligence-1.0-SNAPSHOT.jar app.jar
 COPY target/lib ./lib
+COPY truststore/keycloak.crt /tmp/keycloak.crt
 
-# OpenShift runs with random UID
+# Import into JVM default truststore
+RUN keytool -import \
+    -alias keycloak-jwk \
+    -file /tmp/keycloak.crt \
+    -keystore $JAVA_HOME/lib/security/cacerts \
+    -storepass $STORE_PASS \
+    -noprompt
+
+COPY scripts/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 RUN chmod 644 app.jar
 
 EXPOSE 8080
 
-CMD ["java", "-Xms64m", "-Xmx192m", "-XX:MaxMetaspaceSize=96m", "-XX:MaxDirectMemorySize=64m", "-XX:+UseContainerSupport", \
-"-XX:+UseG1GC", "-XX:MaxGCPauseMillis=200", "-XX:+ExitOnOutOfMemoryError", "-cp", "app.jar:lib/*", "io.wahid.publication.ai.ServerLauncher"]
+ENTRYPOINT ["/app/entrypoint.sh"]
