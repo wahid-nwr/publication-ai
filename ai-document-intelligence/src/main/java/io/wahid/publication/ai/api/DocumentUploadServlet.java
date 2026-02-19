@@ -4,8 +4,9 @@ import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.exception.FileProcessingException;
 import io.wahid.publication.ai.service.AggregationOrchestrator;
-import io.wahid.publication.ai.service.DocumentServiceExecutor;
+import io.wahid.publication.ai.service.CSVParser;
 import io.wahid.publication.ai.service.IngestionService;
+import io.wahid.publication.ai.service.UploadCheckTaskScheduler;
 import io.wahid.publication.ai.util.JobRegistry;
 import io.wahid.publication.ai.util.JobStatus;
 import jakarta.servlet.ServletException;
@@ -37,11 +38,12 @@ public class DocumentUploadServlet extends HttpServlet {
     private static final String BUCKET = "documents";
 
     private final R2Client r2Client;
-    private final AggregationOrchestrator aggregationOrchestrator;
+    private final UploadCheckTaskScheduler checkUploadScheduler;
 
     public DocumentUploadServlet(IngestionService ingestionService, R2Client r2Client) {
         this.r2Client = r2Client;
-        this.aggregationOrchestrator = new AggregationOrchestrator(ingestionService);
+        AggregationOrchestrator aggregationOrchestrator = new AggregationOrchestrator(ingestionService);
+        checkUploadScheduler = new UploadCheckTaskScheduler(aggregationOrchestrator);
     }
 
     @Override
@@ -67,18 +69,22 @@ public class DocumentUploadServlet extends HttpServlet {
             Instant start = Instant.now();
             JobRegistry.update(jobId, JobStatus.UPLOADING);
             Files.copy(in, targetFile);
-            if (AppConfig.openaiEnabled()) {
-                r2Client.upload(
-                        BUCKET,
-                        objectKey,
-                        contentType,
-                        targetFile
-                );
+            CSVParser parser = new CSVParser();
+            boolean isValid = parser.isParsable(Files.newInputStream(targetFile), objectKey);
+            if (isValid) {
+                if (AppConfig.openaiEnabled()) {
+                    r2Client.upload(
+                            BUCKET,
+                            objectKey,
+                            contentType,
+                            targetFile
+                    );
+                }
+                checkUploadScheduler.startPeriodicTask(jobId, "csv", BUCKET, objectKey);
+                Instant end = Instant.now();
+                LOGGER.log(Level.INFO, "Total time taken -> {0}  seconds", Duration.between(start, end).toSeconds());
+                JobRegistry.update(jobId, JobStatus.UPLOADED);
             }
-            Instant end = Instant.now();
-            LOGGER.log(Level.INFO, "Total time taken -> {0}  seconds", Duration.between(start, end).toSeconds());
-            JobRegistry.update(jobId, JobStatus.UPLOADED);
-            aggregationOrchestrator.onUploadCompleted(jobId, "csv", BUCKET, objectKey);
         } catch (IOException e) {
             JobRegistry.update(jobId, JobStatus.FAILED);
             throw new FileProcessingException("Error in CSV job " + jobId, e);

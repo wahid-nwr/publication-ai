@@ -2,10 +2,13 @@ package io.wahid.publication.ai.service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import io.wahid.publication.ai.dto.WeatherInfo;
+import io.wahid.publication.ai.exception.FileProcessingException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CSVParser {
@@ -18,8 +21,36 @@ public class CSVParser {
     public CSVParser(WeatherAggregator aggregator) {
         this.aggregator = aggregator;
     }
+    public CSVParser() {
+        this.aggregator = null;
+    }
+
+    public boolean isParsable(InputStream in, String objectKey) {
+        InputStreamReader isr = new InputStreamReader(in, StandardCharsets.ISO_8859_1);
+        String firstLine;
+
+        try (BufferedReader reader = new BufferedReader(isr)) {
+            LOGGER.info("downloaded file from r2");
+            if (Objects.isNull(reader.readLine())) {
+                throw new IOException(String.format("File does not contain header %s", objectKey));
+            }
+            firstLine = reader.readLine();
+            StringReader stringReader = new StringReader(firstLine);
+
+            // 2. Wrap the StringReader in a BufferedReader
+            BufferedReader bufferedReader = new BufferedReader(stringReader);
+            CsvToBeanBuilder<WeatherInfo> csvToBean = getCsvToBeanBuilder(WeatherInfo.class, bufferedReader);
+            List<WeatherInfo> list = csvToBean.build().stream().toList();
+            return !list.isEmpty();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void parse(InputStream in, String objectKey) throws Exception {
+        if (aggregator == null) {
+            throw new FileProcessingException(String.format("File does not contain header %s", objectKey));
+        }
         InputStreamReader isr = new InputStreamReader(in, StandardCharsets.ISO_8859_1);
         int total = 0;
 
@@ -36,18 +67,7 @@ public class CSVParser {
                 }
                 total += chunk.size();
             }
-            System.out.println("total from csv " + objectKey + ":" + total);
-            /*new CsvToBeanBuilder<WeatherInfo>(reader)
-                    .withType(WeatherInfo.class)
-                    .withSeparator(COLUMN_SEPARATOR)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withVerifyReader(true)
-                    .withThrowExceptions(true)
-                    .withSkipLines(1)
-                    .build()
-                    .stream()
-                    .forEach(aggregator::accept);*/
-
+            LOGGER.log(Level.INFO, "total from csv {0}:{1}", new Object[]{objectKey, total});
             aggregator.finish();
         }
     }

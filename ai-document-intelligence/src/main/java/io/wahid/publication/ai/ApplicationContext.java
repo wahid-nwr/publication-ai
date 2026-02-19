@@ -31,15 +31,18 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.MonthDay;
 import java.time.Year;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ApplicationContext {
-
+    private static final Map<String, Integer> METRICS = new HashMap<>();
     private final QdrantAdminClient admin;
     private final LLMClient llmClient;
     private final EmbeddingClient embeddingClient;
     private final R2Client r2Client;
     private final Neo4jGraphClient neo4jGraphClient;
+
 
     public ApplicationContext() {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
@@ -62,6 +65,14 @@ public class ApplicationContext {
             );
         }
         this.r2Client = new R2Client();
+    }
+
+    public static int getMetricValue(String metric) {
+        return METRICS.getOrDefault(metric, 0);
+    }
+
+    public static void setMetricValue(String metric, int value) {
+        METRICS.merge(metric, value, Integer::sum);
     }
 
     public IngestionService ingestionService() throws IOException, InterruptedException {

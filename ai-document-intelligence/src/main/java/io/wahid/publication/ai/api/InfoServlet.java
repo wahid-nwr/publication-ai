@@ -3,6 +3,7 @@ package io.wahid.publication.ai.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.embedding.EmbeddingClient;
 import io.wahid.publication.ai.infra.ollama.OllamaClient;
@@ -41,8 +42,10 @@ public class InfoServlet extends HttpServlet {
         // Vector store
         ObjectNode vectorStore = root.putObject("vectorStore");
         vectorStore.put("type", "qdrant");
+        vectorStore.put("nodes", ApplicationContext.getMetricValue("node"));
         vectorStore.put("collection", AppConfig.collectionName());
         vectorStore.put("vectorSize", embeddingClient.dimension());
+        vectorStore.put("vectors", ApplicationContext.getMetricValue("vector"));
 
         // Capabilities
         ArrayNode capabilities = root.putArray("capabilities");
@@ -53,6 +56,7 @@ public class InfoServlet extends HttpServlet {
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
+
         resp.getWriter().write(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root));
     }
 }
