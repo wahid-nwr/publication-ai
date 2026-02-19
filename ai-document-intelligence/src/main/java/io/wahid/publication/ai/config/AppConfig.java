@@ -51,7 +51,7 @@ public final class AppConfig {
     }
 
     public static String neo4jBaseUrl() {
-        return env("NEO4J_BASE_URL", "bolt://34.59.213.229:7687");
+        return env("NEO4J_BASE_URL", "bolt://neo4j:7687");
     }
 
     public static String neo4jUser() {
@@ -59,7 +59,7 @@ public final class AppConfig {
     }
 
     public static String neo4jPass() {
-        return env("NEO4J_PASS", "1o6RU1J#RmTWJAK1laAjx");
+        return env("NEO4J_PASS", "mysecretpassword");
     }
 
     public static String embeddingModel() {
