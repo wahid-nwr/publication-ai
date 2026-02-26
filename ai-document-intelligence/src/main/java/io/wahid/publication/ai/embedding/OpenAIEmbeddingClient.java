@@ -2,6 +2,7 @@ package io.wahid.publication.ai.embedding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.wahid.publication.ai.ApplicationContext;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -51,6 +52,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
             return List.of();
         }
 
+        ApplicationContext.setMetricValue("node", texts.size());
         try {
             Map<String, Object> payload = Map.of(
                     "model", MODEL,
@@ -97,6 +99,7 @@ public class OpenAIEmbeddingClient implements EmbeddingClient {
                 for (int i = 0; i < emb.size(); i++) {
                     vec[i] = emb.get(i).floatValue();
                 }
+                ApplicationContext.setMetricValue("vector", vec.length);
                 vectors.add(vec);
             }
 

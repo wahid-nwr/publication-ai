@@ -68,10 +68,12 @@ public class ApplicationContext {
     }
 
     public static int getMetricValue(String metric) {
+        System.out.println("getting value for -> " + metric);
         return METRICS.getOrDefault(metric, 0);
     }
 
     public static void setMetricValue(String metric, int value) {
+        System.out.println("setting value for -> " + metric + "," + value);
         METRICS.merge(metric, value, Integer::sum);
     }
 

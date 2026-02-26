@@ -25,7 +25,7 @@ resource "google_cloud_run_v2_service" "publication-ai" {
       }
     }
     containers {
-      image = "us-central1-docker.pkg.dev/alert-cursor-476219-s1/publication-repo/publication-ai@sha256:47f201c9b06d132d7d4a7bf5de7ec5b14f24f5ee7596062cb03f2f24e5d3e564"
+      image = "us-central1-docker.pkg.dev/alert-cursor-476219-s1/publication-repo/publication-ai@sha256:d759c024a22fe8ce12125207a38bd28fee9fe14da5f71bdb16b19cbf27cc11be"
       volume_mounts {
         name       = "firebase-secret"
         mount_path = "/run/secrets"

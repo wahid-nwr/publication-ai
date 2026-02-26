@@ -1,5 +1,6 @@
 package io.wahid.publication.ai.api;
 
+import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.R2Client;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.exception.FileProcessingException;
@@ -80,6 +81,7 @@ public class DocumentUploadServlet extends HttpServlet {
                             targetFile
                     );
                 }
+                ApplicationContext.setMetricValue("uploads", 1);
                 checkUploadScheduler.startPeriodicTask(jobId, "csv", BUCKET, objectKey);
                 Instant end = Instant.now();
                 LOGGER.log(Level.INFO, "Total time taken -> {0}  seconds", Duration.between(start, end).toSeconds());

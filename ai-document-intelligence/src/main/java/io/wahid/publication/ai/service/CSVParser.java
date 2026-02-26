@@ -1,6 +1,7 @@
 package io.wahid.publication.ai.service;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import io.wahid.publication.ai.ApplicationContext;
 import io.wahid.publication.ai.dto.WeatherInfo;
 import io.wahid.publication.ai.exception.FileProcessingException;
 
@@ -68,6 +69,7 @@ public class CSVParser {
                 total += chunk.size();
             }
             LOGGER.log(Level.INFO, "total from csv {0}:{1}", new Object[]{objectKey, total});
+            ApplicationContext.setMetricValue("datasets", total);
             aggregator.finish();
         }
     }
