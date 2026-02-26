@@ -64,7 +64,6 @@ public final class BatchEmbeddingVectorConsumer
         if (buffer.isEmpty()) return;
 
         List<TextChunk> toProcess = new ArrayList<>(buffer);
-        ApplicationContext.setMetricValue("node", toProcess.size());
         buffer.clear();
 
         CompletableFuture<Void> future =
@@ -76,7 +75,6 @@ public final class BatchEmbeddingVectorConsumer
                             for (int i = 0; i < toProcess.size(); i++) {
                                 float[] vector = embeddings.get(i);
                                 if (vector.length == 0) continue;
-                                ApplicationContext.setMetricValue("vector", vector.length);
 
                                 try {
                                     LOGGER.log(Level.INFO, "writing vectors -> {0}", toProcess.get(i));

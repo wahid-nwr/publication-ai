@@ -29,7 +29,7 @@ public class JwtFilter implements Filter {
     private static final Set<String> ALLOWED_ORIGINS = Set.of(
             "http://localhost:8081",
             "http://127.0.0.1:8081",
-            "https://34.59.213.229",
+            "https://ragops.online",
             "https://publication-ai-652346505611.us-central1.run.app"
     );
     private final JwtConfig cfg;
@@ -95,7 +95,9 @@ public class JwtFilter implements Filter {
     }
 
     public JWTClaimsSet validate(String token) throws Exception {
-        LOGGER.info("token->" + token);
+        LOGGER.log(Level.INFO, "token-> {0}", token);
+        LOGGER.log(Level.INFO, "config-> uri={0}, issuer={1}, audience={2}",
+                new Object[]{this.cfg.getJwksUri(), this.cfg.getIssuer(), this.cfg.getAudience()});
         return jwtProcessor.process(token, null);
     }
 

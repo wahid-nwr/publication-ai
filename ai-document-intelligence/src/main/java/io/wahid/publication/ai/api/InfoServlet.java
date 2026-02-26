@@ -42,10 +42,14 @@ public class InfoServlet extends HttpServlet {
         // Vector store
         ObjectNode vectorStore = root.putObject("vectorStore");
         vectorStore.put("type", "qdrant");
-        vectorStore.put("nodes", ApplicationContext.getMetricValue("node"));
         vectorStore.put("collection", AppConfig.collectionName());
         vectorStore.put("vectorSize", embeddingClient.dimension());
-        vectorStore.put("vectors", ApplicationContext.getMetricValue("vector"));
+
+        ObjectNode summary = root.putObject("summary");
+        summary.put("uploads", ApplicationContext.getMetricValue("uploads"));
+        summary.put("datasets", ApplicationContext.getMetricValue("datasets"));
+        summary.put("nodes", ApplicationContext.getMetricValue("node"));
+        summary.put("vectors", ApplicationContext.getMetricValue("vector"));
 
         // Capabilities
         ArrayNode capabilities = root.putArray("capabilities");
