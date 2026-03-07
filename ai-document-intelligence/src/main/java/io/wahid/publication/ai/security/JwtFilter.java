@@ -2,7 +2,6 @@ package io.wahid.publication.ai.security;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -15,11 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
-import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,19 +29,7 @@ public class JwtFilter implements Filter {
     );
     private final JwtConfig cfg;
     private final DefaultJWTProcessor<SecurityContext> jwtProcessor;
-    /*public JwtFilter(JwtConfig cfg, JWKSource<SecurityContext> jwkSource) {
 
-        DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
-
-        JWSKeySelector<SecurityContext> keySelector =
-                new JWSVerificationKeySelector<>(cfg.getJwsAlgorithm(), jwkSource);
-
-        jwtProcessor.setJWSKeySelector(keySelector);
-
-        // We will validate claims manually
-        jwtProcessor.setJWTClaimsSetVerifier((claims, context) -> {
-        });
-    }*/
     public JwtFilter(JwtConfig cfg) throws Exception {
         this.cfg = cfg;
 
@@ -94,13 +77,6 @@ public class JwtFilter implements Filter {
         this.jwtProcessor = processor;
     }
 
-    public JWTClaimsSet validate(String token) throws Exception {
-        LOGGER.log(Level.INFO, "token-> {0}", token);
-        LOGGER.log(Level.INFO, "config-> uri={0}, issuer={1}, audience={2}",
-                new Object[]{this.cfg.getJwksUri(), this.cfg.getIssuer(), this.cfg.getAudience()});
-        return jwtProcessor.process(token, null);
-    }
-
     public static void sendCorsHeaders(HttpServletRequest req, HttpServletResponse resp) {
         String origin = req.getHeader("Origin");
         if (origin != null) {
@@ -121,6 +97,13 @@ public class JwtFilter implements Filter {
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Vary", "Origin"); // avoid caching incorrect CORS headers
+    }
+
+    public JWTClaimsSet validate(String token) throws Exception {
+        LOGGER.log(Level.INFO, "token-> {0}", token);
+        LOGGER.log(Level.INFO, "config-> uri={0}, issuer={1}, audience={2}",
+                new Object[]{this.cfg.getJwksUri(), this.cfg.getIssuer(), this.cfg.getAudience()});
+        return jwtProcessor.process(token, null);
     }
 
     @Override
@@ -149,10 +132,6 @@ public class JwtFilter implements Filter {
             return;
         }
 
-        /*if (TokenVerifier.verify(authHeader) == null) {
-            unauthorized(request, response, "Invalid token");
-            return;
-        }*/
         try {
             String token = authHeader.substring(7); // remove "Bearer "
             JWTClaimsSet claims = validate(token);
@@ -183,36 +162,5 @@ public class JwtFilter implements Filter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.getWriter().write("{\"error\":\"" + msg + "\"}");
-    }
-
-    private String extractTenant(JWTClaimsSet claims, Map<String, Object> firebase) throws ParseException {
-        // Custom claim first
-        Object t = claims.getClaim("tenant");
-        if (t != null) return t.toString();
-
-        // Optional: custom added inside firebase
-        if (firebase != null) {
-            Object t2 = firebase.get("tenant");
-            if (t2 != null) return t2.toString();
-        }
-
-        // Fallback: email-domain mapping
-        String email = claims.getStringClaim("email");
-        if (email != null && email.contains("@")) {
-            String domain = email.substring(email.indexOf('@') + 1);
-            return domain.replace(".", "-");  // e.g. tenant from domain
-        }
-
-        return "default";
-    }
-
-    private List<String> extractRoles(JWTClaimsSet claims) {
-        Object rolesObj = claims.getClaim("roles");
-
-        if (rolesObj instanceof List<?> list) {
-            return list.stream().map(Object::toString).toList();
-        }
-
-        return List.of("USER");
     }
 }
