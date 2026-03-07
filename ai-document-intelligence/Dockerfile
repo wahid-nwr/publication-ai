@@ -11,7 +11,7 @@ RUN keytool -import \
     -alias keycloak-jwk \
     -file /tmp/keycloak.crt \
     -keystore $JAVA_HOME/lib/security/cacerts \
-    -storepass $STORE_PASS \
+    -storepass changeit \
     -noprompt
 
 COPY scripts/entrypoint.sh /app/entrypoint.sh

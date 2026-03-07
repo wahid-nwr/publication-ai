@@ -1,12 +1,8 @@
 package io.wahid.publication.ai;
 
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
-import com.nimbusds.jose.proc.SecurityContext;
 import io.wahid.publication.ai.api.*;
 import io.wahid.publication.ai.config.AppConfig;
 import io.wahid.publication.ai.exception.GlobalExceptionFilter;
-import io.wahid.publication.ai.security.FirebaseInit;
 import io.wahid.publication.ai.security.JwtConfig;
 import io.wahid.publication.ai.security.JwtFilter;
 import io.wahid.publication.ai.service.HealthService;
@@ -18,7 +14,6 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,14 +22,10 @@ import java.util.logging.Logger;
 
 public class ServerLauncher {
     private static final Logger LOGGER = Logger.getLogger(ServerLauncher.class.getName());
-    private static final String JWKS_URI = "https://www.googleapis.com/oauth2/v3/certs";
 
     public static void main(String[] args) throws Exception {
         LOGGER.info("Initiating Serverlauncher");
-        // TODO Remove this and add hostname to ssl key
         System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
-
-        FirebaseInit.initialize();
 
         ApplicationContext appContext = new ApplicationContext();
 
