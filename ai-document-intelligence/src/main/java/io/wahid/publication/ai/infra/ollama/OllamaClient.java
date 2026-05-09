@@ -1,6 +1,0 @@
-package io.wahid.publication.ai.infra.ollama;
-
-public interface OllamaClient extends LLMClient {
-    boolean isUp();
-    boolean hasModel(String modelName);
-}

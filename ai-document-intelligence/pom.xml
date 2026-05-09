@@ -161,7 +161,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.wahid.publication.ai.ServerLauncher</mainClass>
+                            <mainClass>io.wahid.knowledge.ServerLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
