@@ -127,7 +127,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>io.wahid.knowledge.ServerLauncher</mainClass>
+                            <mainClass>io.wahid.knowledge.application.ServerLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

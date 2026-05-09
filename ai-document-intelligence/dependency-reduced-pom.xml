@@ -30,7 +30,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>io.wahid.knowledge.ServerLauncher</mainClass>
+                  <mainClass>io.wahid.knowledge.application.ServerLauncher</mainClass>
                 </transformer>
               </transformers>
             </configuration>
