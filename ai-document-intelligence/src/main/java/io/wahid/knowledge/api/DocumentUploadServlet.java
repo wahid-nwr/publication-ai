@@ -1,13 +1,13 @@
 package io.wahid.knowledge.api;
 
-import io.wahid.knowledge.ApplicationContext;
-import io.wahid.knowledge.R2Client;
-import io.wahid.knowledge.config.AppConfig;
-import io.wahid.knowledge.exception.FileProcessingException;
-import io.wahid.knowledge.service.AggregationOrchestrator;
-import io.wahid.knowledge.service.CSVParser;
-import io.wahid.knowledge.service.IngestionService;
-import io.wahid.knowledge.service.UploadCheckTaskScheduler;
+import io.wahid.knowledge.application.ApplicationContext;
+import io.wahid.knowledge.infrastructure.storage.R2Client;
+import io.wahid.knowledge.infrastructure.config.AppConfig;
+import io.wahid.knowledge.application.exception.FileProcessingException;
+import io.wahid.knowledge.application.insights.impl.AggregationOrchestrator;
+import io.wahid.knowledge.application.ingestion.processing.CSVParser;
+import io.wahid.knowledge.application.ingestion.processing.IngestionService;
+import io.wahid.knowledge.application.insights.impl.UploadCheckTaskScheduler;
 import io.wahid.knowledge.util.JobRegistry;
 import io.wahid.knowledge.util.JobStatus;
 import jakarta.servlet.ServletException;

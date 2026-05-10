@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Created-By: Maven JAR Plugin 3.3.0
 Build-Jdk-Spec: 21
-Main-Class: io.wahid.knowledge.ServerLauncher
+Main-Class: io.wahid.knowledge.application.ServerLauncher
 
