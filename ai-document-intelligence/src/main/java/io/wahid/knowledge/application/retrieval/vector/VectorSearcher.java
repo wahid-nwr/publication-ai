@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.retrieval.vector;
 
-import io.wahid.knowledge.application.query.dto.DocumentPayload;
+import io.wahid.knowledge.infrastructure.vectorstore.dto.DocumentPayload;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package io.wahid.knowledge.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.knowledge.application.query.dto.QueryRequest;
-import io.wahid.knowledge.application.query.dto.QueryResponse;
+import io.wahid.knowledge.domain.query.QueryRequest;
+import io.wahid.knowledge.domain.query.QueryResponse;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
 import jakarta.servlet.http.*;
 

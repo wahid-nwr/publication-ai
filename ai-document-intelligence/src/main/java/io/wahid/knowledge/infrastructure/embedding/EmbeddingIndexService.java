@@ -8,6 +8,9 @@ import io.wahid.knowledge.repository.StationSummaryRepository;
 
 import java.util.Map;
 
+/***
+ * TODO this class needs to remove station attachment to the logic
+ */
 public class EmbeddingIndexService {
 
     private final EmbeddingClient embeddingClient;

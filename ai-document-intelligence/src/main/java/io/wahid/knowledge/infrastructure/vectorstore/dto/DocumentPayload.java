@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.query.dto;
+package io.wahid.knowledge.infrastructure.vectorstore.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

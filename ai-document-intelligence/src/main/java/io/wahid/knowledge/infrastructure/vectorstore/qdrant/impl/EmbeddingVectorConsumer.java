@@ -1,4 +1,4 @@
-package io.wahid.knowledge.infrastructure.vectorstore.impl;
+package io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl;
 
 import io.wahid.knowledge.application.embedding.EmbeddingClient;
 import io.wahid.knowledge.application.knowledge.extraction.pipeline.AbstractPipelineStage;

@@ -3,7 +3,7 @@ package io.wahid.knowledge.infrastructure.vectorstore.qdrant;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.knowledge.application.query.dto.DocumentPayload;
+import io.wahid.knowledge.infrastructure.vectorstore.dto.DocumentPayload;
 import io.wahid.knowledge.application.retrieval.vector.VectorSearcher;
 
 import java.net.URI;

@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.query.dto;
+package io.wahid.knowledge.domain.query;
 
 import java.util.List;
 

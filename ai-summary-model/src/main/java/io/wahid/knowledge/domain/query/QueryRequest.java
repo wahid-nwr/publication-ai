@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.query.dto;
+package io.wahid.knowledge.domain.query;
 
 public class QueryRequest {
     private String question;
