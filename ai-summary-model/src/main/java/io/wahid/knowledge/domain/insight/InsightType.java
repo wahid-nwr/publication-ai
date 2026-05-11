@@ -1,4 +1,11 @@
 package io.wahid.knowledge.domain.insight;
 
-public class InsightType {
+public enum InsightType {
+    RELATIONSHIP,
+    TREND,
+    ANOMALY,
+    DEPENDENCY,
+    RECOMMENDATION,
+    SUMMARY,
+    CORRELATION
 }
