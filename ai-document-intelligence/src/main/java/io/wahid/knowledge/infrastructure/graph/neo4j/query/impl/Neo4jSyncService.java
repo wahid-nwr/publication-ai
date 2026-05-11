@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.wahid.knowledge.application.config.NumericMetric.*;
+import static io.wahid.knowledge.domain.query.NumericMetric.*;
 
 public class Neo4jSyncService {
 

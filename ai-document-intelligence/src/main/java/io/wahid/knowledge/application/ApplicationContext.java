@@ -25,7 +25,7 @@ import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
 import io.wahid.knowledge.application.query.QuestionRouter;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.DefaultQueryService;
 import io.wahid.knowledge.application.retrieval.impl.HybridNumericQueryEngine;
-import io.wahid.knowledge.infrastructure.vectorstore.impl.BatchEmbeddingVectorConsumer;
+import io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl.BatchEmbeddingVectorConsumer;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantAdminClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantVectorSearcher;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantVectorWriter;

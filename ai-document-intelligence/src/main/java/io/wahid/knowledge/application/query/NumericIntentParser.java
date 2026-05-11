@@ -2,9 +2,9 @@ package io.wahid.knowledge.application.query;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.knowledge.application.config.NumericMetric;
-import io.wahid.knowledge.application.config.NumericQueryType;
-import io.wahid.knowledge.application.query.dto.NumericQuery;
+import io.wahid.knowledge.domain.query.NumericMetric;
+import io.wahid.knowledge.domain.query.NumericQueryType;
+import io.wahid.knowledge.domain.query.NumericQuery;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 
 import java.util.Optional;
