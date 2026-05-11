@@ -14,4 +14,4 @@ exec java \
   -XX:MaxGCPauseMillis=200 \
   -XX:+ExitOnOutOfMemoryError \
   -cp "/app/app.jar:/app/lib/*" \
-  io.wahid.publication.ai.ServerLauncher
+  io.wahid.knowledge.application.ServerLauncher
