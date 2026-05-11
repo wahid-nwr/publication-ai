@@ -1,7 +1,7 @@
 package io.wahid.knowledge.infrastructure.llms;
 
 import io.wahid.knowledge.application.query.dto.GraphResult;
-import io.wahid.knowledge.application.query.dto.NumericQuery;
+import io.wahid.knowledge.domain.query.NumericQuery;
 import io.wahid.knowledge.application.query.dto.NumericResult;
 import io.wahid.knowledge.application.query.dto.TrendResult;
 import io.wahid.knowledge.application.ingestion.processing.dto.TrendSummary;

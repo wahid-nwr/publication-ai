@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.ingestion.processing.dto;
 
-import io.wahid.knowledge.application.config.NumericMetric;
+import io.wahid.knowledge.domain.query.NumericMetric;
 import io.wahid.knowledge.model.StationYearMetric;
 import io.wahid.knowledge.model.YearMetricId;
 

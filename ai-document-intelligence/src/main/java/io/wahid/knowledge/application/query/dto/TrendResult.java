@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.query.dto;
 
-import io.wahid.knowledge.application.config.NumericMetric;
-import io.wahid.knowledge.application.config.TrendDirection;
+import io.wahid.knowledge.domain.query.NumericMetric;
+import io.wahid.knowledge.domain.query.TrendDirection;
 import io.wahid.knowledge.application.ingestion.processing.dto.YearValue;
 
 import java.util.List;
