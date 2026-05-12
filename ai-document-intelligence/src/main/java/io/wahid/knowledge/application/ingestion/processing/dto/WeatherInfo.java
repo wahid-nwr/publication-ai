@@ -1,7 +1,6 @@
 package io.wahid.knowledge.application.ingestion.processing.dto;
 
 import com.opencsv.bean.CsvBindByPosition;
-import io.wahid.knowledge.dto.WeatherRow;
 
 public class WeatherInfo {
     @CsvBindByPosition(position = 0, required = true)

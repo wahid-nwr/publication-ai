@@ -1,6 +1,6 @@
-package io.wahid.knowledge.util;
+package io.wahid.knowledge.application.ingestion.processing.util;
 
-import io.wahid.knowledge.dto.WeatherRow;
+import io.wahid.knowledge.application.ingestion.processing.dto.WeatherRow;
 
 final class StationAccumulator {
 
