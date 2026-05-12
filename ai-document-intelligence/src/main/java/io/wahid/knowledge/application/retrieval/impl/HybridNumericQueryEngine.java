@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.retrieval.impl;
 
 import io.wahid.knowledge.application.query.dto.GraphResult;
-import io.wahid.knowledge.domain.query.NumericQuery;
+import io.wahid.knowledge.application.query.NumericQuery;
 import io.wahid.knowledge.application.query.dto.NumericResult;
 import io.wahid.knowledge.application.query.dto.TrendResult;
 import io.wahid.knowledge.application.ingestion.processing.dto.YearValue;
@@ -16,7 +16,7 @@ import io.wahid.knowledge.util.JpaUtil;
 
 import java.util.List;
 
-import static io.wahid.knowledge.domain.query.NumericMetric.*;
+import static io.wahid.knowledge.application.query.NumericMetric.*;
 
 public class HybridNumericQueryEngine implements NumericQueryEngine {
 

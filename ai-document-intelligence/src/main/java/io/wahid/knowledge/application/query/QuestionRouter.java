@@ -1,8 +1,6 @@
 package io.wahid.knowledge.application.query;
 
 import io.wahid.knowledge.application.retrieval.NumericQueryEngine;
-import io.wahid.knowledge.domain.query.NumericMetric;
-import io.wahid.knowledge.domain.query.NumericQuery;
 import io.wahid.knowledge.application.query.dto.NumericResult;
 import io.wahid.knowledge.application.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
@@ -17,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static io.wahid.knowledge.domain.query.NumericQueryType.*;
+import static io.wahid.knowledge.application.query.NumericQueryType.*;
 
 public class QuestionRouter {
 

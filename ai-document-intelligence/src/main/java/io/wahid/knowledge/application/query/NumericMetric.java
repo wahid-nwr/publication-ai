@@ -1,4 +1,4 @@
-package io.wahid.knowledge.domain.query;
+package io.wahid.knowledge.application.query;
 
 import java.util.Arrays;
 import java.util.Map;
