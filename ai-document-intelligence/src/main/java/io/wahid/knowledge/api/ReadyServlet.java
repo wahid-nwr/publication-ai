@@ -3,7 +3,7 @@ package io.wahid.knowledge.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantClient;
 import jakarta.servlet.http.HttpServlet;

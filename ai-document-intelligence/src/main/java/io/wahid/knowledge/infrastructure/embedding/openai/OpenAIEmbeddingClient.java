@@ -3,7 +3,7 @@ package io.wahid.knowledge.infrastructure.embedding.openai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.wahid.knowledge.application.ApplicationContext;
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 
 import java.net.URI;
 import java.net.http.HttpClient;
