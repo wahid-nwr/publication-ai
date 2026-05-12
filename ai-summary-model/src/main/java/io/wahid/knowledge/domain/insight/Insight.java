@@ -1,11 +1,10 @@
 package io.wahid.knowledge.domain.insight;
 
-import java.time.Instant;
+import io.wahid.knowledge.domain.shared.BaseEntity;
+
 import java.util.List;
 
-public class Insight {
-
-    private String id;
+public class Insight extends BaseEntity {
     private String tenantId;
     private String workspaceId;
     private InsightType type;
@@ -14,7 +13,6 @@ public class Insight {
     private InsightSeverity severity;
     private InsightStatus status;
     private List<InsightEvidence> evidence;
-    private Instant createdAt;
 
     public Insight() {
     }

@@ -1,7 +1,8 @@
 package io.wahid.knowledge.domain.document;
 
-public class Chunk {
-    private String id;
+import io.wahid.knowledge.domain.shared.BaseEntity;
+
+public class Chunk extends BaseEntity {
     private String documentId;
     private String content;
     private Integer sequence;

@@ -1,8 +1,10 @@
 package io.wahid.knowledge.domain.knowledge;
 
+import io.wahid.knowledge.domain.shared.BaseEntity;
+
 import java.util.Map;
 
-public class KnowledgeNode {
+public class KnowledgeNode extends BaseEntity {
     private String id;
     private String workspaceId;
     private NodeType type;
