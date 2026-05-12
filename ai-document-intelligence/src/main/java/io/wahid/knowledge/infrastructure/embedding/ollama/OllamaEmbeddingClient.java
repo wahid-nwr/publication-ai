@@ -3,7 +3,7 @@ package io.wahid.knowledge.infrastructure.embedding.ollama;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 
 import java.net.URI;
 import java.net.http.HttpClient;

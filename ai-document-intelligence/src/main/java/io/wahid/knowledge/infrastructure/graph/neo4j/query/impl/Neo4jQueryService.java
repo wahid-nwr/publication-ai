@@ -1,6 +1,6 @@
 package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 
-import io.wahid.knowledge.application.query.dto.GraphResult;
+import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;

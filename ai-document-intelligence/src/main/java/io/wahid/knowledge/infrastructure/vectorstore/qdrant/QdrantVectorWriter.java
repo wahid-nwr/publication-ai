@@ -2,8 +2,8 @@ package io.wahid.knowledge.infrastructure.vectorstore.qdrant;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.knowledge.application.ingestion.chunking.dto.TextChunk;
-import io.wahid.knowledge.application.ingestion.processing.VectorWriter;
+import io.wahid.knowledge.application.core.ingestion.chunking.dto.TextChunk;
+import io.wahid.knowledge.application.core.ingestion.processing.VectorWriter;
 
 import java.io.IOException;
 import java.net.URI;

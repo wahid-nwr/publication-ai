@@ -1,10 +1,10 @@
 package io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl;
 
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
-import io.wahid.knowledge.application.knowledge.extraction.pipeline.AbstractPipelineStage;
-import io.wahid.knowledge.application.ingestion.chunking.dto.TextChunk;
-import io.wahid.knowledge.application.ingestion.chunking.TextChunkConsumer;
-import io.wahid.knowledge.application.ingestion.processing.VectorWriter;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.pipeline.AbstractPipelineStage;
+import io.wahid.knowledge.application.core.ingestion.chunking.dto.TextChunk;
+import io.wahid.knowledge.application.core.ingestion.chunking.TextChunkConsumer;
+import io.wahid.knowledge.application.core.ingestion.processing.VectorWriter;
 
 public class EmbeddingVectorConsumer extends AbstractPipelineStage implements TextChunkConsumer {
 

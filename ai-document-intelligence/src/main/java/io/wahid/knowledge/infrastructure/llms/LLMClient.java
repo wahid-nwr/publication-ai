@@ -1,11 +1,11 @@
 package io.wahid.knowledge.infrastructure.llms;
 
-import io.wahid.knowledge.application.query.dto.GraphResult;
-import io.wahid.knowledge.application.query.NumericQuery;
-import io.wahid.knowledge.application.query.dto.NumericResult;
-import io.wahid.knowledge.application.query.dto.TrendResult;
-import io.wahid.knowledge.application.ingestion.processing.dto.TrendSummary;
-import io.wahid.knowledge.application.ingestion.processing.dto.YearValue;
+import io.wahid.knowledge.application.core.query.dto.GraphResult;
+import io.wahid.knowledge.application.core.query.NumericQuery;
+import io.wahid.knowledge.application.core.query.dto.NumericResult;
+import io.wahid.knowledge.application.core.query.dto.TrendResult;
+import io.wahid.knowledge.application.core.ingestion.processing.dto.TrendSummary;
+import io.wahid.knowledge.application.core.ingestion.processing.dto.YearValue;
 import io.wahid.knowledge.model.StationSummary;
 
 import java.util.Comparator;

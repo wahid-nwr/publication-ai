@@ -1,10 +1,10 @@
 package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 
-import io.wahid.knowledge.application.insights.AnswerGenerator;
-import io.wahid.knowledge.application.retrieval.Retriever;
+import io.wahid.knowledge.application.domain.weather.insights.AnswerGenerator;
+import io.wahid.knowledge.application.core.retrieval.Retriever;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
-import io.wahid.knowledge.application.query.QuestionRouter;
-import io.wahid.knowledge.application.retrieval.vector.VectorSearcher;
+import io.wahid.knowledge.application.core.query.QuestionRouter;
+import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.wahid.knowledge.application.ApplicationContext;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

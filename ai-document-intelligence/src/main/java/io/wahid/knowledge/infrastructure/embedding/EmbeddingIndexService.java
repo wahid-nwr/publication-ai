@@ -1,7 +1,7 @@
 package io.wahid.knowledge.infrastructure.embedding;
 
 import io.wahid.knowledge.infrastructure.config.AppConfig;
-import io.wahid.knowledge.application.embedding.EmbeddingClient;
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantClient;
 import io.wahid.knowledge.model.StationSummary;
 import io.wahid.knowledge.repository.StationSummaryRepository;

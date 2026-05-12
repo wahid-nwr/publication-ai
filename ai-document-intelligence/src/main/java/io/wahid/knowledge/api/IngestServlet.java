@@ -1,6 +1,6 @@
 package io.wahid.knowledge.api;
 
-import io.wahid.knowledge.application.ingestion.processing.IngestionService;
+import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
