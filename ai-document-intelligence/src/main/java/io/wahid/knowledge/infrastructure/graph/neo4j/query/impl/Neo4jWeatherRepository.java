@@ -1,6 +1,6 @@
 package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 
-import io.wahid.knowledge.domain.query.NumericMetric;
+import io.wahid.knowledge.application.query.NumericMetric;
 import io.wahid.knowledge.domain.query.TrendDirection;
 import io.wahid.knowledge.application.query.dto.GraphResult;
 import io.wahid.knowledge.application.query.dto.TrendResult;
