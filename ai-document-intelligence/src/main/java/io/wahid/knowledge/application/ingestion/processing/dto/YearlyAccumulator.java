@@ -1,4 +1,4 @@
-package io.wahid.knowledge.dto;
+package io.wahid.knowledge.application.ingestion.processing.dto;
 
 public class YearlyAccumulator {
     int year;

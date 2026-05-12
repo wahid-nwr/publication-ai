@@ -7,7 +7,7 @@ import io.wahid.knowledge.application.ingestion.processing.dto.WeatherInfo;
 import io.wahid.knowledge.infrastructure.embedding.EmbeddingIndexService;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.Neo4jSyncService;
 import io.wahid.knowledge.application.insights.weather.WeatherAggregator;
-import io.wahid.knowledge.dto.YearlyAccumulator;
+import io.wahid.knowledge.application.ingestion.processing.dto.YearlyAccumulator;
 import io.wahid.knowledge.application.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantClient;
 import io.wahid.knowledge.model.StationSummary;
