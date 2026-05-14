@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.core.ingestion.processing.dto;
 
-import io.wahid.knowledge.application.core.query.NumericMetric;
+import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
 import io.wahid.knowledge.domain.query.TrendDirection;
 
 public record TrendSummary(

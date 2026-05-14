@@ -3,7 +3,7 @@ package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 import io.wahid.knowledge.application.domain.weather.insights.AnswerGenerator;
 import io.wahid.knowledge.application.core.retrieval.Retriever;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
-import io.wahid.knowledge.application.core.query.QuestionRouter;
+import io.wahid.knowledge.application.core.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 
 import java.util.List;
@@ -12,10 +12,10 @@ public class DefaultQueryService implements QueryService {
 
     private final Retriever retriever;
     private final AnswerGenerator answerGenerator;
-    private final QuestionRouter questionRouter;
+    private final WeatherQuestionRouter questionRouter;
 
     public DefaultQueryService(
-            QuestionRouter questionRouter,
+            WeatherQuestionRouter questionRouter,
             Retriever retriever,
             AnswerGenerator answerGenerator
     ) {

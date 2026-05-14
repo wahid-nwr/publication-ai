@@ -1,5 +1,8 @@
 package io.wahid.knowledge.application.core.retrieval;
 
+import io.wahid.knowledge.application.core.retrieval.strategy.RetrievalStrategy;
+import io.wahid.knowledge.domain.query.result.RetrievedDocument;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +25,7 @@ public class RetrievalResult {
     /**
      * Retrieved matches/chunks/documents.
      */
-    private final List<RetrievedDocument> documents =
+    private List<RetrievedDocument> documents =
             new ArrayList<>();
 
     /**
@@ -53,6 +56,11 @@ public class RetrievalResult {
 
     public RetrievalResult() {
         this.retrievedAt = Instant.now();
+    }
+
+    public RetrievalResult(List<RetrievedDocument> documents) {
+        super();
+        this.documents = documents;
     }
 
     public List<RetrievedDocument> getDocuments() {

@@ -22,9 +22,9 @@ import io.wahid.knowledge.application.core.ingestion.processing.IngestionService
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
-import io.wahid.knowledge.application.core.query.QuestionRouter;
+import io.wahid.knowledge.application.core.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.DefaultQueryService;
-import io.wahid.knowledge.application.core.retrieval.impl.HybridNumericQueryEngine;
+import io.wahid.knowledge.application.core.retrieval.impl.WeatherQueryEngine;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl.BatchEmbeddingVectorConsumer;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantAdminClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantVectorSearcher;
@@ -116,9 +116,9 @@ public class ApplicationContext {
                 AppConfig.collectionName()
         );
 
-        NumericQueryEngine numericQueryEngine = new HybridNumericQueryEngine(neo4jGraphClient, llmClient);
+        NumericQueryEngine numericQueryEngine = new WeatherQueryEngine(neo4jGraphClient, llmClient);
         NumericIntentParser numericIntentParser = new NumericIntentParser(llmClient);
-        QuestionRouter questionRouter = new QuestionRouter(vectorSearcher, embeddingClient,
+        WeatherQuestionRouter questionRouter = new WeatherQuestionRouter(vectorSearcher, embeddingClient,
                 llmClient, numericQueryEngine, numericIntentParser);
 
         Retriever retriever = new DefaultRetriever(embeddingClient, vectorSearcher);

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.wahid.knowledge.application.core.query.NumericMetric.*;
+import static io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric.*;
 
 public class StationWeatherAggregator implements WeatherAggregator {
 

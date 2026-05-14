@@ -2,7 +2,7 @@ package io.wahid.knowledge.application.domain;
 
 import io.wahid.knowledge.application.core.aggregation.Aggregator;
 import io.wahid.knowledge.application.core.insight.InsightGenerator;
-import io.wahid.knowledge.application.core.query.QueryEngine;
+import io.wahid.knowledge.application.core.query.engine.QueryEngine;
 import io.wahid.knowledge.application.core.retrieval.Retriever;
 
 public class DomainContext {
