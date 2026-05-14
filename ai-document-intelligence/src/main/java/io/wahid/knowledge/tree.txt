@@ -1,0 +1,195 @@
+.
+|-- api
+|   |-- DocumentUploadServlet.java
+|   |-- HealthCheckServlet.java
+|   |-- InfoServlet.java
+|   |-- IngestServlet.java
+|   |-- LoginServlet.java
+|   |-- QueryServlet.java
+|   `-- ReadyServlet.java
+|-- application
+|   |-- ApplicationContext.java
+|   |-- core
+|   |   |-- aggregation
+|   |   |   `-- Aggregator.java
+|   |   |-- chunking
+|   |   |-- embedding
+|   |   |   `-- EmbeddingClient.java
+|   |   |-- ingestion
+|   |   |   |-- chunking
+|   |   |   |   |-- dto
+|   |   |   |   |   `-- TextChunk.java
+|   |   |   |   |-- EmbeddingChunker.java
+|   |   |   |   `-- TextChunkConsumer.java
+|   |   |   |-- ParsedDocument.java
+|   |   |   |-- parsing
+|   |   |   `-- processing
+|   |   |       |-- CSVParser.java
+|   |   |       |-- DocumentIngestor.java
+|   |   |       |-- dto
+|   |   |       |   |-- DailyWeatherMeasurement.java
+|   |   |       |   |-- StationStats.java
+|   |   |       |   |-- StationYearStats.java
+|   |   |       |   |-- TrendSummary.java
+|   |   |       |   |-- WeatherRow.java
+|   |   |       |   |-- YearlyAccumulator.java
+|   |   |       |   `-- YearValue.java
+|   |   |       |-- impl
+|   |   |       |   |-- DefaultIngestionService.java
+|   |   |       |   `-- TokenEstimator.java
+|   |   |       |-- IngestionService.java
+|   |   |       |-- util
+|   |   |       |   |-- StationAccumulator.java
+|   |   |       |   `-- StationSummaryAggregator.java
+|   |   |       `-- VectorWriter.java
+|   |   |-- insight
+|   |   |   |-- InsightGenerator.java
+|   |   |   `-- InsightResult.java
+|   |   |-- metadata
+|   |   |-- pipeline
+|   |   |   |-- AbstractPipelineStage.java
+|   |   |   |-- impl
+|   |   |   |   |-- DefaultMetadataExtractor.java
+|   |   |   |   `-- DefaultTextNormalizer.java
+|   |   |   `-- PipelineStage.java
+|   |   |-- query
+|   |   |   |-- dto
+|   |   |   |   |-- GraphResult.java
+|   |   |   |   |-- NumericResult.java
+|   |   |   |   `-- TrendResult.java
+|   |   |   |-- engine
+|   |   |   |   |-- DefaultQueryEngine.java
+|   |   |   |   `-- QueryEngine.java
+|   |   |   |-- handler
+|   |   |   |   |-- aggregation
+|   |   |   |   |   |-- AggregationQueryHandler.java
+|   |   |   |   |   `-- StatisticalQueryHandler.java
+|   |   |   |   |-- comparison
+|   |   |   |   |   `-- CompareQueryHandler.java
+|   |   |   |   |-- numeric
+|   |   |   |   |   |-- BottomKQueryHandler.java
+|   |   |   |   |   |-- MaxQueryHandler.java
+|   |   |   |   |   |-- MinQueryHandler.java
+|   |   |   |   |   |-- NumericMetric.java
+|   |   |   |   |   |-- NumericQuery.java
+|   |   |   |   |   |-- NumericQueryType.java
+|   |   |   |   |   |-- NumericResultFormatter.java
+|   |   |   |   |   |-- TopKQueryHandler.java
+|   |   |   |   |   |-- TrendQueryHandler.java
+|   |   |   |   |   `-- ValueQueryHandler.java
+|   |   |   |   |-- QueryHandler.java
+|   |   |   |   |-- QueryHandlerRegistry.java
+|   |   |   |   `-- semantic
+|   |   |   |       |-- InsightQueryHandler.java
+|   |   |   |       |-- SemanticResultFormatter.java
+|   |   |   |       `-- SemanticSearchQueryHandler.java
+|   |   |   |-- model
+|   |   |   |   |-- SemanticQuery.java
+|   |   |   |   `-- SemanticResultPayload.java
+|   |   |   |-- NumericIntentParser.java
+|   |   |   |-- result
+|   |   |   |   |-- NumericResultPayload.java
+|   |   |   |   `-- ResultFormatter.java
+|   |   |   `-- routing
+|   |   |       |-- QueryRouter.java
+|   |   |       `-- WeatherQuestionRouter.java
+|   |   |-- retrieval
+|   |   |   |-- impl
+|   |   |   |   |-- DefaultRetriever.java
+|   |   |   |   `-- WeatherQueryEngine.java
+|   |   |   |-- NumericQueryEngine.java
+|   |   |   |-- RetrievalContext.java
+|   |   |   |-- RetrievalResult.java
+|   |   |   |-- Retriever.java
+|   |   |   |-- strategy
+|   |   |   |   |-- RetrievalStrategy.java
+|   |   |   |   `-- VectorRetrievalStrategy.java
+|   |   |   `-- vector
+|   |   |       `-- VectorSearcher.java
+|   |   `-- vector
+|   |-- domain
+|   |   |-- DocumentParser.java
+|   |   |-- DomainAggregator.java
+|   |   |-- DomainContext.java
+|   |   |-- DomainDocument.java
+|   |   |-- DomainMapper.java
+|   |   |-- publication
+|   |   |   |-- model
+|   |   |   `-- query
+|   |   `-- weather
+|   |       |-- aggregation
+|   |       |-- ingestion
+|   |       |-- insights
+|   |       |   |-- AnswerGenerator.java
+|   |       |   |-- impl
+|   |       |   |   |-- AggregationOrchestrator.java
+|   |       |   |   |-- StationWeatherAggregator.java
+|   |       |   |   `-- UploadCheckTaskScheduler.java
+|   |       |   |-- OllamaAnswerGenerator.java
+|   |       |   `-- weather
+|   |       |       |-- WeatherAggregator.java
+|   |       |       `-- WeatherSummaryFormatter.java
+|   |       |-- model
+|   |       |-- query
+|   |       `-- retrieval
+|   |-- exception
+|   |   |-- ErrorResponse.java
+|   |   |-- FileProcessingException.java
+|   |   |-- GlobalExceptionFilter.java
+|   |   `-- HttpResponseWriteException.java
+|   `-- ServerLauncher.java
+|-- infrastructure
+|   |-- config
+|   |   `-- AppConfig.java
+|   |-- document
+|   |   `-- source
+|   |       `-- MultipartDocumentSource.java
+|   |-- dto
+|   |   `-- HealthStatus.java
+|   |-- embedding
+|   |   |-- EmbeddingIndexService.java
+|   |   |-- ollama
+|   |   |   `-- OllamaEmbeddingClient.java
+|   |   `-- openai
+|   |       `-- OpenAIEmbeddingClient.java
+|   |-- graph
+|   |   `-- neo4j
+|   |       |-- Neo4jGraphClient.java
+|   |       `-- query
+|   |           |-- impl
+|   |           |   |-- DefaultQueryService.java
+|   |           |   |-- Neo4jQueryService.java
+|   |           |   |-- Neo4jSyncService.java
+|   |           |   `-- Neo4jWeatherRepository.java
+|   |           `-- QueryService.java
+|   |-- health
+|   |   `-- HealthService.java
+|   |-- llms
+|   |   |-- LLMClient.java
+|   |   |-- ollama
+|   |   |   |-- impl
+|   |   |   |   `-- OllamaLLMClient.java
+|   |   |   `-- OllamaClient.java
+|   |   `-- openai
+|   |       `-- OpenAILLMClient.java
+|   |-- storage
+|   |   `-- R2Client.java
+|   `-- vectorstore
+|       |-- dto
+|       |   `-- DocumentPayload.java
+|       `-- qdrant
+|           |-- impl
+|           |   |-- BatchEmbeddingVectorConsumer.java
+|           |   `-- EmbeddingVectorConsumer.java
+|           |-- QdrantAdminClient.java
+|           |-- QdrantClient.java
+|           |-- QdrantVectorSearcher.java
+|           `-- QdrantVectorWriter.java
+|-- security
+|   |-- JwtConfig.java
+|   |-- JwtFilter.java
+|   |-- JwtValidator.java
+|   `-- TokenVerifier.java
+`-- tree.txt
+
+72 directories, 121 files
