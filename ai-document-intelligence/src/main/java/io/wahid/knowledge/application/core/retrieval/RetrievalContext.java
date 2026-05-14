@@ -7,4 +7,12 @@ public class RetrievalContext {
     private double similarityThreshold;
     private boolean useHybridSearch;
     private DocumentType preferredDocumentType;
+
+    public RetrievalContext(int topK) {
+        this.topK = topK;
+    }
+
+    public int topK() {
+        return this.topK;
+    }
 }

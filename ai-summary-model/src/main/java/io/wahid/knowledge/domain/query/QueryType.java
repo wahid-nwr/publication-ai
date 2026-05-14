@@ -4,5 +4,5 @@ public enum QueryType {
     VECTOR,
     GRAPH,
     HYBRID,
-    KEYWORD
+    SEMANTIC, KEYWORD
 }

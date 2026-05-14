@@ -1,5 +1,6 @@
 package io.wahid.knowledge.domain.query;
 
+// TODO depricate
 public class QueryRequest {
     private String question;
     private int topK = 50;

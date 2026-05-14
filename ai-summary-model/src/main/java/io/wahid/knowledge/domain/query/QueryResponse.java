@@ -2,6 +2,7 @@ package io.wahid.knowledge.domain.query;
 
 import java.util.List;
 
+// TODO depricate
 public class QueryResponse {
     private String answer;
     private List<String> sources;
