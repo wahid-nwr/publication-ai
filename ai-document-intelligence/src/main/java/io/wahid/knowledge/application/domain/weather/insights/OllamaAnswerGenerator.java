@@ -1,5 +1,8 @@
 package io.wahid.knowledge.application.domain.weather.insights;
 
+import io.wahid.knowledge.application.core.insight.InsightResult;
+import io.wahid.knowledge.application.core.retrieval.RetrievalResult;
+import io.wahid.knowledge.domain.query.Query;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 
@@ -51,5 +54,10 @@ public class OllamaAnswerGenerator implements AnswerGenerator {
 
                 Answer:
                 """.formatted(context, question);
+    }
+
+    @Override
+    public InsightResult generate(Query query, RetrievalResult retrievalResult) {
+        return null;
     }
 }

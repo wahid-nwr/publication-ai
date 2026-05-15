@@ -22,7 +22,6 @@
 |   |   |   |   `-- TextChunkConsumer.java
 |   |   |   |-- ParsedDocument.java
 |   |   |   |-- parsing
-|   |   |   |   `-- CSVParser.java
 |   |   |   `-- processing
 |   |   |       |-- DocumentIngestor.java
 |   |   |       |-- impl
@@ -30,8 +29,6 @@
 |   |   |       |   `-- TokenEstimator.java
 |   |   |       |-- IngestionService.java
 |   |   |       |-- util
-|   |   |       |   |-- StationAccumulator.java
-|   |   |       |   `-- StationSummaryAggregator.java
 |   |   |       `-- VectorWriter.java
 |   |   |-- insight
 |   |   |   |-- InsightGenerator.java
@@ -92,7 +89,13 @@
 |   |   |   `-- query
 |   |   `-- weather
 |   |       |-- aggregation
+|   |       |   `-- StationSummaryAggregator.java
 |   |       |-- ingestion
+|   |       |   |-- mapper
+|   |       |   |-- parser
+|   |       |   |   `-- WeatherCsvParser.java
+|   |       |   `-- processor
+|   |       |       `-- StationAccumulator.java
 |   |       |-- insights
 |   |       |   |-- AnswerGenerator.java
 |   |       |   |-- impl
@@ -193,4 +196,4 @@
 |   `-- TokenVerifier.java
 `-- tree.txt
 
-71 directories, 123 files
+74 directories, 123 files

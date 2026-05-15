@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.ingestion.parsing;
+package io.wahid.knowledge.application.domain.weather.ingestion.parser;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import io.wahid.knowledge.application.ApplicationContext;
@@ -12,17 +12,17 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CSVParser {
-    private static final Logger LOGGER = Logger.getLogger(CSVParser.class.getName());
+public class WeatherCsvParser {
+    private static final Logger LOGGER = Logger.getLogger(WeatherCsvParser.class.getName());
     private static final char COLUMN_SEPARATOR = ',';
     private static final String LINE_SEPARATOR = System.lineSeparator();
     private static final int BATCH_SIZE = 500;
     private final WeatherAggregator aggregator;
 
-    public CSVParser(WeatherAggregator aggregator) {
+    public WeatherCsvParser(WeatherAggregator aggregator) {
         this.aggregator = aggregator;
     }
-    public CSVParser() {
+    public WeatherCsvParser() {
         this.aggregator = null;
     }
 
