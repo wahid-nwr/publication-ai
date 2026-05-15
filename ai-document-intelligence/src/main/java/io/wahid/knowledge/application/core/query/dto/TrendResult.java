@@ -2,7 +2,7 @@ package io.wahid.knowledge.application.core.query.dto;
 
 import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
 import io.wahid.knowledge.domain.query.TrendDirection;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.YearValue;
+import io.wahid.knowledge.application.domain.weather.model.YearValue;
 
 import java.util.List;
 

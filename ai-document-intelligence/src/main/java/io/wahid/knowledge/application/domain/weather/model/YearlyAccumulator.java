@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.ingestion.processing.dto;
+package io.wahid.knowledge.application.domain.weather.model;
 
 public class YearlyAccumulator {
     int year;

@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.ingestion.processing.dto;
+package io.wahid.knowledge.application.domain.weather.model;
 
 import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
 import io.wahid.knowledge.domain.query.TrendDirection;

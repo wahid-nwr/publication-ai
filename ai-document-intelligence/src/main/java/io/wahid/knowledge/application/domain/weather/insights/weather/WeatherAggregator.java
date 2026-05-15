@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.domain.weather.insights.weather;
 
-import io.wahid.knowledge.application.core.ingestion.processing.dto.DailyWeatherMeasurement;
+import io.wahid.knowledge.application.domain.weather.model.DailyWeatherMeasurement;
 
 public interface WeatherAggregator {
 

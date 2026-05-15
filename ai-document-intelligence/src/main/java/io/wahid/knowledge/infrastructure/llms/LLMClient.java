@@ -4,8 +4,8 @@ import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
 import io.wahid.knowledge.application.core.query.dto.TrendResult;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.TrendSummary;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.YearValue;
+import io.wahid.knowledge.application.domain.weather.model.TrendSummary;
+import io.wahid.knowledge.application.domain.weather.model.YearValue;
 import io.wahid.knowledge.model.StationSummary;
 
 import java.util.Comparator;
