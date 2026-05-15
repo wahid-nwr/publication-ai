@@ -1,10 +1,10 @@
-package io.wahid.knowledge.application.core.query.routing;
+package io.wahid.knowledge.application.domain.weather.query.routing;
 
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQueryType;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;

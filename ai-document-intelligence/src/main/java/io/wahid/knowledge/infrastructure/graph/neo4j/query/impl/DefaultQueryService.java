@@ -3,7 +3,7 @@ package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 import io.wahid.knowledge.application.domain.weather.insights.AnswerGenerator;
 import io.wahid.knowledge.application.core.retrieval.Retriever;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
-import io.wahid.knowledge.application.core.query.routing.WeatherQuestionRouter;
+import io.wahid.knowledge.application.domain.weather.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 
 import java.util.List;

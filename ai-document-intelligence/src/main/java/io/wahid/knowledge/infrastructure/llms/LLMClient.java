@@ -1,7 +1,7 @@
 package io.wahid.knowledge.infrastructure.llms;
 
 import io.wahid.knowledge.application.core.query.dto.GraphResult;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
 import io.wahid.knowledge.application.core.query.dto.TrendResult;
 import io.wahid.knowledge.application.domain.weather.model.TrendSummary;

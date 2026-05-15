@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.domain.weather.retrieval;
 
 import io.wahid.knowledge.application.core.query.dto.GraphResult;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
 import io.wahid.knowledge.application.core.query.dto.TrendResult;
 import io.wahid.knowledge.application.domain.weather.model.YearValue;
@@ -16,7 +16,7 @@ import io.wahid.knowledge.util.JpaUtil;
 
 import java.util.List;
 
-import static io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric.*;
+import static io.wahid.knowledge.application.domain.weather.query.model.NumericMetric.*;
 
 public class WeatherQueryEngine implements NumericQueryEngine {
 

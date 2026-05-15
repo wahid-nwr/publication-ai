@@ -5,7 +5,7 @@ import io.wahid.knowledge.infrastructure.storage.R2Client;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
 import io.wahid.knowledge.application.exception.FileProcessingException;
 import io.wahid.knowledge.application.domain.weather.insights.impl.AggregationOrchestrator;
-import io.wahid.knowledge.application.core.ingestion.processing.CSVParser;
+import io.wahid.knowledge.application.core.ingestion.parsing.CSVParser;
 import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
 import io.wahid.knowledge.application.domain.weather.insights.impl.UploadCheckTaskScheduler;
 import io.wahid.knowledge.util.JobRegistry;

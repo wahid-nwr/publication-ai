@@ -12,7 +12,6 @@
 |   |-- core
 |   |   |-- aggregation
 |   |   |   `-- Aggregator.java
-|   |   |-- chunking
 |   |   |-- embedding
 |   |   |   `-- EmbeddingClient.java
 |   |   |-- ingestion
@@ -23,17 +22,9 @@
 |   |   |   |   `-- TextChunkConsumer.java
 |   |   |   |-- ParsedDocument.java
 |   |   |   |-- parsing
+|   |   |   |   `-- CSVParser.java
 |   |   |   `-- processing
-|   |   |       |-- CSVParser.java
 |   |   |       |-- DocumentIngestor.java
-|   |   |       |-- dto
-|   |   |       |   |-- DailyWeatherMeasurement.java
-|   |   |       |   |-- StationStats.java
-|   |   |       |   |-- StationYearStats.java
-|   |   |       |   |-- TrendSummary.java
-|   |   |       |   |-- WeatherRow.java
-|   |   |       |   |-- YearlyAccumulator.java
-|   |   |       |   `-- YearValue.java
 |   |   |       |-- impl
 |   |   |       |   |-- DefaultIngestionService.java
 |   |   |       |   `-- TokenEstimator.java
@@ -61,22 +52,8 @@
 |   |   |   |   |-- DefaultQueryEngine.java
 |   |   |   |   `-- QueryEngine.java
 |   |   |   |-- handler
-|   |   |   |   |-- aggregation
-|   |   |   |   |   |-- AggregationQueryHandler.java
-|   |   |   |   |   `-- StatisticalQueryHandler.java
-|   |   |   |   |-- comparison
-|   |   |   |   |   `-- CompareQueryHandler.java
 |   |   |   |   |-- numeric
-|   |   |   |   |   |-- BottomKQueryHandler.java
-|   |   |   |   |   |-- MaxQueryHandler.java
-|   |   |   |   |   |-- MinQueryHandler.java
-|   |   |   |   |   |-- NumericMetric.java
-|   |   |   |   |   |-- NumericQuery.java
-|   |   |   |   |   |-- NumericQueryType.java
-|   |   |   |   |   |-- NumericResultFormatter.java
-|   |   |   |   |   |-- TopKQueryHandler.java
-|   |   |   |   |   |-- TrendQueryHandler.java
-|   |   |   |   |   `-- ValueQueryHandler.java
+|   |   |   |   |   `-- NumericResultFormatter.java
 |   |   |   |   |-- QueryHandler.java
 |   |   |   |   |-- QueryHandlerRegistry.java
 |   |   |   |   `-- semantic
@@ -91,22 +68,19 @@
 |   |   |   |   |-- NumericResultPayload.java
 |   |   |   |   `-- ResultFormatter.java
 |   |   |   `-- routing
-|   |   |       |-- QueryRouter.java
-|   |   |       `-- WeatherQuestionRouter.java
-|   |   |-- retrieval
-|   |   |   |-- impl
-|   |   |   |   |-- DefaultRetriever.java
-|   |   |   |   `-- WeatherQueryEngine.java
-|   |   |   |-- NumericQueryEngine.java
-|   |   |   |-- RetrievalContext.java
-|   |   |   |-- RetrievalResult.java
-|   |   |   |-- Retriever.java
-|   |   |   |-- strategy
-|   |   |   |   |-- RetrievalStrategy.java
-|   |   |   |   `-- VectorRetrievalStrategy.java
-|   |   |   `-- vector
-|   |   |       `-- VectorSearcher.java
-|   |   `-- vector
+|   |   |       `-- QueryRouter.java
+|   |   `-- retrieval
+|   |       |-- impl
+|   |       |   `-- DefaultRetriever.java
+|   |       |-- NumericQueryEngine.java
+|   |       |-- RetrievalContext.java
+|   |       |-- RetrievalResult.java
+|   |       |-- Retriever.java
+|   |       |-- strategy
+|   |       |   |-- RetrievalStrategy.java
+|   |       |   `-- VectorRetrievalStrategy.java
+|   |       `-- vector
+|   |           `-- VectorSearcher.java
 |   |-- domain
 |   |   |-- DocumentParser.java
 |   |   |-- DomainAggregator.java
@@ -130,8 +104,35 @@
 |   |       |       |-- WeatherAggregator.java
 |   |       |       `-- WeatherSummaryFormatter.java
 |   |       |-- model
+|   |       |   |-- DailyWeatherMeasurement.java
+|   |       |   |-- StationStats.java
+|   |       |   |-- StationYearStats.java
+|   |       |   |-- TrendSummary.java
+|   |       |   |-- WeatherRow.java
+|   |       |   |-- YearlyAccumulator.java
+|   |       |   `-- YearValue.java
 |   |       |-- query
+|   |       |   |-- handler
+|   |       |   |   |-- AggregationQueryHandler.java
+|   |       |   |   |-- BottomKQueryHandler.java
+|   |       |   |   |-- CompareQueryHandler.java
+|   |       |   |   |-- MaxQueryHandler.java
+|   |       |   |   |-- MinQueryHandler.java
+|   |       |   |   |-- StatisticalQueryHandler.java
+|   |       |   |   |-- TopKQueryHandler.java
+|   |       |   |   |-- TrendQueryHandler.java
+|   |       |   |   `-- ValueQueryHandler.java
+|   |       |   |-- model
+|   |       |   |   |-- NumericMetric.java
+|   |       |   |   |-- NumericQuery.java
+|   |       |   |   `-- NumericQueryType.java
+|   |       |   |-- result
+|   |       |   `-- routing
+|   |       |       `-- WeatherQuestionRouter.java
 |   |       `-- retrieval
+|   |           |-- WeatherQueryEngine.java
+|   |           |-- WeatherRetrievalService.java
+|   |           `-- WeatherRetriever.java
 |   |-- exception
 |   |   |-- ErrorResponse.java
 |   |   |-- FileProcessingException.java
@@ -192,4 +193,4 @@
 |   `-- TokenVerifier.java
 `-- tree.txt
 
-72 directories, 121 files
+71 directories, 123 files

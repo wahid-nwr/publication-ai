@@ -1,7 +1,6 @@
-package io.wahid.knowledge.application.core.query.handler.numeric;
+package io.wahid.knowledge.application.domain.weather.query.model;
 
 import io.wahid.knowledge.domain.query.Query;
-import io.wahid.knowledge.domain.query.QueryType;
 
 import java.util.List;
 
