@@ -9,19 +9,19 @@ import java.util.Optional;
 
 public class QueryRouter {
 
-    private final NumericIntentParser numericIntentParser;
+//    private final NumericIntentParser numericIntentParser;
 
-    public QueryRouter(NumericIntentParser numericIntentParser) {
-        this.numericIntentParser = numericIntentParser;
-    }
+//    public QueryRouter(NumericIntentParser numericIntentParser) {
+//        this.numericIntentParser = numericIntentParser;
+//    }
 
     public Query route(String question) throws Exception {
 
-        Optional<NumericQuery> numericQuery = numericIntentParser.parse(question);
+//        Optional<NumericQuery> numericQuery = numericIntentParser.parse(question);
 
-        if (numericQuery.isPresent()) {
-            return numericQuery.get();
-        }
+//        if (numericQuery.isPresent()) {
+//            return numericQuery.get();
+//        }
 
         return new SemanticQuery(question);
     }

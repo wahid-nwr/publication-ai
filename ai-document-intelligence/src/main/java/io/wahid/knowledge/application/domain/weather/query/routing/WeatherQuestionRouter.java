@@ -2,6 +2,7 @@ package io.wahid.knowledge.application.domain.weather.query.routing;
 
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
+import io.wahid.knowledge.application.core.query.routing.QueryRouter;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
@@ -19,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class WeatherQuestionRouter {
+public class WeatherQuestionRouter extends QueryRouter {
 
     private static final Logger LOGGER = Logger.getLogger(WeatherQuestionRouter.class.getName());
     private final StationSummaryRepository repository;
@@ -34,6 +35,7 @@ public class WeatherQuestionRouter {
                                  LLMClient llmClient,
                                  NumericQueryEngine numericEngine,
                                  NumericIntentParser numericIntentParser) {
+        super();
         this.vectorSearcher = qdrantSearcher;
         this.embeddingClient = embeddingClient;
         this.llmClient = llmClient;

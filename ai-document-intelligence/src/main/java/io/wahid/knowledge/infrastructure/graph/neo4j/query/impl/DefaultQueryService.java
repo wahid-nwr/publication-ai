@@ -1,5 +1,7 @@
 package io.wahid.knowledge.infrastructure.graph.neo4j.query.impl;
 
+import io.wahid.knowledge.application.domain.DomainRegistry;
+import io.wahid.knowledge.application.domain.DomainResolver;
 import io.wahid.knowledge.application.domain.weather.insights.AnswerGenerator;
 import io.wahid.knowledge.application.core.retrieval.Retriever;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
@@ -10,9 +12,12 @@ import java.util.List;
 
 public class DefaultQueryService implements QueryService {
 
-    private final Retriever retriever;
-    private final AnswerGenerator answerGenerator;
-    private final WeatherQuestionRouter questionRouter;
+    private Retriever retriever;
+    private DomainResolver domainResolver;
+    private DomainRegistry domainRegistry;
+    // TODO REMOVE ANSWER, QUESTION
+    private AnswerGenerator answerGenerator;
+    private WeatherQuestionRouter questionRouter;
 
     public DefaultQueryService(
             WeatherQuestionRouter questionRouter,
@@ -22,6 +27,16 @@ public class DefaultQueryService implements QueryService {
         this.retriever = retriever;
         this.answerGenerator = answerGenerator;
         this.questionRouter = questionRouter;
+    }
+
+    public DefaultQueryService(
+            DomainRegistry domainRegistry,
+            DomainResolver domainResolver,
+            Retriever retriever
+    ) {
+        this.retriever = retriever;
+        this.domainRegistry = domainRegistry;
+        this.domainResolver = domainResolver;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.core.ingestion.processing.impl;
 
 import io.wahid.knowledge.application.core.ingestion.chunking.dto.TextChunk;
-import io.wahid.knowledge.application.core.ingestion.parsing.CSVParser;
+import io.wahid.knowledge.application.domain.weather.ingestion.parser.WeatherCsvParser;
 import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
 import io.wahid.knowledge.infrastructure.storage.R2Client;
 import io.wahid.knowledge.application.core.pipeline.PipelineStage;
@@ -72,7 +72,7 @@ public class DefaultIngestionService implements IngestionService {
         try (InputStream in = r2Client.download(bucket, objectKey)) {
             WeatherAggregator aggregator = new StationWeatherAggregator(embeddingClient, qdrantClient, neo4jSyncService);
 
-            new CSVParser(aggregator).parse(in, objectKey);
+            new WeatherCsvParser(aggregator).parse(in, objectKey);
 
             JobRegistry.update(jobId, JobStatus.AGGREGATED);
         }

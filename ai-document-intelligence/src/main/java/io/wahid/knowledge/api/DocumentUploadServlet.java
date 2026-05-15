@@ -5,7 +5,7 @@ import io.wahid.knowledge.infrastructure.storage.R2Client;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
 import io.wahid.knowledge.application.exception.FileProcessingException;
 import io.wahid.knowledge.application.domain.weather.insights.impl.AggregationOrchestrator;
-import io.wahid.knowledge.application.core.ingestion.parsing.CSVParser;
+import io.wahid.knowledge.application.domain.weather.ingestion.parser.WeatherCsvParser;
 import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
 import io.wahid.knowledge.application.domain.weather.insights.impl.UploadCheckTaskScheduler;
 import io.wahid.knowledge.util.JobRegistry;
@@ -70,7 +70,7 @@ public class DocumentUploadServlet extends HttpServlet {
             Instant start = Instant.now();
             JobRegistry.update(jobId, JobStatus.UPLOADING);
             Files.copy(in, targetFile);
-            CSVParser parser = new CSVParser();
+            WeatherCsvParser parser = new WeatherCsvParser();
             boolean isValid = parser.isParsable(Files.newInputStream(targetFile), objectKey);
             if (isValid) {
                 if (AppConfig.openaiEnabled()) {

@@ -1,5 +1,9 @@
 package io.wahid.knowledge.application;
 
+import io.wahid.knowledge.application.domain.DomainContext;
+import io.wahid.knowledge.application.domain.DomainRegistry;
+import io.wahid.knowledge.application.domain.DomainResolver;
+import io.wahid.knowledge.application.domain.weather.config.WeatherDomainConfiguration;
 import io.wahid.knowledge.infrastructure.storage.R2Client;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
 import io.wahid.knowledge.application.core.retrieval.impl.DefaultRetriever;
@@ -56,6 +60,9 @@ public class ApplicationContext {
     private final R2Client r2Client;
     private final Neo4jGraphClient neo4jGraphClient;
 
+    private final DomainRegistry domainRegistry = new DomainRegistry();
+    private final DomainResolver domainResolver = new DomainResolver();
+
     public ApplicationContext() {
         this.admin = new QdrantAdminClient(AppConfig.qdrantBaseUrl());
         this.llmClient = new OpenAILLMClient(AppConfig.openAIKey(), "gpt-4.1-mini");
@@ -77,6 +84,11 @@ public class ApplicationContext {
             );
         }
         this.r2Client = new R2Client();
+
+        DomainContext weatherContext = new WeatherDomainConfiguration()
+                .configure(null, null, null, null);
+
+        domainRegistry.register("weather", weatherContext);
     }
 
     public static int getMetricValue(String metric) {
