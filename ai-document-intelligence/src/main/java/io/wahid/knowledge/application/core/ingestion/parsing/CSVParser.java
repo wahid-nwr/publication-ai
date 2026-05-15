@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.ingestion.processing;
+package io.wahid.knowledge.application.core.ingestion.parsing;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import io.wahid.knowledge.application.ApplicationContext;

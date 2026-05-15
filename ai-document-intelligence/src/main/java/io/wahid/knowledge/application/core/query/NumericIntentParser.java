@@ -2,9 +2,9 @@ package io.wahid.knowledge.application.core.query;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQueryType;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 
 import java.util.Optional;

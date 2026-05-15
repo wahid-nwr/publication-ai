@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.query.handler.numeric;
+package io.wahid.knowledge.application.domain.weather.query.model;
 
 public enum NumericQueryType {
     MAX,

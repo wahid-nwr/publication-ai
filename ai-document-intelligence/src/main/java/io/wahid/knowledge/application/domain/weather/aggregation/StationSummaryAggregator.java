@@ -1,5 +1,6 @@
-package io.wahid.knowledge.application.core.ingestion.processing.util;
+package io.wahid.knowledge.application.domain.weather.aggregation;
 
+import io.wahid.knowledge.application.domain.weather.model.StationAccumulator;
 import io.wahid.knowledge.application.domain.weather.model.WeatherRow;
 import io.wahid.knowledge.model.StationSummary;
 

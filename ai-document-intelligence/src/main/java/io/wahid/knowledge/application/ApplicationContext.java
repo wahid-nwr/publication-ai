@@ -22,7 +22,7 @@ import io.wahid.knowledge.application.core.ingestion.processing.IngestionService
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
-import io.wahid.knowledge.application.core.query.routing.WeatherQuestionRouter;
+import io.wahid.knowledge.application.domain.weather.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.DefaultQueryService;
 import io.wahid.knowledge.application.domain.weather.retrieval.WeatherQueryEngine;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl.BatchEmbeddingVectorConsumer;

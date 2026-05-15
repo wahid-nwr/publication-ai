@@ -1,15 +1,12 @@
-package io.wahid.knowledge.application.core.query.handler.numeric;
+package io.wahid.knowledge.application.domain.weather.query.handler;
 
 import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.handler.QueryHandler;
 import io.wahid.knowledge.application.core.query.result.NumericResultPayload;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.domain.query.Query;
-import io.wahid.knowledge.domain.query.QueryType;
 import io.wahid.knowledge.domain.query.result.QueryResult;
-import io.wahid.knowledge.infrastructure.graph.neo4j.Neo4jGraphClient;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.Neo4jWeatherRepository;
-
-import io.wahid.knowledge.model.StationSummary;
 
 import java.util.List;
 

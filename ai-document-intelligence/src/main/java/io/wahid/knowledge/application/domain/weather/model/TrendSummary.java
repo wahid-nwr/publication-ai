@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.domain.weather.model;
 
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericMetric;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
 import io.wahid.knowledge.domain.query.TrendDirection;
 
 public record TrendSummary(

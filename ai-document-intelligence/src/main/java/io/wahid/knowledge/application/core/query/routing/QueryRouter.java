@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.core.query.routing;
 
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
-import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.application.core.query.model.SemanticQuery;
 import io.wahid.knowledge.domain.query.Query;
 

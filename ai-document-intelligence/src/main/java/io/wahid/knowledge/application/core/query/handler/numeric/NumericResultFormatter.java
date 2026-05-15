@@ -2,6 +2,7 @@ package io.wahid.knowledge.application.core.query.handler.numeric;
 
 import io.wahid.knowledge.application.core.query.result.NumericResultPayload;
 import io.wahid.knowledge.application.core.query.result.ResultFormatter;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.domain.query.result.QueryResult;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.model.StationSummary;

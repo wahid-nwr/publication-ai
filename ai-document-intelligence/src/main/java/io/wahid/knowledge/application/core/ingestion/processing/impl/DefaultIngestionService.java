@@ -1,7 +1,7 @@
 package io.wahid.knowledge.application.core.ingestion.processing.impl;
 
 import io.wahid.knowledge.application.core.ingestion.chunking.dto.TextChunk;
-import io.wahid.knowledge.application.core.ingestion.processing.CSVParser;
+import io.wahid.knowledge.application.core.ingestion.parsing.CSVParser;
 import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
 import io.wahid.knowledge.infrastructure.storage.R2Client;
 import io.wahid.knowledge.application.core.pipeline.PipelineStage;
