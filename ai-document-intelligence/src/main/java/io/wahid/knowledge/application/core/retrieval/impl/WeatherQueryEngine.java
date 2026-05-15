@@ -4,7 +4,7 @@ import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
 import io.wahid.knowledge.application.core.query.dto.TrendResult;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.YearValue;
+import io.wahid.knowledge.application.domain.weather.model.YearValue;
 import io.wahid.knowledge.infrastructure.graph.neo4j.Neo4jGraphClient;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.model.StationSummary;

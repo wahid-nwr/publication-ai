@@ -2,12 +2,12 @@ package io.wahid.knowledge.application.domain.weather.insights.impl;
 
 import io.wahid.knowledge.application.domain.weather.insights.weather.WeatherAggregator;
 import io.wahid.knowledge.infrastructure.config.AppConfig;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.StationStats;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.StationYearStats;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.DailyWeatherMeasurement;
+import io.wahid.knowledge.application.domain.weather.model.StationStats;
+import io.wahid.knowledge.application.domain.weather.model.StationYearStats;
+import io.wahid.knowledge.application.domain.weather.model.DailyWeatherMeasurement;
 import io.wahid.knowledge.infrastructure.embedding.EmbeddingIndexService;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.Neo4jSyncService;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.YearlyAccumulator;
+import io.wahid.knowledge.application.domain.weather.model.YearlyAccumulator;
 import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantClient;
 import io.wahid.knowledge.model.StationSummary;

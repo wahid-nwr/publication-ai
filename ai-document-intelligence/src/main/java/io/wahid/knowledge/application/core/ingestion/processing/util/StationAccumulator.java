@@ -1,6 +1,6 @@
 package io.wahid.knowledge.application.core.ingestion.processing.util;
 
-import io.wahid.knowledge.application.core.ingestion.processing.dto.WeatherRow;
+import io.wahid.knowledge.application.domain.weather.model.WeatherRow;
 
 final class StationAccumulator {
 

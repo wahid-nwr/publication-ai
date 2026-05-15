@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.ingestion.processing.dto;
+package io.wahid.knowledge.application.domain.weather.model;
 
 import io.wahid.knowledge.model.StationSummary;
 import io.wahid.knowledge.service.StationSummaryFormatter;

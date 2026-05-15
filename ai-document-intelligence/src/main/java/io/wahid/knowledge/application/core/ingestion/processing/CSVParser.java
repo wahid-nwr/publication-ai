@@ -2,7 +2,7 @@ package io.wahid.knowledge.application.core.ingestion.processing;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import io.wahid.knowledge.application.ApplicationContext;
-import io.wahid.knowledge.application.core.ingestion.processing.dto.DailyWeatherMeasurement;
+import io.wahid.knowledge.application.domain.weather.model.DailyWeatherMeasurement;
 import io.wahid.knowledge.application.exception.FileProcessingException;
 import io.wahid.knowledge.application.domain.weather.insights.weather.WeatherAggregator;
 
