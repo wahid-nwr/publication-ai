@@ -1,4 +1,4 @@
-package io.wahid.knowledge.application.core.retrieval.impl;
+package io.wahid.knowledge.application.domain.weather.retrieval;
 
 import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.handler.numeric.NumericQuery;

@@ -24,7 +24,7 @@ import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
 import io.wahid.knowledge.application.core.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.DefaultQueryService;
-import io.wahid.knowledge.application.core.retrieval.impl.WeatherQueryEngine;
+import io.wahid.knowledge.application.domain.weather.retrieval.WeatherQueryEngine;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.impl.BatchEmbeddingVectorConsumer;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantAdminClient;
 import io.wahid.knowledge.infrastructure.vectorstore.qdrant.QdrantVectorSearcher;
