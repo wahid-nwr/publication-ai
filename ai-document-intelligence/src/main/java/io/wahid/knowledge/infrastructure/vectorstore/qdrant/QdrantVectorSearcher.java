@@ -102,6 +102,7 @@ public class QdrantVectorSearcher implements VectorSearcher {
 
             results.add(new SearchResult(
                     documentId,
+                    "",
                     textNode.asText(),
                     mapper.convertValue(payload, DocumentPayload.class),
                     score

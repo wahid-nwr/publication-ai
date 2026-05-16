@@ -2,13 +2,16 @@ package io.wahid.knowledge.application.domain.weather.config;
 
 import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
+import io.wahid.knowledge.application.core.query.handler.semantic.SemanticSearchQueryHandler;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
-import io.wahid.knowledge.application.core.retrieval.Retriever;
-import io.wahid.knowledge.application.core.retrieval.impl.DefaultRetriever;
+import io.wahid.knowledge.application.core.retrieval.strategy.RetrievalStrategy;
+import io.wahid.knowledge.application.core.retrieval.strategy.VectorRetrievalStrategy;
 import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 import io.wahid.knowledge.application.domain.DomainContext;
 import io.wahid.knowledge.application.domain.weather.insights.AnswerGenerator;
 import io.wahid.knowledge.application.domain.weather.insights.OllamaAnswerGenerator;
+import io.wahid.knowledge.application.domain.weather.query.handler.CompareQueryHandler;
+import io.wahid.knowledge.application.domain.weather.query.handler.TopKQueryHandler;
 import io.wahid.knowledge.application.domain.weather.query.routing.WeatherQuestionRouter;
 import io.wahid.knowledge.application.domain.weather.retrieval.WeatherQueryEngine;
 import io.wahid.knowledge.infrastructure.graph.neo4j.Neo4jGraphClient;
@@ -24,7 +27,7 @@ public class WeatherDomainConfiguration {
     ) {
 
         /*
-         * Weather-specific query engine
+         * Query engine
          */
         NumericQueryEngine numericQueryEngine =
                 new WeatherQueryEngine(
@@ -33,53 +36,64 @@ public class WeatherDomainConfiguration {
                 );
 
         /*
-         * Weather-specific intent parsing
+         * Intent parser
          */
         NumericIntentParser numericIntentParser =
                 new NumericIntentParser(llmClient);
 
         /*
-         * Weather-specific router
+         * Handlers
          */
-        WeatherQuestionRouter questionRouter =
-                new WeatherQuestionRouter(
-                        vectorSearcher,
-                        embeddingClient,
-                        llmClient,
+        TopKQueryHandler topKHandler =
+                new TopKQueryHandler(
                         numericQueryEngine,
-                        numericIntentParser
+                        llmClient
                 );
 
-        /*
-         * Generic retriever
-         */
-        Retriever retriever =
-                new DefaultRetriever(
+        CompareQueryHandler compareHandler =
+                new CompareQueryHandler(
+                        llmClient
+                );
+
+        RetrievalStrategy retrievalStrategy =
+                new VectorRetrievalStrategy(
                         embeddingClient,
                         vectorSearcher
                 );
 
+        SemanticSearchQueryHandler semanticHandler =
+                new SemanticSearchQueryHandler(
+                        retrievalStrategy,
+                        llmClient
+                );
+
         /*
-         * Weather answer generation
+         * Router
+         */
+        WeatherQuestionRouter questionRouter =
+                new WeatherQuestionRouter(
+                        numericIntentParser,
+                        compareHandler,
+                        semanticHandler
+                );
+
+        /*
+         * Answer generator
          */
         AnswerGenerator answerGenerator =
                 new OllamaAnswerGenerator(llmClient);
 
         /*
-         * Build domain context
+         * Domain context
          */
-        DomainContext context = new DomainContext();
+        DomainContext context =
+                new DomainContext();
 
         context.setDomainName("weather");
-        context.setQueryRouter(questionRouter);
-        context.setInsightGenerator(answerGenerator);
 
-        /*
-         * Optional for later chunks
-         */
-        // context.setRetriever(retriever);
-        // context.setDocumentParser(...);
-        // context.setDomainMapper(...);
+        context.setQueryRouter(questionRouter);
+
+        context.setInsightGenerator(answerGenerator);
 
         return context;
     }

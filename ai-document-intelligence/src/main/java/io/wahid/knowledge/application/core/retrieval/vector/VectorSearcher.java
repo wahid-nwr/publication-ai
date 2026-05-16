@@ -13,6 +13,7 @@ public interface VectorSearcher {
 
     record SearchResult(
             String documentId,
+            String chunkId,
             String chunkText,
             DocumentPayload metadata,
             double score

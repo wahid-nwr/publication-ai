@@ -6,10 +6,9 @@ public class QueryResultReference {
 
     private String sourceId;
 
-    private String description;
+    private String chunkId;
 
-    public QueryResultReference() {
-    }
+    private String description;
 
     public String getSourceType() {
         return sourceType;
@@ -33,5 +32,13 @@ public class QueryResultReference {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getChunkId() {
+        return this.chunkId;
+    }
+
+    public void setChunkId(String chunkId) {
+        this.chunkId = chunkId;
     }
 }

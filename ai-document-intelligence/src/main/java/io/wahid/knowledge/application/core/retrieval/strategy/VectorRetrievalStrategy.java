@@ -9,8 +9,7 @@ import io.wahid.knowledge.domain.query.Query;
 
 import java.util.List;
 
-public class VectorRetrievalStrategy
-        implements RetrievalStrategy {
+public class VectorRetrievalStrategy implements RetrievalStrategy {
 
     private final EmbeddingClient embeddingClient;
     private final VectorSearcher vectorSearcher;
@@ -37,6 +36,7 @@ public class VectorRetrievalStrategy
                         .stream()
                         .map(r -> new RetrievedDocument(
                                 r.documentId(),
+                                r.chunkId(),
                                 r.chunkText(),
                                 r.score()
                         ))
