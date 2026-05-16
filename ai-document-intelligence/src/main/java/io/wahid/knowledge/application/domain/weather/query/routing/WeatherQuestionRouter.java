@@ -1,26 +1,62 @@
 package io.wahid.knowledge.application.domain.weather.query.routing;
 
+import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
+import io.wahid.knowledge.application.core.query.handler.QueryHandler;
+import io.wahid.knowledge.application.core.query.model.SemanticQuery;
 import io.wahid.knowledge.application.core.query.routing.QueryRouter;
+import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
+import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
-import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
-import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
+import io.wahid.knowledge.domain.query.Query;
+import io.wahid.knowledge.domain.query.result.QueryResult;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.model.StationSummary;
 import io.wahid.knowledge.repository.StationSummaryRepository;
 import io.wahid.knowledge.util.JpaUtil;
-import io.wahid.knowledge.application.core.retrieval.vector.VectorSearcher;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class WeatherQuestionRouter extends QueryRouter {
+public class WeatherQuestionRouter implements QueryRouter {
+
+    private final NumericIntentParser numericIntentParser;
+
+    private final QueryHandler<NumericQuery> numericHandler;
+
+    private final QueryHandler<SemanticQuery> semanticHandler;
+
+    public WeatherQuestionRouter(NumericIntentParser numericIntentParser,
+                                 QueryHandler<NumericQuery> numericHandler, QueryHandler<SemanticQuery> semanticHandler) {
+        super();
+        this.numericHandler = numericHandler;
+        this.semanticHandler = semanticHandler;
+        this.numericIntentParser = numericIntentParser;
+    }
+
+    @Override
+    public QueryResult route(Query request) throws Exception {
+
+        Optional<NumericQuery> numericQuery = numericIntentParser.parse(request.getText());
+
+        if (numericQuery.isPresent()) {
+            return numericHandler.handle(numericQuery.get());
+        }
+        SemanticQuery query = new SemanticQuery();
+        query.setQuestion(request.getText());
+        query.setTopK(10);
+        query.setContext(request.getContext());
+        query.setType(request.getType());
+        return semanticHandler.handle(query);
+    }
+}
+
+class WeatherQuestionRouter1 implements QueryRouter {
 
     private static final Logger LOGGER = Logger.getLogger(WeatherQuestionRouter.class.getName());
     private final StationSummaryRepository repository;
@@ -30,11 +66,11 @@ public class WeatherQuestionRouter extends QueryRouter {
     private final NumericQueryEngine numericEngine;
     private final NumericIntentParser numericIntentParser;
 
-    public WeatherQuestionRouter(VectorSearcher qdrantSearcher,
-                                 EmbeddingClient embeddingClient,
-                                 LLMClient llmClient,
-                                 NumericQueryEngine numericEngine,
-                                 NumericIntentParser numericIntentParser) {
+    public WeatherQuestionRouter1(VectorSearcher qdrantSearcher,
+                                  EmbeddingClient embeddingClient,
+                                  LLMClient llmClient,
+                                  NumericQueryEngine numericEngine,
+                                  NumericIntentParser numericIntentParser) {
         super();
         this.vectorSearcher = qdrantSearcher;
         this.embeddingClient = embeddingClient;
@@ -44,7 +80,7 @@ public class WeatherQuestionRouter extends QueryRouter {
         this.repository = new StationSummaryRepository(JpaUtil.getEntityManagerFactory());
     }
 
-    public String answer(String question) throws Exception {
+    /*public String answer(String question) throws Exception {
 
         Optional<NumericQuery> nq = numericIntentParser.parse(question);
         LOGGER.log(Level.INFO, "numeric intent present -> {0}", nq.isPresent());
@@ -57,7 +93,7 @@ public class WeatherQuestionRouter extends QueryRouter {
         }
 
         return handleDescriptive(question);
-    }
+    }*/
 
     // ------------------------- RAG handler -------------------------
     private String handleDescriptive(String question) throws Exception {
@@ -81,47 +117,6 @@ public class WeatherQuestionRouter extends QueryRouter {
     }
 
     // ------------------------- Comparison handler -------------------------
-    private String handleComparison(String question) throws Exception {
-        List<String> stations = extractStations(question);
-
-        if (stations.size() < 2) {
-            return "Please specify at least two stations to compare.";
-        }
-
-        List<StationSummary> summaries = repository.findByStationIn(stations);
-
-        if (summaries.size() < 2) {
-            return "Insufficient data to perform the comparison.";
-        }
-
-        String context = summaries.stream()
-                .map(this::formatFacts)
-                .collect(Collectors.joining("\n"));
-
-        return llmClient.generate("""
-                Compare the following weather statistics.
-                Do not infer or assume missing values.
-                Use only the provided data.
-
-                %s
-                """.formatted(context));
-    }
-
-    private String formatFacts(StationSummary s) {
-        return """
-                Station: %s
-                Total Rainfall: %.1f mm
-                Average Rainfall: %.2f mm
-                Average Sunshine: %.2f hours
-                Average Temperature: %.2f °C
-                """.formatted(
-                s.getStation(),
-                s.getTotalRainfall(),
-                s.getAvgRainfall(),
-                s.getAvgSunshine(),
-                s.getAvgTemperature()
-        );
-    }
 
     private List<String> extractStations(String question) {
         String q = question.toLowerCase();
@@ -200,5 +195,10 @@ public class WeatherQuestionRouter extends QueryRouter {
                 value = 0;
         }
         return value;
+    }
+
+    @Override
+    public QueryResult route(Query request) {
+        return null;
     }
 }

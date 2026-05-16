@@ -1,12 +1,10 @@
 package io.wahid.knowledge.infrastructure.graph.neo4j.query;
 
-import java.util.List;
+import io.wahid.knowledge.domain.query.result.QueryResult;
 
 public interface QueryService {
 
     QueryResult query(String question, int topK) throws Exception;
 
     String route(String question) throws Exception;
-
-    record QueryResult(String answer, List<String> sources) {}
 }

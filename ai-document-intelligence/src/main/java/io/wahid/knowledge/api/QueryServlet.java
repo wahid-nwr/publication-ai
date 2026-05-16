@@ -3,10 +3,13 @@ package io.wahid.knowledge.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.wahid.knowledge.domain.query.QueryRequest;
 import io.wahid.knowledge.domain.query.QueryResponse;
+import io.wahid.knowledge.domain.query.result.QueryResult;
+import io.wahid.knowledge.domain.query.result.QueryResultReference;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.util.List;
 
 public class QueryServlet extends HttpServlet {
 
@@ -29,9 +32,10 @@ public class QueryServlet extends HttpServlet {
                 return;
             }
 
-            QueryService.QueryResult result = queryService.query(request.getQuestion(), request.getTopK());
+            QueryResult result = queryService.query(request.getQuestion(), request.getTopK());
 
-            QueryResponse response = new QueryResponse(result.answer(), result.sources());
+            List<String> sources = result.getReferences().stream().map(QueryResultReference::getDescription).toList();
+            QueryResponse response = new QueryResponse(result.getAnswer(), sources);
 
             resp.setContentType("application/json");
             objectMapper.writeValue(resp.getOutputStream(), response);
