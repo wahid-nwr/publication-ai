@@ -4,6 +4,7 @@ import io.wahid.knowledge.application.core.embedding.EmbeddingClient;
 import io.wahid.knowledge.application.core.query.NumericIntentParser;
 import io.wahid.knowledge.application.core.query.dto.NumericResult;
 import io.wahid.knowledge.application.core.query.handler.QueryHandler;
+import io.wahid.knowledge.application.core.query.handler.QueryHandlerRegistry;
 import io.wahid.knowledge.application.core.query.model.SemanticQuery;
 import io.wahid.knowledge.application.core.query.routing.QueryRouter;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
@@ -27,14 +28,15 @@ public class WeatherQuestionRouter implements QueryRouter {
 
     private final NumericIntentParser numericIntentParser;
 
-    private final QueryHandler<NumericQuery> numericHandler;
+    private final QueryHandlerRegistry registry;
 
     private final QueryHandler<SemanticQuery> semanticHandler;
 
     public WeatherQuestionRouter(NumericIntentParser numericIntentParser,
-                                 QueryHandler<NumericQuery> numericHandler, QueryHandler<SemanticQuery> semanticHandler) {
+                                 QueryHandlerRegistry registry, QueryHandler<SemanticQuery> semanticHandler) {
         super();
-        this.numericHandler = numericHandler;
+//        this.numericHandler = numericHandler;
+        this.registry = registry;
         this.semanticHandler = semanticHandler;
         this.numericIntentParser = numericIntentParser;
     }
@@ -45,7 +47,7 @@ public class WeatherQuestionRouter implements QueryRouter {
         Optional<NumericQuery> numericQuery = numericIntentParser.parse(request.getText());
 
         if (numericQuery.isPresent()) {
-            return numericHandler.handle(numericQuery.get());
+            return registry.resolve(numericQuery.get()).handle(numericQuery.get());
         }
         SemanticQuery query = new SemanticQuery();
         query.setQuestion(request.getText());

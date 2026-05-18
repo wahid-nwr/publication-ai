@@ -136,6 +136,28 @@ public class StationSummary {
         return createdAt;
     }
 
+    @Override
+    public String toString() {
+        return "StationSummary{" +
+                "station='" + station + '\'' +
+                ", startYear=" + startYear +
+                ", endYear=" + endYear +
+                ", avgTemperature=" + avgTemperature +
+                ", minTemperature=" + minTemperature +
+                ", maxTemperature=" + maxTemperature +
+                ", avgRainfall=" + avgRainfall +
+                ", totalRainfall=" + totalRainfall +
+                ", rainyMonths='" + rainyMonths + '\'' +
+                ", avgSunshine=" + avgSunshine +
+                ", avgHumidity=" + avgHumidity +
+                ", dataPoints=" + dataPoints +
+                ", summaryText='" + summaryText + '\'' +
+                ", embeddingId='" + embeddingId + '\'' +
+                ", createdAt=" + createdAt +
+                ", summaryId=" + summaryId +
+                '}';
+    }
+
     public static class Builder {
         private String station;
         private int startYear;

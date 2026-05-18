@@ -55,6 +55,7 @@ public class SemanticSearchQueryHandler implements QueryHandler<SemanticQuery> {
                             QueryResultReference ref = new QueryResultReference();
                             ref.setSourceId(doc.getDocumentId());
                             ref.setChunkId(doc.getChunkId());
+                            ref.setDescription(doc.getContent());
                             return ref;
                         })
                         .toList();

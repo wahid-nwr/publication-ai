@@ -4,12 +4,14 @@ import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.dto.TrendResult;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
+import io.wahid.knowledge.domain.query.result.QueryResult;
 import io.wahid.knowledge.domain.query.result.QueryResultPayload;
 import io.wahid.knowledge.model.StationSummary;
 
 import java.util.List;
 
-public class NumericResultPayload implements QueryResultPayload {
+public class NumericExecutionResult extends QueryResult
+        implements QueryResultPayload {
 
     private NumericQueryType type;
 
@@ -23,12 +25,13 @@ public class NumericResultPayload implements QueryResultPayload {
 
     private int total;
 
-    public NumericResultPayload(NumericQueryType type,
-                                NumericMetric metric,
-                                List<StationSummary> stations,
-                                TrendResult trend,
-                                GraphResult value,
-                                int total
+    public NumericExecutionResult(
+            NumericQueryType type,
+            NumericMetric metric,
+            List<StationSummary> stations,
+            TrendResult trend,
+            GraphResult value,
+            int total
     ) {
         this.type = type;
         this.metric = metric;
@@ -43,7 +46,7 @@ public class NumericResultPayload implements QueryResultPayload {
         return stations;
     }
 
-    public NumericQueryType getType() {
+    public NumericQueryType getNumericType() {
         return type;
     }
 

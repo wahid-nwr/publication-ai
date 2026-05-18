@@ -3,6 +3,7 @@ package io.wahid.knowledge.application.core.query.model;
 import io.wahid.knowledge.domain.query.result.QueryResultPayload;
 import io.wahid.knowledge.domain.query.result.RetrievedDocument;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SemanticResultPayload implements QueryResultPayload {
