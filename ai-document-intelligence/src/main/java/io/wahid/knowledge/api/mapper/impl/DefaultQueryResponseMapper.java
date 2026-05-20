@@ -36,7 +36,7 @@ public class DefaultQueryResponseMapper implements QueryResponseMapper {
          * Numeric response
          */
         if (payload instanceof NumericResultPayload numeric) {
-            List<StationSummary> stations = numeric.getStations();
+            List<StationSummary> stations = numeric.results();
             if (stations == null || stations.isEmpty()) {
                 return new QueryResponse("No numeric result found.", List.of());
             }
