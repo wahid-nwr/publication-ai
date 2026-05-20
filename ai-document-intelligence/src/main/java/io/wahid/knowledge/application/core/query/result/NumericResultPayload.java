@@ -5,17 +5,16 @@ import io.wahid.knowledge.application.core.query.dto.TrendResult;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericMetric;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
 import io.wahid.knowledge.domain.query.result.QueryResultPayload;
-import io.wahid.knowledge.model.StationSummary;
 
 import java.util.List;
 
-public class NumericResultPayload implements QueryResultPayload {
+public class NumericResultPayload<T> implements QueryResultPayload<T> {
 
     private NumericQueryType type;
 
     private NumericMetric metric;
 
-    private List<StationSummary> stations;
+    private final List<T> results;
 
     private TrendResult trend;
 
@@ -25,22 +24,22 @@ public class NumericResultPayload implements QueryResultPayload {
 
     public NumericResultPayload(NumericQueryType type,
                                 NumericMetric metric,
-                                List<StationSummary> stations,
+                                List<T> results,
                                 TrendResult trend,
                                 GraphResult value,
                                 int total
     ) {
         this.type = type;
         this.metric = metric;
-        this.stations = stations;
+        this.results = results;
         this.trend = trend;
         this.value = value;
         this.total = total;
     }
 
     @Override
-    public List<?> results() {
-        return stations;
+    public List<T> results() {
+        return results;
     }
 
     public NumericQueryType getType() {
@@ -57,14 +56,6 @@ public class NumericResultPayload implements QueryResultPayload {
 
     public void setMetric(NumericMetric metric) {
         this.metric = metric;
-    }
-
-    public List<StationSummary> getStations() {
-        return stations;
-    }
-
-    public void setStations(List<StationSummary> stations) {
-        this.stations = stations;
     }
 
     public TrendResult getTrend() {
