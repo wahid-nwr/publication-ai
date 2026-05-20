@@ -24,7 +24,6 @@ public class WeatherQueryEngine implements NumericQueryEngine {
     @Override
     public NumericResultPayload execute(NumericQuery query) {
         String metric = query.getMetric().getMetricName();
-        System.out.println("query.getNemericType()->" + query.getNemericType());
         return switch (query.getNemericType()) {
             case MAX -> wrap(query, neoRepo.findTopByMetricDesc(metric));
             case MIN -> wrap(query, neoRepo.findTopByMetricAsc(metric));
