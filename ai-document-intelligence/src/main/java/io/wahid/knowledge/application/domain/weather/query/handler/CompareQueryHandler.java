@@ -3,7 +3,7 @@ package io.wahid.knowledge.application.domain.weather.query.handler;
 import io.wahid.knowledge.application.core.query.handler.QueryHandler;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
-import io.wahid.knowledge.domain.query.Query;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
 import io.wahid.knowledge.domain.query.result.QueryResult;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
 import io.wahid.knowledge.model.StationSummary;
@@ -30,8 +30,8 @@ public class CompareQueryHandler implements QueryHandler<NumericQuery> {
     }
 
     @Override
-    public boolean supports(Query query) {
-        return query instanceof NumericQuery;
+    public boolean supports(NumericQuery query) {
+        return query.getNumericType() == NumericQueryType.COMPARE;
     }
 
     @Override

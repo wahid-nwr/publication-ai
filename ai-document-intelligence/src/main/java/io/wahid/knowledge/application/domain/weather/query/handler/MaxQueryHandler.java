@@ -1,20 +1,11 @@
 package io.wahid.knowledge.application.domain.weather.query.handler;
 
-import io.wahid.knowledge.application.core.query.dto.GraphResult;
 import io.wahid.knowledge.application.core.query.handler.QueryHandler;
-import io.wahid.knowledge.application.core.query.result.NumericExecutionResult;
-import io.wahid.knowledge.application.core.query.result.NumericResultPayload;
 import io.wahid.knowledge.application.core.retrieval.NumericQueryEngine;
 import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
-import io.wahid.knowledge.application.domain.weather.retrieval.WeatherQueryEngine;
-import io.wahid.knowledge.domain.query.Query;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
 import io.wahid.knowledge.domain.query.result.QueryResult;
-import io.wahid.knowledge.infrastructure.config.AppConfig;
-import io.wahid.knowledge.infrastructure.graph.neo4j.Neo4jGraphClient;
-import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.Neo4jWeatherRepository;
 import io.wahid.knowledge.infrastructure.llms.LLMClient;
-
-import java.util.List;
 
 public class MaxQueryHandler implements QueryHandler<NumericQuery> {
 
@@ -29,8 +20,8 @@ public class MaxQueryHandler implements QueryHandler<NumericQuery> {
     }
 
     @Override
-    public boolean supports(Query query) {
-        return query instanceof NumericQuery /*nq && nq.getType() == NumericQueryType.MAX*/;
+    public boolean supports(NumericQuery query) {
+        return query.getNumericType() == NumericQueryType.MAX;
     }
 
     @Override

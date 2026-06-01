@@ -55,7 +55,7 @@ public class DefaultQueryResponseMapper implements QueryResponseMapper {
         List<String> sources = result.getReferences() != null
                         ? result.getReferences().stream().map(QueryResultReference::getDescription).toList()
                         : List.of();
-        return new QueryResponse("No response available", sources);
+        return new QueryResponse(result.getAnswer(), sources);
     }
 
     private String formatStation(StationSummary s, NumericResultPayload payload) {

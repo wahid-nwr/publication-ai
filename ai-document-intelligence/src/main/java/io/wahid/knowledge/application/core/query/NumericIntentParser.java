@@ -41,13 +41,14 @@ public class NumericIntentParser {
                 return Optional.empty();
             }
 
+            LOGGER.log(Level.INFO, "Numeric query type {0}", type);
             NumericQueryType nmQuerytype = NumericQueryType.valueOf(type.toUpperCase());
 
             return Optional.of(
                     new NumericQuery.Builder()
-                            .numeric(root.path("numeric").asBoolean(numeric))
+                            .numeric(numeric)
                             .timeBased(root.path("timeBased").asBoolean(false))
-                            .value(root.path("value").asDouble(0))
+//                            .value(root.path("value").asDouble(0))
                             .type(nmQuerytype)
                             .metric(NumericMetric.getMetricByName(metric))
                             .k(root.path("k").asInt(1))
@@ -57,6 +58,7 @@ public class NumericIntentParser {
             );
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             return Optional.empty();
         }
     }

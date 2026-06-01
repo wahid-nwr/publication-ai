@@ -9,7 +9,7 @@ public class NumericQuery extends Query {
     private final boolean timeBased;
     private final boolean numeric;
     private final double value;
-    private final NumericQueryType nemerictype;
+    private final NumericQueryType numerictype;
 
     private final NumericMetric metric;
 
@@ -24,7 +24,7 @@ public class NumericQuery extends Query {
     private final Integer k;
 
     private NumericQuery(Builder b) {
-        this.nemerictype = b.type;
+        this.numerictype = b.type;
         this.metric = b.metric;
         this.stations = b.stations;
         this.station = b.station;
@@ -35,7 +35,7 @@ public class NumericQuery extends Query {
         this.value = b.value;
     }
 
-    public NumericQueryType getNemericType() { return this.nemerictype; }
+    public NumericQueryType getNumericType() { return this.numerictype; }
     public NumericMetric getMetric() { return metric; }
 
     public List<String> getStations() { return stations; }
