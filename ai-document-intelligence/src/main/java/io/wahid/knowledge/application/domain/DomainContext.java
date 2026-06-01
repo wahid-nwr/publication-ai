@@ -1,17 +1,18 @@
 package io.wahid.knowledge.application.domain;
 
 import io.wahid.knowledge.application.core.insight.InsightGenerator;
+import io.wahid.knowledge.application.core.insight.InsightResult;
 import io.wahid.knowledge.application.core.query.routing.QueryRouter;
 import io.wahid.knowledge.application.core.retrieval.strategy.RetrievalStrategy;
+import io.wahid.knowledge.domain.query.Query;
 
 public class DomainContext {
     private String domainName;
-    private DocumentParser documentParser;
-    private DomainMapper domainMapper;
+    private DocumentParser<DomainDocument> documentParser;
+    private DomainMapper<DomainDocument> domainMapper;
     private QueryRouter queryRouter;
     private RetrievalStrategy retrievalStrategy;
-    private InsightGenerator insightGenerator;
-//    private DomainMetadata metadata;
+    private InsightGenerator<Query, InsightResult> insightGenerator;
 
     public String getDomainName() {
         return domainName;
@@ -21,19 +22,19 @@ public class DomainContext {
         this.domainName = domainName;
     }
 
-    public DocumentParser getDocumentParser() {
+    public DocumentParser<DomainDocument> getDocumentParser() {
         return documentParser;
     }
 
-    public void setDocumentParser(DocumentParser documentParser) {
+    public void setDocumentParser(DocumentParser<DomainDocument> documentParser) {
         this.documentParser = documentParser;
     }
 
-    public DomainMapper getDomainMapper() {
+    public DomainMapper<DomainDocument> getDomainMapper() {
         return domainMapper;
     }
 
-    public void setDomainMapper(DomainMapper domainMapper) {
+    public void setDomainMapper(DomainMapper<DomainDocument> domainMapper) {
         this.domainMapper = domainMapper;
     }
 
@@ -53,11 +54,11 @@ public class DomainContext {
         this.retrievalStrategy = retrievalStrategy;
     }
 
-    public InsightGenerator getInsightGenerator() {
+    public InsightGenerator<Query, InsightResult> getInsightGenerator() {
         return insightGenerator;
     }
 
-    public void setInsightGenerator(InsightGenerator insightGenerator) {
+    public void setInsightGenerator(InsightGenerator<Query, InsightResult> insightGenerator) {
         this.insightGenerator = insightGenerator;
     }
 }
