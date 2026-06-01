@@ -5,7 +5,9 @@ import io.wahid.knowledge.application.core.query.model.SemanticQuery;
 import io.wahid.knowledge.application.core.retrieval.RetrievalContext;
 import io.wahid.knowledge.application.core.retrieval.RetrievalResult;
 import io.wahid.knowledge.application.core.retrieval.strategy.RetrievalStrategy;
-import io.wahid.knowledge.domain.query.Query;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQuery;
+import io.wahid.knowledge.application.domain.weather.query.model.NumericQueryType;
+import io.wahid.knowledge.domain.query.QueryType;
 import io.wahid.knowledge.domain.query.result.QueryResult;
 import io.wahid.knowledge.domain.query.result.QueryResultReference;
 import io.wahid.knowledge.domain.query.result.RetrievedDocument;
@@ -23,8 +25,8 @@ public class SemanticSearchQueryHandler implements QueryHandler<SemanticQuery> {
     }
 
     @Override
-    public boolean supports(Query query) {
-        return query instanceof SemanticQuery;
+    public boolean supports(SemanticQuery query) {
+        return query.getType() == QueryType.SEMANTIC;
     }
 
     @Override

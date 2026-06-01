@@ -29,8 +29,7 @@ public class SemanticResultFormatter
     public String format(QueryResult result)
             throws Exception {
 
-        SemanticResultPayload payload =
-                (SemanticResultPayload) result.getPayload();
+        SemanticResultPayload payload = (SemanticResultPayload) result.getPayload();
 
         // TODO check objects
         String context = payload.results()

@@ -35,7 +35,6 @@ public class WeatherQuestionRouter implements QueryRouter {
     public WeatherQuestionRouter(NumericIntentParser numericIntentParser,
                                  QueryHandlerRegistry registry, QueryHandler<SemanticQuery> semanticHandler) {
         super();
-//        this.numericHandler = numericHandler;
         this.registry = registry;
         this.semanticHandler = semanticHandler;
         this.numericIntentParser = numericIntentParser;
@@ -134,7 +133,7 @@ class WeatherQuestionRouter1 implements QueryRouter {
             return "No data available for this query.";
         }
 
-        if (query.getNemericType() == NumericQueryType.MAX || query.getNemericType() == NumericQueryType.MIN) {
+        if (query.getNumericType() == NumericQueryType.MAX || query.getNumericType() == NumericQueryType.MIN) {
             StationSummary s = result.getNodes().getFirst();
 
             // Determine value and unit dynamically
@@ -144,18 +143,18 @@ class WeatherQuestionRouter1 implements QueryRouter {
             return llmClient.generate(
                     "Answer in one sentence: " +
                             "The station with " +
-                            (query.getNemericType() == NumericQueryType.MAX ? "the highest" : "the lowest") +
+                            (query.getNumericType() == NumericQueryType.MAX ? "the highest" : "the lowest") +
                             " " + query.getMetric() +
                             " is " + s.getStation() +
                             " with " + value + " " + unit + "."
             );
         }
 
-        if (query.getNemericType() == NumericQueryType.TOP_K || query.getNemericType() == NumericQueryType.BOTTOM_K) {
+        if (query.getNumericType() == NumericQueryType.TOP_K || query.getNumericType() == NumericQueryType.BOTTOM_K) {
             return getComparisonAnswers(query, result);
         }
 
-        if (query.getNemericType() == NumericQueryType.TREND || query.getNemericType() == NumericQueryType.VALUE) {
+        if (query.getNumericType() == NumericQueryType.TREND || query.getNumericType() == NumericQueryType.VALUE) {
             return result.getNodes().isEmpty() ? "" : result.getNodes().getFirst().getSummaryText();
         }
         // For TOP_K / BOTTOM_K / TREND
@@ -166,7 +165,7 @@ class WeatherQuestionRouter1 implements QueryRouter {
         List<StationSummary> nodes = result.getNodes();
         StringBuilder sb = new StringBuilder();
         sb.append("Here are the ").append(query.getK()).append(" stations with ")
-                .append(query.getNemericType() == NumericQueryType.TOP_K ? "highest " : "lowest ")
+                .append(query.getNumericType() == NumericQueryType.TOP_K ? "highest " : "lowest ")
                 .append(query.getMetric()).append(": ");
         for (int i = 0; i < nodes.size(); i++) {
             StationSummary s = nodes.get(i);
