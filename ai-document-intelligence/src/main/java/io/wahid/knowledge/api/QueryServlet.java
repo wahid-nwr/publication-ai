@@ -19,40 +19,27 @@ public class QueryServlet extends HttpServlet {
 
     private final QueryResponseMapper responseMapper;
 
-    private final ObjectMapper objectMapper =
-            new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public QueryServlet(
-            QueryService queryService
-    ) {
+    public QueryServlet(QueryService queryService) {
         this.queryService = queryService;
         this.responseMapper = new DefaultQueryResponseMapper();
     }
 
     @Override
-    protected void doPost(
-            HttpServletRequest req,
-            HttpServletResponse resp
-    ) throws IOException {
-
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-
             QueryRequest request = objectMapper.readValue(req.getInputStream(), QueryRequest.class);
-
             if (request.getQuestion() == null || request.getQuestion().isBlank()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Question is required");
                 return;
             }
-
             QueryResult result = queryService.query(request.getQuestion(), request.getTopK());
-
             QueryResponse response = responseMapper.map(result);
             resp.setContentType("application/json");
-
             objectMapper.writeValue(resp.getOutputStream(), response);
-
         } catch (Exception e) {
-            throw new IOException(e);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
         }
     }
 }
