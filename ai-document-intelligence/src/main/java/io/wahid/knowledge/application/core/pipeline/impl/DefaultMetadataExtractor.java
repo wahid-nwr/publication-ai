@@ -23,6 +23,8 @@ public class DefaultMetadataExtractor extends AbstractPipelineStage {
 
         downstream.accept(new TextChunk(
                 chunk.documentId(),
+                chunk.tenantId(),
+                chunk.workspaceId(),
                 chunk.text(),
                 enriched
         ));

@@ -34,7 +34,8 @@ public class QueryServlet extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Question is required");
                 return;
             }
-            QueryResult result = queryService.query(request.getQuestion(), request.getTopK());
+            QueryResult result = queryService.query(request.getTenantId(), request.getWorkspaceId(),
+                    request.getQuestion(), request.getTopK());
             QueryResponse response = responseMapper.map(result);
             resp.setContentType("application/json");
             objectMapper.writeValue(resp.getOutputStream(), response);

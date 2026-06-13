@@ -97,12 +97,12 @@ class WeatherQuestionRouter1 implements QueryRouter {
     }*/
 
     // ------------------------- RAG handler -------------------------
-    private String handleDescriptive(String question) throws Exception {
+    private String handleDescriptive(String tenantId, String workspaceId, String question) throws Exception {
 
         float[] queryVector = embeddingClient.embed(question);
 
         List<VectorSearcher.SearchResult> results =
-                vectorSearcher.search(queryVector, 3);
+                vectorSearcher.search(tenantId, workspaceId, queryVector, 3);
 
         String context = results.stream()
                 .map(VectorSearcher.SearchResult::chunkText)

@@ -21,11 +21,13 @@ public class DefaultRetriever implements Retriever {
 
     @Override
     public List<VectorSearcher.SearchResult> retrieve(
+            String tenantId,
+            String workspaceId,
             String question,
             int topK
     ) throws Exception {
         float[] queryEmbedding = embeddingClient.embed(question);
 
-        return vectorSearcher.search(queryEmbedding, topK);
+        return vectorSearcher.search(tenantId, workspaceId, queryEmbedding, topK);
     }
 }

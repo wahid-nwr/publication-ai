@@ -41,12 +41,12 @@ public class DefaultQueryService implements QueryService {
     }
 
     @Override
-    public QueryResult query(String question, int topK) throws Exception {
+    public QueryResult query(String tenantId, String workspaceId, String question, int topK) throws Exception {
 
         /*
          * Generic retrieval
          */
-        List<VectorSearcher.SearchResult> retrieved = retriever.retrieve(question, topK);
+        List<VectorSearcher.SearchResult> retrieved = retriever.retrieve(tenantId, workspaceId, question, topK);
 
         System.out.println("---- Retrieved Context ----");
 
@@ -90,7 +90,8 @@ public class DefaultQueryService implements QueryService {
 
     @Override
     public String route(String question) throws Exception {
-        return query(question, 10).getAnswer();
+        // TODO replace tenant and workspace id
+        return query("tenantId", "workspaceId", question, 10).getAnswer();
     }
 }
 

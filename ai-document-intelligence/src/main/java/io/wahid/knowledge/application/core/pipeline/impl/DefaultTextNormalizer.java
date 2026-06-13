@@ -15,6 +15,8 @@ public class DefaultTextNormalizer extends AbstractPipelineStage {
 
         downstream.accept(new TextChunk(
                 chunk.documentId(),
+                chunk.tenantId(),
+                chunk.workspaceId(),
                 normalized,
                 chunk.metadata()
         ));

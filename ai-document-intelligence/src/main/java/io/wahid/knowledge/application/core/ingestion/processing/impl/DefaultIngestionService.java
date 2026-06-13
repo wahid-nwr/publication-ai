@@ -47,7 +47,7 @@ public class DefaultIngestionService implements IngestionService {
     }
 
     @Override
-    public void ingest(String documentId, String type, InputStream input) throws Exception {
+    public void ingest(String tenantId, String workspaceId, String documentId, String type, InputStream input) throws Exception {
         LOGGER.log(Level.INFO, "Initiating ingest by {0}", pipeline.getClass().getName());
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("type", type);
@@ -58,7 +58,7 @@ public class DefaultIngestionService implements IngestionService {
             while ((line = reader.readLine()) != null) {
                 if (line.isBlank()) continue;
 //                LOGGER.log(Level.FINE, "ingesting line-> {0}", line);
-                pipeline.accept(new TextChunk(documentId, line, metadata));
+                pipeline.accept(new TextChunk(tenantId, workspaceId, documentId, line, metadata));
             }
         }
 

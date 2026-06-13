@@ -27,6 +27,8 @@ public final class EmbeddingChunker
     private int bufferedTokens = 0;
 
     private String documentId;
+    private String tenantId;
+    private String workspaceId;
     private Map<String, Object> baseMetadata;
 
     public EmbeddingChunker(int maxTokens, int maxChars) {
@@ -38,6 +40,8 @@ public final class EmbeddingChunker
     public void accept(TextChunk input) throws Exception {
         if (documentId == null) {
             documentId = input.documentId();
+            tenantId = input.tenantId();
+            workspaceId = input.workspaceId();
             baseMetadata = input.metadata();
         }
 
@@ -73,6 +77,8 @@ public final class EmbeddingChunker
 
         LOGGER.log(Level.INFO, "emitting buffer from embeddingchunker with -> {0}", downstream.getClass().getName());
         downstream.accept(new TextChunk(
+                tenantId,
+                workspaceId,
                 documentId,
                 buffer.toString().trim(),
                 enrichMetadata()
