@@ -2,11 +2,13 @@ package io.wahid.knowledge.domain.query;
 
 import io.wahid.knowledge.domain.shared.BaseEntity;
 
+import java.util.UUID;
+
 public class Query extends BaseEntity {
 
-    private String tenantId;
+    private UUID tenantId;
 
-    private String workspaceId;
+    private UUID workspaceId;
 
     private String text;
 
@@ -19,19 +21,19 @@ public class Query extends BaseEntity {
     public Query() {
     }
 
-    public String getTenantId() {
+    public UUID getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(UUID tenantId) {
         this.tenantId = tenantId;
     }
 
-    public String getWorkspaceId() {
+    public UUID getWorkspaceId() {
         return workspaceId;
     }
 
-    public void setWorkspaceId(String workspaceId) {
+    public void setWorkspaceId(UUID workspaceId) {
         this.workspaceId = workspaceId;
     }
 

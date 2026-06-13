@@ -51,7 +51,8 @@ public class IngestServlet extends HttpServlet {
 
         try (InputStream in = filePart.getInputStream()) {
             try {
-                ingestionService.ingest(documentId, type, in);
+                // TODO parse jwt for tenant and workspace and pass them here
+                ingestionService.ingest(documentId, documentId, documentId, type, in);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

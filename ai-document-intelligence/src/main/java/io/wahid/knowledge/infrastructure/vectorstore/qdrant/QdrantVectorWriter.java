@@ -46,6 +46,8 @@ public class QdrantVectorWriter implements VectorWriter {
 
         Map<String, Object> payload = new HashMap<>(chunk.metadata());
         payload.put("documentId", chunk.documentId());
+        payload.put("tenantId", chunk.tenantId());
+        payload.put("workspaceId", chunk.workspaceId());
         payload.put("text", chunk.text());
         LOGGER.log(Level.INFO, "writing vectors -> {0}", chunk.text());
         Map<String, Object> point = Map.of(

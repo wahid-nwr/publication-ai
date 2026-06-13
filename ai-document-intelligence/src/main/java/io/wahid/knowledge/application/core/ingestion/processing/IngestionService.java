@@ -6,6 +6,8 @@ import java.nio.file.Path;
 
 public interface IngestionService {
     void ingest(
+            String tenantId,
+            String workspaceId,
             String documentId,
             String type,
             InputStream inputStream
@@ -18,9 +20,9 @@ public interface IngestionService {
             String objectKey
     ) throws Exception;
 
-    default void ingest(String documentId,
+    default void ingest(String tenantId, String workspaceId, String documentId,
                         String type,
                         Path file) throws Exception {
-        ingest(documentId, type, Files.newInputStream(file));
+        ingest(tenantId, workspaceId, documentId, type, Files.newInputStream(file));
     }
 }

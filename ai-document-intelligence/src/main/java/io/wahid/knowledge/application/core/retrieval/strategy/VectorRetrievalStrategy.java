@@ -23,16 +23,11 @@ public class VectorRetrievalStrategy implements RetrievalStrategy {
     }
 
     @Override
-    public RetrievalResult retrieve(
-            Query query,
-            RetrievalContext context
-    ) throws Exception {
-
-        float[] embedding =
-                embeddingClient.embed(query.getText());
-
+    public RetrievalResult retrieve(Query query, RetrievalContext context) throws Exception {
+        float[] embedding = embeddingClient.embed(query.getText());
         List<RetrievedDocument> documents =
-                vectorSearcher.search(embedding, context.topK())
+                vectorSearcher.search(query.getTenantId().toString(), query.getWorkspaceId().toString(),
+                                embedding, context.topK())
                         .stream()
                         .map(r -> new RetrievedDocument(
                                 r.documentId(),

@@ -36,9 +36,9 @@ public class QdrantVectorSearcher implements VectorSearcher {
     }
 
     @Override
-    public List<SearchResult> search(float[] queryVector, int topK) {
+    public List<SearchResult> search(String tenantId, String workspaceId, float[] queryVector, int topK) {
         try {
-            String requestBody = buildRequest(queryVector, topK);
+            String requestBody = buildRequest(tenantId, workspaceId, queryVector, topK);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/collections/" + collection + "/points/search"))
                     .header("Content-Type", "application/json")
@@ -59,8 +59,10 @@ public class QdrantVectorSearcher implements VectorSearcher {
         }
     }
 
-    private String buildRequest(float[] vector, int topK) throws Exception {
+    private String buildRequest(String tenantId, String workspaceId, float[] vector, int topK) throws Exception {
         Map<String, Object> body = new HashMap<>();
+        body.put("tenantId", tenantId);
+        body.put("workspaceId", workspaceId);
         body.put("vector", vector);
         body.put("limit", topK);
         body.put("with_payload", true);
@@ -98,9 +100,21 @@ public class QdrantVectorSearcher implements VectorSearcher {
                     ? documentIdNode.asText()
                     : "unknown";
 
+            JsonNode tenantIdNode = payload.get("tenantId");
+            String tenantId = tenantIdNode != null && !tenantIdNode.isNull()
+                    ? tenantIdNode.asText()
+                    : "unknown";
+
+            JsonNode workspaceIdNode = payload.get("workspaceId");
+            String workspaceId = workspaceIdNode != null && !workspaceIdNode.isNull()
+                    ? workspaceIdNode.asText()
+                    : "unknown";
+
             double score = node.has("score") ? node.get("score").asDouble() : 0.0;
 
             results.add(new SearchResult(
+                    tenantId,
+                    workspaceId,
                     documentId,
                     "",
                     textNode.asText(),
