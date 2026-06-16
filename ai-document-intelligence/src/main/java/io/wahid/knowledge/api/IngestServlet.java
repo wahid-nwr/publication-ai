@@ -1,6 +1,8 @@
 package io.wahid.knowledge.api;
 
+import com.nimbusds.jwt.JWTClaimsSet;
 import io.wahid.knowledge.application.core.ingestion.processing.IngestionService;
+import io.wahid.knowledge.infrastructure.graph.neo4j.query.impl.Neo4jWeatherRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
@@ -10,12 +12,16 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @MultipartConfig
 public class IngestServlet extends HttpServlet {
-
-    private final IngestionService ingestionService;
+    private static final Logger LOGGER = Logger.getLogger(IngestServlet.class.getName());
+    private final transient IngestionService ingestionService;
 
     public IngestServlet(IngestionService ingestionService) {
         this.ingestionService = ingestionService;
@@ -39,6 +45,16 @@ public class IngestServlet extends HttpServlet {
             return;
         }
 
+        JWTClaimsSet claims = (JWTClaimsSet) req.getAttribute("jwtClaims");
+        String tenantId;
+        try {
+            List<String> tenantIds = claims.getStringListClaim("tenantId");
+            tenantId = tenantIds.getFirst();
+        } catch (ParseException e) {
+            LOGGER.log(Level.SEVERE, "ParseException occured.", e);
+            throw new RuntimeException(e);
+        }
+        String workspaceId = Optional.ofNullable(req.getAttribute("workspaceId").toString()).orElse("");
         String documentId = Optional.ofNullable(req.getPart("docId"))
                 .map(p -> {
                     try {
@@ -51,9 +67,9 @@ public class IngestServlet extends HttpServlet {
 
         try (InputStream in = filePart.getInputStream()) {
             try {
-                // TODO parse jwt for tenant and workspace and pass them here
-                ingestionService.ingest(documentId, documentId, documentId, type, in);
+                ingestionService.ingest(tenantId, workspaceId, documentId, type, in);
             } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Exception occured while ingesting.", e);
                 throw new RuntimeException(e);
             }
         }

@@ -42,7 +42,12 @@ public class SemanticQuery extends Query {
      */
     private boolean hybridSearchEnabled = true;
 
-    public SemanticQuery() {
+    public SemanticQuery(Query query) {
+        setTenantId(query.getTenantId());
+        setWorkspaceId(query.getWorkspaceId());
+        setQuestion(query.getText());
+        setTopK(10);
+        setContext(query.getContext());
         setType(QueryType.SEMANTIC);
     }
 

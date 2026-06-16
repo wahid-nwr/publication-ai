@@ -6,9 +6,9 @@ import java.util.UUID;
 
 public class Query extends BaseEntity {
 
-    private UUID tenantId;
+    private String tenantId;
 
-    private UUID workspaceId;
+    private String workspaceId;
 
     private String text;
 
@@ -21,19 +21,19 @@ public class Query extends BaseEntity {
     public Query() {
     }
 
-    public UUID getTenantId() {
+    public String getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(UUID tenantId) {
+    public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 
-    public UUID getWorkspaceId() {
+    public String getWorkspaceId() {
         return workspaceId;
     }
 
-    public void setWorkspaceId(UUID workspaceId) {
+    public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
     }
 
