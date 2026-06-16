@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -136,7 +137,10 @@ public class JwtFilter implements Filter {
             String token = authHeader.substring(7); // remove "Bearer "
             JWTClaimsSet claims = validate(token);
 
+            System.out.println(claims.toJSONObject());
             // optionally store claims for controllers
+            // TODO pass real workspaceId here
+            request.setAttribute("workspaceId", "default-workspace");
             request.setAttribute("jwtClaims", claims);
 
         } catch (Exception e) {

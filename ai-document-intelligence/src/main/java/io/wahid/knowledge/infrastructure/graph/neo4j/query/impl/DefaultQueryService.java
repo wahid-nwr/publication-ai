@@ -46,6 +46,8 @@ public class DefaultQueryService implements QueryService {
         /*
          * Generic retrieval
          */
+        System.out.println("---- Retrieving Context ----");
+        System.out.println("tenant->" + tenantId + ", workspace->" + workspaceId);
         List<VectorSearcher.SearchResult> retrieved = retriever.retrieve(tenantId, workspaceId, question, topK);
 
         System.out.println("---- Retrieved Context ----");
@@ -58,6 +60,8 @@ public class DefaultQueryService implements QueryService {
          * Resolve domain
          */
         Query query = new Query();
+        query.setTenantId(tenantId);
+        query.setWorkspaceId(workspaceId);
         query.setText(question);
         String domain = domainResolver.resolve(query);
 

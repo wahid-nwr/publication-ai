@@ -48,11 +48,7 @@ public class WeatherQuestionRouter implements QueryRouter {
         if (numericQuery.isPresent()) {
             return registry.resolve(numericQuery.get()).handle(numericQuery.get());
         }
-        SemanticQuery query = new SemanticQuery();
-        query.setQuestion(request.getText());
-        query.setTopK(10);
-        query.setContext(request.getContext());
-        query.setType(request.getType());
+        SemanticQuery query = new SemanticQuery(request);
         return semanticHandler.handle(query);
     }
 }
