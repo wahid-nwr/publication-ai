@@ -59,10 +59,7 @@ public class DefaultQueryService implements QueryService {
         /*
          * Resolve domain
          */
-        Query query = new Query();
-        query.setTenantId(tenantId);
-        query.setWorkspaceId(workspaceId);
-        query.setText(question);
+        Query query = new Query(tenantId, workspaceId, question, null, null, null);
         String domain = domainResolver.resolve(query);
 
         /*
@@ -90,12 +87,6 @@ public class DefaultQueryService implements QueryService {
                 .toList();*/
 
         /*return queryResult;*/
-    }
-
-    @Override
-    public String route(String question) throws Exception {
-        // TODO replace tenant and workspace id
-        return query("tenantId", "workspaceId", question, 10).getAnswer();
     }
 }
 

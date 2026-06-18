@@ -24,6 +24,7 @@ public class NumericQuery extends Query {
     private final Integer k;
 
     private NumericQuery(Builder b) {
+        super();
         this.numerictype = b.type;
         this.metric = b.metric;
         this.stations = b.stations;
