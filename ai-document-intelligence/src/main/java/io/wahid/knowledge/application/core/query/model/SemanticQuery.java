@@ -11,7 +11,7 @@ public class SemanticQuery extends Query {
     /**
      * Natural language question.
      */
-    private String question;
+    private final String question;
 
     /**
      * Optional semantic filters.
@@ -43,71 +43,34 @@ public class SemanticQuery extends Query {
     private boolean hybridSearchEnabled = true;
 
     public SemanticQuery(Query query) {
-        setTenantId(query.getTenantId());
-        setWorkspaceId(query.getWorkspaceId());
-        setQuestion(query.getText());
-        setTopK(10);
-        setContext(query.getContext());
-        setType(QueryType.SEMANTIC);
-    }
-
-    public SemanticQuery(String question) {
-        this.question = question;
-        setType(QueryType.SEMANTIC);
-    }
-
-    public SemanticQuery(String question, int topK) {
-        this.question = question;
-        this.topK = topK;
-        setType(QueryType.SEMANTIC);
+        super(query.getTenantId(), query.getWorkspaceId(), query.getText(),
+                query.getIntent(), QueryType.SEMANTIC, query.getContext());
+        this.question = query.getText();
+        this.topK = 10;
     }
 
     public String getQuestion() {
         return question;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
     public Map<String, Object> getFilters() {
         return filters;
-    }
-
-    public void setFilters(Map<String, Object> filters) {
-        this.filters = filters;
     }
 
     public int getTopK() {
         return topK;
     }
 
-    public void setTopK(int topK) {
-        this.topK = topK;
-    }
-
     public double getSimilarityThreshold() {
         return similarityThreshold;
-    }
-
-    public void setSimilarityThreshold(double similarityThreshold) {
-        this.similarityThreshold = similarityThreshold;
     }
 
     public List<String> getTargetDocumentTypes() {
         return targetDocumentTypes;
     }
 
-    public void setTargetDocumentTypes(List<String> targetDocumentTypes) {
-        this.targetDocumentTypes = targetDocumentTypes;
-    }
-
     public boolean isHybridSearchEnabled() {
         return hybridSearchEnabled;
-    }
-
-    public void setHybridSearchEnabled(boolean hybridSearchEnabled) {
-        this.hybridSearchEnabled = hybridSearchEnabled;
     }
 
     @Override
