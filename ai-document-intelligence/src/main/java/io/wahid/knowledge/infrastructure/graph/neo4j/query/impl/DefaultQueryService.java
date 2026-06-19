@@ -7,28 +7,18 @@ import io.wahid.knowledge.application.domain.DomainRegistry;
 import io.wahid.knowledge.application.domain.DomainResolver;
 import io.wahid.knowledge.domain.query.Query;
 import io.wahid.knowledge.domain.query.result.QueryResult;
+import io.wahid.knowledge.domain.query.result.QueryResultReference;
 import io.wahid.knowledge.infrastructure.graph.neo4j.query.QueryService;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DefaultQueryService implements QueryService {
-
-    private Retriever retriever;
-    private DomainResolver domainResolver;
-    private DomainRegistry domainRegistry;
-    // TODO REMOVE ANSWER, QUESTION
-//    private AnswerGenerator answerGenerator;
-//    private WeatherQuestionRouter questionRouter;
-
-//    public DefaultQueryService(
-//            WeatherQuestionRouter questionRouter,
-//            Retriever retriever,
-//            AnswerGenerator answerGenerator
-//    ) {
-//        this.retriever = retriever;
-////        this.answerGenerator = answerGenerator;
-////        this.questionRouter = questionRouter;
-//    }
+    private static final Logger LOGGER = Logger.getLogger(DefaultQueryService.class.getName());
+    private final Retriever retriever;
+    private final DomainResolver domainResolver;
+    private final DomainRegistry domainRegistry;
 
     public DefaultQueryService(
             DomainRegistry domainRegistry,
@@ -46,15 +36,18 @@ public class DefaultQueryService implements QueryService {
         /*
          * Generic retrieval
          */
-        System.out.println("---- Retrieving Context ----");
-        System.out.println("tenant->" + tenantId + ", workspace->" + workspaceId);
+        LOGGER.info("---- Retrieving Context ----");
+        LOGGER.log(Level.INFO, "tenant-> {0}, workspace-> {1}", new Object[]{tenantId, workspaceId});
         List<VectorSearcher.SearchResult> retrieved = retriever.retrieve(tenantId, workspaceId, question, topK);
 
-        System.out.println("---- Retrieved Context ----");
+        LOGGER.info("---- Retrieved Context ----");
+        LOGGER.log(Level.INFO, "Chunk texts. First 10: {}",
+                retrieved.stream()
+                        .map(VectorSearcher.SearchResult::chunkText)
+                        .limit(10)
+                        .toList().toArray());
 
-        retrieved.stream().map(VectorSearcher.SearchResult::chunkText).forEach(System.out::println);
-
-        System.out.println("---------------------------");
+        LOGGER.info("---------------------------");
 
         /*
          * Resolve domain
@@ -74,19 +67,26 @@ public class DefaultQueryService implements QueryService {
         }
 
         /*
-         * Route question to domain
-         */
-        return context.getQueryRouter().route(query);
-
-        /*
          * Build sources
          */
-        /*List<String> sources = retrieved.stream()
-                .map(VectorSearcher.SearchResult::documentId)
+        List<QueryResultReference> sources = retrieved.stream()
+                .map(result -> {
+                    QueryResultReference reference = new QueryResultReference();
+                    reference.setSourceId(result.documentId());
+                    reference.setChunkId(result.chunkId());
+                    reference.setSourceType(result.metadata().getSource());
+                    reference.setDescription(result.metadata().getText());
+                    return reference;
+                })
                 .distinct()
-                .toList();*/
+                .toList();
 
-        /*return queryResult;*/
+        /*
+         * Route question to domain
+         */
+        QueryResult queryResult = context.getQueryRouter().route(query);
+        queryResult.setReferences(sources);
+        return context.getQueryRouter().route(query);
     }
 }
 
