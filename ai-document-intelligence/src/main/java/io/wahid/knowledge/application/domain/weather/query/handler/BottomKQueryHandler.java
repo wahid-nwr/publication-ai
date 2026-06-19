@@ -23,11 +23,6 @@ public class BottomKQueryHandler implements QueryHandler<NumericQuery> {
 
     @Override
     public QueryResult handle(NumericQuery query) {
-
-//        String metric = query.getMetric().getMetricName();
-
-//        NumericResultPayload result = weatherQueryEngine.execute(query);//repository.findTopByMetricDesc(metric);
-
         return new QueryResult(query, weatherQueryEngine.execute(query));
     }
 }
